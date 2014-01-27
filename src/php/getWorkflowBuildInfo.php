@@ -1,5 +1,7 @@
 <?php
 
+header('Content-type: application/json');
+
 if($_POST['action']) {
 	
 	//required
@@ -8,6 +10,7 @@ if($_POST['action']) {
 	require_once("Steps.php");
 	require_once("StepConnections.php");
 	require_once("Tags.php");
+	require_once("functions.php");
 	
 	//MySql
 	$dbConn = DBConn::getConnection();
@@ -21,6 +24,9 @@ if($_POST['action']) {
 	if ($result = $dbConn->query($query)) {
 			 	
 	 	$data = $result->fetch_assoc();
+	 	
+	 	$data['title'] = utf8_encode($data['title']);
+	 	$data['author'] = utf8_decode($data['author']);
 		
 		/* free result set */
 		//$result->close();
@@ -51,7 +57,8 @@ if($_POST['action']) {
 	$data["tags"] = $tagsResults;
 	
 	//Convert to JSON
-	print json_encode($data);
+	//print json_encode($data);
+	print jsonRemoveUnicodeSequences($data);
 	
 	/* close connection */
 	$dbConn->close();

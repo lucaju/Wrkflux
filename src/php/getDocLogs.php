@@ -1,5 +1,7 @@
 <?php
 
+header('Content-type: application/json');
+
 if($_POST['wdata']) {
 	
 	//required

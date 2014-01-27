@@ -1,5 +1,7 @@
 <?php
 
+header('Content-type: application/json');
+
 if($_POST['wdata']) {
 	
 	//required
@@ -8,6 +10,8 @@ if($_POST['wdata']) {
 	require_once("Steps.php");
 	require_once("StepConnections.php");
 	require_once("Tags.php");
+	
+	require_once("functions.php");
 	
 	//MySql
 	$dbConn = DBConn::getConnection();
@@ -20,8 +24,8 @@ if($_POST['wdata']) {
 	
 	//save data - Workflow
 	$wfID = $jData['id'];
-	if ($jData['title']) $title = $jData['title'];
-	if ($jData['author']) $author = $jData['author'];
+	if ($jData['title']) $title = utf8_encode($jData['title']);
+	if ($jData['author']) $author = utf8_encode($jData['author']);
 	$date = getDateNow();
 	$time = getTimeNow();
 	$dateTime = $date." ".$time;
@@ -102,23 +106,12 @@ if($_POST['wdata']) {
 	$data["added_tags"] = $tagAddedResults;
 	
 	//Convert to JSON
-	print json_encode($data);
+	//print json_encode($data);
+	print jsonRemoveUnicodeSequences($data);
 	
 	/* close connection */
 	$dbConn->close();
 
-}
-
-function getDateNow() {
-	$date = getDate();
-	$today = $date['year']."-".$date['mon']."-".$date['mday'];
-	return $today;
-}
-
-function getTimeNow() {
-	$date = getDate();
-	$time = $date['hours'].":".$date['minutes'].":".$date['seconds'];
-	return $time;
 }
 
 ?>

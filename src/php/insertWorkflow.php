@@ -1,11 +1,14 @@
 <?php
 
+header('Content-type: application/json');
+
 if($_POST['wdata']) {
 	
 	//required
 	require_once("DBConn.php");
 	require_once("Flags.php");
 	require_once("Steps.php");
+	require_once("functions.php");
 	
 	//mysql
 	$dbConn = DBConn::getConnection();
@@ -17,21 +20,22 @@ if($_POST['wdata']) {
 	$jData = json_decode($wdata,true);
 	
 	//save data - Workflow
-	$title = $jData['title'];
-	$author = $jData['author'];
+	$title = utf8_decode($jData['title']);
+	$author = utf8_decode($jData['author']);
 	$date = getDateNow();
 	$time = getTimeNow();
 	$dateTime = $date." ".$time;
 	
 	//query - Insert new Workflow
 	$query = "INSERT INTO workflow (title, author, created_date, modified_date) VALUES ('$title', '$author', '$dateTime', '$dateTime')";
+	
 	if ($dbConn->query($query)) {
 		
 		$wfid = $dbConn->insert_id;
 		
 		$data["id"] = $wfid;
-		$data["title"] = $title;
-		$data["author"] = $author;
+		$data["title"] = utf8_encode($title);
+		$data["author"] = utf8_encode($author);
 		$data["created_date"] = $dateTime;
 		$data["modified_date"] = $dateTime;
 		
@@ -54,23 +58,12 @@ if($_POST['wdata']) {
 	$data["steps"] = $stepAddedResults;
 	
 	//Convert to JSON and print
-	print json_encode($data);
+	//print json_encode($data);
+	print jsonRemoveUnicodeSequences($data);
 	
 	/* close connection */
 	$dbConn->close();
 	
-}
-
-function getDateNow() {
-	$date = getDate();
-	$today = $date['year']."-".$date['mon']."-".$date['mday'];
-	return $today;
-}
-
-function getTimeNow() {
-	$date = getDate();
-	$time = $date['hours'].":".$date['minutes'].":".$date['seconds'];
-	return $time;
 }
 
 ?>

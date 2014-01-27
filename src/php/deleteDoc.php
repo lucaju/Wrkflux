@@ -1,5 +1,7 @@
 <?php
 
+header('Content-type: application/json');
+
 if($_POST['wdata']) {
 	
 	//required
@@ -28,9 +30,9 @@ if($_POST['wdata']) {
 	//query - delete item	logs	
 	$query = "DELETE FROM items_log WHERE item_uid = $itemUID";
 	if ($dbConn->query($query)) {
-		$result = "success";
+		$result = "Success";
 	} else {
-		$result = "error";
+		$result = "Error";
 	}
 	
 	//result

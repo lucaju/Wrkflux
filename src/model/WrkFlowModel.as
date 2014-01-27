@@ -11,6 +11,7 @@ package model {
 	
 	import events.WrkfluxEvent;
 	
+	import model.PHPGateWay;
 	import model.wrkflow.PinModel;
 	import model.wrkflow.WorkflowModel;
 	
@@ -57,7 +58,7 @@ package model {
 		 * 
 		 */
 		public function loadWorkflow(wfID:int):void {
-			var request:URLRequest = new URLRequest("http://labs.fluxo.art.br/wrkflux/getWorkflow.php");
+			var request:URLRequest = new URLRequest(PHPGateWay.getWorkflow());
 			var data:URLVariables = new URLVariables();
 			data.action = "getWorkflows";
 			data.id = wfID;
@@ -193,7 +194,7 @@ package model {
 			variables.wdata = Jdata;
 			
 			//define request url
-			var request:URLRequest = new URLRequest("http://labs.fluxo.art.br/wrkflux/insertDoc.php");
+			var request:URLRequest = new URLRequest(PHPGateWay.addDocument());
 			request.data = variables;
 			request.method = URLRequestMethod.POST;
 			
@@ -226,7 +227,7 @@ package model {
 			variables.wdata = Jdata;
 			
 			//define request url
-			var request:URLRequest = new URLRequest("http://labs.fluxo.art.br/wrkflux/insertLogDoc.php");
+			var request:URLRequest = new URLRequest(PHPGateWay.addLog());
 			request.data = variables;
 			request.method = URLRequestMethod.POST;
 			
@@ -258,7 +259,7 @@ package model {
 			variables.wdata = Jdata;
 			
 			//define request url
-			var request:URLRequest = new URLRequest("http://labs.fluxo.art.br/wrkflux/deleteDoc.php");
+			var request:URLRequest = new URLRequest(PHPGateWay.removeDoc());
 			request.data = variables;
 			request.method = URLRequestMethod.POST;
 			
@@ -290,7 +291,7 @@ package model {
 			variables.wdata = Jdata;
 			
 			//define request url
-			var request:URLRequest = new URLRequest("http://labs.fluxo.art.br/wrkflux/getDocLogs.php");
+			var request:URLRequest = new URLRequest(PHPGateWay.loadDocLog());
 			request.data = variables;
 			request.method = URLRequestMethod.POST;
 			

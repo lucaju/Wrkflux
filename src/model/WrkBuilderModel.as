@@ -12,6 +12,7 @@ package model {
 	
 	import events.WrkfluxEvent;
 	
+	import model.PHPGateWay;
 	import model.builder.FlagsPreset;
 	import model.builder.StepModel;
 	import model.builder.StepsPreset;
@@ -64,6 +65,8 @@ package model {
 		 */
 		public function createWorkflow(title:String, author:String):void {
 			
+			//try to send in another formar... maybe not URL variables
+			
 			//get data
 			var wfData:Object = new Object();
 			wfData.title = title;
@@ -79,7 +82,7 @@ package model {
 			variables.wdata = Jdata;
 			
 			//define request url
-			var request:URLRequest = new URLRequest("http://labs.fluxo.art.br/wrkflux/insertWorkflow.php");
+			var request:URLRequest = new URLRequest(PHPGateWay.createWorkflow());
 			request.data = variables;
 			request.method = URLRequestMethod.POST;
 			
@@ -99,7 +102,7 @@ package model {
 		 * 
 		 */
 		public function loadWorkflow(wfID:int):void {
-			var request:URLRequest = new URLRequest("http://labs.fluxo.art.br/wrkflux/getWorkflowBuildInfo.php");
+			var request:URLRequest = new URLRequest(PHPGateWay.loadWorkflow());
 			var data:URLVariables = new URLVariables();
 			data.action = "getWorkflows";
 			data.id = wfID;
@@ -405,7 +408,7 @@ package model {
 			variables.wdata = Jdata;
 			
 			//define request url
-			var request:URLRequest = new URLRequest("http://labs.fluxo.art.br/wrkflux/updateWorkflowBuild.php");
+			var request:URLRequest = new URLRequest(PHPGateWay.UpdateWorkflow());
 			request.data = variables;
 			request.method = URLRequestMethod.POST;
 			

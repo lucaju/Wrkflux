@@ -1,17 +1,27 @@
 <?php
 
+//require
 require_once("DBConn.php");
 require_once("Steps.php");
 
+
 class StepConnections {
+	
+	//****************** Properties ****************** ****************** ******************
 	
 	public $wfid;
 	public $stepsAdded;
 	protected $query;
-
+	
+	
+	//****************** Constructor ****************** ****************** ******************
+	
 	public function __contruct() {
 		
 	}
+	
+	
+	//****************** PUBLIC METHODS ****************** ****************** ******************
 	
 	public function getStepID($tempStepID) {
 		foreach ($this->stepsAdded as $step) {

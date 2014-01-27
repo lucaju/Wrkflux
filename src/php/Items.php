@@ -1,12 +1,22 @@
 <?php
 
+//require
 require_once("DBConn.php");
+
 
 class Items {
 
+	//****************** Properties ****************** ****************** ******************
+	
+	
+	//****************** Constructor ****************** ****************** ******************
+	
 	public function __contruct() {
 		
 	}
+	
+	
+	//****************** PUBLIC METHODS ****************** ****************** ******************
 	
 	public function selectItemsByWFID($wfid) {
 		
@@ -17,7 +27,11 @@ class Items {
 		$dbConn = DBConn::getConnection();
 		
 		if ($result = $dbConn->query($query)) {
+			
 			while ($item = $result->fetch_assoc()) {
+			
+				$item["title"] = utf8_encode($item["title"]);
+				$item["description"] = utf8_encode($item["description"]);
 				
 				//get last log for each item
 				$itemUID = $item['uid'];

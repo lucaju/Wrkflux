@@ -1,22 +1,15 @@
 <?php
-header('Content-Type: text/html; charset=utf-8');
+
+header('Content-type: application/json');
 
 if($_POST['wdata']) {
 	
 	//required
 	require_once("DBConn.php");
+	require_once("functions.php");
 	
 	//mysql
 	$dbConn = DBConn::getConnection();
-	
-	/*
-	if (!$dbConn->set_charset('utf8')) {
-		printf("Error loading character set utf8: %s\n", $dbConn->error);
-	} else {
-		printf("Current character set: %s\n", $dbConn->character_set_name());
-	}
-	*/
-	
 	
 	//get data
 	$wdata = stripslashes($_POST['wdata']);
@@ -33,8 +26,13 @@ if($_POST['wdata']) {
 	if ($result = $dbConn->query($query)) {
 		while ($item = $result->fetch_assoc()) {
 			
+			$item["title"] = utf8_encode($item["title"]);
+			$item["description"] = utf8_encode($item["description"]);
+				
+			
 			//get last log for each item
 			$itemUID = $item['uid'];
+			
 			$queryLog = "SELECT * FROM items_log WHERE item_uid=$itemUID ORDER BY uid DESC LIMIT 1";
 			
 			if ($resultLog = $dbConn->query($queryLog)) {
@@ -54,7 +52,8 @@ if($_POST['wdata']) {
 	$data["items"] = $items;
 	
 	//Convert to JSON and print
-	print json_encode($data);
+	//print json_encode($data);
+	print jsonRemoveUnicodeSequences($data);
 	
 	/* close connection */
 	$dbConn->close();

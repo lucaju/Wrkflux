@@ -1,15 +1,25 @@
 <?php
 
+//require
 require_once("DBConn.php");
 
+
 class Steps {
+
+	//****************** Properties ****************** ****************** ******************
 	
 	public $wfid;
 	protected $query;
 
+
+	//****************** Constructor ****************** ****************** ******************
+	
 	public function __contruct() {
 		
 	}
+	
+	
+	//****************** PUBLIC METHODS ****************** ****************** ******************
 	
 	public function insertMultipleSteps($steps) {
 		
@@ -17,8 +27,8 @@ class Steps {
 		foreach ($steps as $step) {
 			
 			$wfid = $this->wfid;
-			$title = $step['title'];
-			$abbreviation = $step['abbreviation'];
+			$title = utf8_decode($step['title']);
+			$abbreviation = utf8_decode($step['abbreviation']);
 			$shape = $step['shape'];
 			$position = $step['position'];
 			
@@ -79,8 +89,8 @@ class Steps {
 			
 			$wfid = $this->wfid;
 			$uid = $step["uid"]; 
-			$title = $step['title'];
-			$abbreviation = $step['abbreviation'];
+			$title = utf8_decode($step['title']);
+			$abbreviation = utf8_decode($step['abbreviation']);
 			$shape = $step['shape'];
 			$position = $step['position'];
 			
@@ -112,12 +122,19 @@ class Steps {
 		$dbConn = DBConn::getConnection();
 		
 		if ($result = $dbConn->query($query)) {
+			
 			while ($step = $result->fetch_assoc()) {
+				$step['title'] = utf8_encode($step['title']);
+				$step['abbreviation'] = utf8_encode($step['abbreviation']);
 				$stepResults[] = $step;
 			}
+			
 			return $stepResults;
+		
 		} else {
+			
 			return "error";	
+			
 		}
 	}
 	

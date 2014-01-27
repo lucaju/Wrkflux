@@ -1,5 +1,7 @@
 <?php
 
+header('Content-type: application/json');
+
 if($_POST['wdata']) {
 	
 	//required
@@ -16,8 +18,8 @@ if($_POST['wdata']) {
 	
 	//save data - Workflow
 	$itemUID = $jData['uid'];
-	$title = $jData['tilte'];
-	$description = $jData['description'];
+	$title = utf8_decode($jData['title']);
+	$description = utf8_decode($jData['description']);
 	
 	//query - Update item
 	$query = "UPDATE items SET title='$title', description='$description' WHERE uid=$itemUID";
@@ -25,13 +27,14 @@ if($_POST['wdata']) {
 	if ($dbConn->query($query)) {
 		
 		$data["uid"] = $itemUID;
-		$data["title"] = $title;
-		$data["description"] = $description;
+		$data["title"] = utf8_encode($title);
+		$data["description"] = utf8_encode($description);
 		
 	}
 	
 	//Convert to JSON and print
-	print json_encode($data);
+	//print json_encode($data);
+	print jsonRemoveUnicodeSequences($data);
 	
 	/* close connection */
 	$dbConn->close();

@@ -1,9 +1,12 @@
 <?php
 
+header('Content-type: application/json');
+
 if($_POST['wdata']) {
 	
 	//required
 	require_once("DBConn.php");
+	require_once("functions.php");
 	
 	//mysql
 	$dbConn = DBConn::getConnection();
@@ -43,18 +46,6 @@ if($_POST['wdata']) {
 	/* close connection */
 	$dbConn->close();
 	
-}
-
-function getDateNow() {
-	$date = getDate();
-	$today = $date['year']."-".$date['mon']."-".$date['mday'];
-	return $today;
-}
-
-function getTimeNow() {
-	$date = getDate();
-	$time = $date['hours'].":".$date['minutes'].":".$date['seconds'];
-	return $time;
 }
 
 ?>

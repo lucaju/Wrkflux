@@ -1,22 +1,15 @@
 <?php
-//header('Content-Type: text/html; charset=utf-8');
+
+header('Content-type: application/json');
 
 if($_POST['wdata']) {
 	
 	//required
 	require_once("DBConn.php");
-	
+	require_once("functions.php");
 	
 	//mysql
 	$dbConn = DBConn::getConnection();
-	
-	/*
-	if (!$dbConn->set_charset('utf8')) {
-		printf("Error loading character set utf8: %s\n", $dbConn->error);
-	} else {
-		printf("Current character set: %s\n", $dbConn->character_set_name());
-	}
-	*/
 	
 	//get data
 	$wdata = stripslashes($_POST['wdata']);
@@ -26,10 +19,10 @@ if($_POST['wdata']) {
 	
 	//save data - Workflow
 	$wfID = $jData['wfid'];
-	$title = $jData['title'];
+	$title = utf8_decode($jData['title']);
 	$flagID = $jData['flagID'];
 	$stepID = $jData['stepID'];
-	$description = $jData['description'];
+	$description = utf8_decode($jData['description']);
 	
 	$date = getDateNow();
 	$time = getTimeNow();
@@ -44,10 +37,10 @@ if($_POST['wdata']) {
 		
 		$data["uid"] = $itemUID;
 		$data["wfID"] = $wfID;
-		$data["title"] = $title;
-		$data["description"] = $description;
-		
+		$data["title"] = utf8_encode($title);
+		$data["description"] = utf8_encode($description);
 	}
+	
 	
 	//query - Insert new item log	
 	$query = "INSERT INTO items_log (item_uid, flag_uid, step_uid, date) VALUES ('$itemUID', '$flagID', '$stepID', '$dateTime')";
@@ -66,23 +59,12 @@ if($_POST['wdata']) {
 	$data["log"] = $log;
 	
 	//Convert to JSON and print
-	print json_encode($data);
+	//print json_encode($data);
+	print jsonRemoveUnicodeSequences($data);
 	
 	/* close connection */
 	$dbConn->close();
 	
-}
-
-function getDateNow() {
-	$date = getDate();
-	$today = $date['year']."-".$date['mon']."-".$date['mday'];
-	return $today;
-}
-
-function getTimeNow() {
-	$date = getDate();
-	$time = $date['hours'].":".$date['minutes'].":".$date['seconds'];
-	return $time;
 }
 
 ?>

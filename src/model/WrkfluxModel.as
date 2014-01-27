@@ -12,6 +12,7 @@ package model {
 	
 	import events.WrkfluxEvent;
 	
+	import model.PHPGateWay;
 	import model.initial.WorkflowItemModel;
 	
 	import mvc.Observable;
@@ -58,7 +59,7 @@ package model {
 		 * 
 		 */
 		public function getWorkflows():void {
-			var request:URLRequest = new URLRequest("http://labs.fluxo.art.br/wrkflux/getWorkflows.php");
+			var request:URLRequest = new URLRequest(PHPGateWay.getWorkflows());
 			var data:URLVariables = new URLVariables();
 			data.action = "getWorkflows";
 			data.id = "";
@@ -89,8 +90,12 @@ package model {
 		 */
 		protected function completeHandler(event:LoaderEvent):void {
 			
+			var dataLoader:DataLoader = DataLoader(event.target);
+			
 			_workflowCollection = new Array();
 			var workflows:Object = JSON.parse(LoaderMax.getContent("getWorkflows"));
+			
+			
 			
 			for each (var workflow:Object in workflows) {
 				var wfProject:WorkflowItemModel = new WorkflowItemModel(workflow.id,

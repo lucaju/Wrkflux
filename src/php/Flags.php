@@ -1,15 +1,25 @@
 <?php
 
+//require
 require_once("DBConn.php");
 
+
 class Flags {
+
+	//****************** Properties ****************** ****************** ******************
 	
 	public $wfid;
 	protected $query;
+	
+	
+	//****************** Constructor ****************** ****************** ******************
 
 	public function __contruct() {
 		
 	}
+	
+	
+	//****************** PUBLIC METHODS ****************** ****************** ******************
 	
 	public function insertMultipleFlags($flags) {
 		
@@ -17,7 +27,7 @@ class Flags {
 		foreach ($flags as $flag) {
 			
 			$wfid = $this->wfid;
-			$title = $flag['title'];
+			$title = utf8_decode($flag['title']);
 			$color = $flag['color'];
 			$ordering = $flag['order'];
 			
@@ -48,9 +58,9 @@ class Flags {
 			
 			$wfid = $this->wfid;
 			$uid = $flag["uid"]; 
-			$title = $flag['title'];
-			$color = $flag['color'];
-			$ordering = $flag['order'];
+			//$title = $flag['title'];
+			//$color = $flag['color'];
+			//$ordering = $flag['order'];
 			
 			$query = "DELETE FROM flags WHERE uid = $uid";
 			
@@ -76,7 +86,7 @@ class Flags {
 			
 			$wfid = $this->wfid;
 			$uid = $flag["uid"]; 
-			$title = $flag['title'];
+			$title = utf8_decode($flag['title']);
 			$color = $flag['color'];
 			$ordering = $flag['order'];
 			
@@ -103,12 +113,18 @@ class Flags {
 		$dbConn = DBConn::getConnection();
 		
 		if ($result = $dbConn->query($query)) {
+			
 			while ($flag = $result->fetch_assoc()) {
+				$flag['title'] = utf8_encode($flag['title']);
 				$flagResults[] = $flag;
 			}
+			
 			return $flagResults;
+			
 		} else {
+			
 			return "error";	
+			
 		}
 	}
 	
@@ -124,144 +140,6 @@ class Flags {
 		}
 	}
 	
-	/************************************/
-	
-	protected function insertFlags($flags) {
-		
-		$this->query = "";
-		$this->query .= "INSERT INTO flags (wfid, title, color, ordering) VALUES ";
-		
-		$flagsLenght = count($flags);
-		$i = 1;
-		
-		foreach ($flags as $flag) {
-			
-			$wfid = $this->wfid;
-			$title = $flag['title'];
-			$color = $flag['color'];
-			$ordering = $flag['order'];
-			
-			if ($i == $flagsLenght) {
-				$this->query .= "('$wfid', '$title', '$color', '$ordering')";	
-			} else {
-				$this->query .= "('$wfid', '$title', '$color', '$ordering'),";
-			}
-			
-			$i++;
-			
-		}
-		
-	}
-	
-	protected function removeFlags($flags) {
-		$this->query = "";
-		$this->query .= "DELETE FROM flags [WHERE Clause]";
-		
-		$flagsLenght = count($flags);
-		$i = 1;
-		
-		foreach ($flags as $flag) {
-			
-			$wfid = $this->wfid;
-			$title = $flag['title'];
-			$color = $flag['color'];
-			$ordering = $flag['order'];
-			
-			if ($i == $flagsLenght) {
-				$this->query .= "('$wfid', '$title', '$color', '$ordering')";	
-			} else {
-				$this->query .= "('$wfid', '$title', '$color', '$ordering'),";
-			}
-			
-			$i++;
-			
-		}
-		
-	}
-	
-	protected function selectByWFID() {
-		$this->query = "";
-		$this->query = "SELECT * FROM flags WHERE wfid=$this->wfid";
-	}
-	
-	protected function selectByUID($uid) {
-		$this->query = "";
-		$this->query = "SELECT * FROM flags WHERE uid=$uid";
-	}
-	
-	protected function updateAllFlagsbyWFid($flags) {
-		$this->query = "";
-		$this->query = "UPDATE flags SET ";
-		
-		$flagsLenght = count($flags);
-		$i = 1;
-		
-		foreach ($flags as $flag) {
-			
-			$wfid = $this->wfid;
-			$title = $flag['title'];
-			$color = $flag['color'];
-			$ordering = $flag['order'];
-			
-			if($title != "") {
-				$query .= "title = '$title' ";
-			}
-			
-			if($color != "") {
-				$query .= "color = '$color' ";
-			}
-			
-			if($ordering != "") {
-				$query .= "ordering = '$ordering' ";
-			}
-			
-			$query .= "WHERE id = $wfID";
-			
-			if ($i != $flagsLenght) {
-				$this->query .= ", ";
-			}
-			
-			$i++;
-			
-		}
-	}
-	
-	public function query($type, $data = null) {
-		
-		//create query;
-		switch ($type) {
-			case "insert":
-				$this->insertFlags($data);
-				break;
-				
-			case "selectByWFID":
-				$this->selectByWFID();
-				break;
-				
-			case "selectByUID":
-				$this->selectByUID($data);
-				break;
-				
-			case "updateAllFlagsbyWFid":
-				$this->updateAllFlagsbyWFid($data);
-				break;
-				
-			case "remove":
-				$this->removeFlags($data);
-				break;
-		
-		}
-		
-		//query
-		$dbConn = DBConn::getConnection();
-		
-		if ($result = $dbConn->query($this->query)) {
-			return $result;
-		} else {
-			return "error";	
-		}
-		
-	}
 }
 	
 ?>

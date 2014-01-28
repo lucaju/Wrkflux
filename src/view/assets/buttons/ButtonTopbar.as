@@ -5,12 +5,15 @@ package view.assets.buttons {
 	
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
+	import flash.geom.ColorTransform;
 	import flash.text.AntiAliasType;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	
 	import font.FontFolio;
+	
+	import util.Colors;
 	
 	/**
 	 * 
@@ -20,7 +23,6 @@ package view.assets.buttons {
 	public class ButtonTopbar extends AbstractButton {
 		
 		//****************** Properties ****************** ****************** ******************
-		
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -76,6 +78,7 @@ package view.assets.buttons {
 			//Interaction
 			this.addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
 			this.addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
+			this.addEventListener(MouseEvent.CLICK, mouseClick);
 		}
 		
 		
@@ -99,6 +102,17 @@ package view.assets.buttons {
 			TweenMax.to(shape,.6,{alpha:1});
 		}	
 		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function mouseClick(event:MouseEvent):void {
+			
+			if (this.togglable) this.doToggle();
+			
+		}	
+		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
 		
 		/**
@@ -108,6 +122,31 @@ package view.assets.buttons {
 		 */
 		override public function getLabel():String {
 			return labelTF.text;
+		}
+		
+		
+		//****************** PUBLIC METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		override public function doToggle():void {
+			
+			toggle = !toggle;
+			
+			shape.graphics.clear();
+			if (this.line) shape.graphics.lineStyle(this.lineThickness,this.lineColor,this.lineColorAlpha,true);
+			
+			if (toggle) {
+				shape.graphics.beginFill(this.toggleColor,this.toggleColorAlpha);
+			} else {
+				shape.graphics.beginFill(this.color,this.colorAlpha);	
+			}
+			
+			shape.graphics.drawRect(0,0,labelTF.width + 10,20);
+			shape.graphics.endFill();
 		}
 		
 	}

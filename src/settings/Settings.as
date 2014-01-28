@@ -23,10 +23,16 @@ package settings {
 		private static var _statusFlags					:Array				//Color Options
 		
 		//pins
-		private static var _pinTrail					:Boolean			//Turn on and Off pin trail
+		private static var _pinTrail					:Boolean;			//Turn on and Off pin trail
+		
+		//pin list
+		private static var _pinListVisibility			:Boolean;
+		
+		//tags
+		private static var _tagsVisibility				:Boolean;
 		
 		//groups
-		private static var _contractableGroups			:Boolean			//Whether groups can or cannot contracts
+		private static var _contractableGroups			:Boolean;			//Whether groups can or cannot contracts
 		
 		
 		//****************** Constructor ****************** ****************** ******************
@@ -48,6 +54,12 @@ package settings {
 			
 			//--flags
 			_maxFlags = 6;
+			
+			//pin list
+			_pinListVisibility = false;
+			
+			//tags
+			_tagsVisibility	= false;
 			
 			//--groups
 			_contractableGroups = false;
@@ -158,6 +170,48 @@ package settings {
 			}
 			
 			return null;
+		}
+		
+		
+		//****************** GETTERS & SETTERS - PIN LIST ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public static function get pinListVisibility():Boolean {
+			return _pinListVisibility;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public static function set pinListVisibility(value:Boolean):void {
+			_pinListVisibility = value;
+		}
+		
+		
+		//****************** GETTERS & SETTERS - TAGS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public static function get tagsVisibility():Boolean {
+			return _tagsVisibility;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public static function set tagsVisibility(value:Boolean):void {
+			_tagsVisibility = value;
 		}
 		
 		

@@ -17,6 +17,8 @@ package model {
 	
 	import mvc.Observable;
 	
+	import settings.Settings;
+	
 	import util.MessageType;
 	
 	/**
@@ -30,8 +32,11 @@ package model {
 		
 		public const label					:String = "Wrkflow";
 		
-		public const menuRight				:Array = [{label:"Close"}, {label:"Edit"},];
-		public const menuLeft				:Array = [{label:"List"}];
+		public const menuRight				:Array = [{label:"Close"},
+													  {label:"Edit"}];
+		
+		public const menuLeft				:Array = [{label:"List", togglable:true, toggle:Settings.tagsVisibility},
+													  {label:"Tags", togglable:true, toggle:Settings.tagsVisibility}];
 		
 		protected var workflowModel			:model.wrkflow.WorkflowModel;
 		
@@ -168,6 +173,16 @@ package model {
 		 */
 		public function getFlagColor(flagUID:int):uint {
 			if (workflowModel) return workflowModel.getFlagColor(flagUID);
+			return null;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function getTags():Array {
+			if (workflowModel) return workflowModel.tags;
 			return null;
 		}
 		
@@ -336,7 +351,6 @@ package model {
 			return null;
 		}
 		
-		
 		//****************** MAIN WORKFLOW METHODS ****************** ****************** ******************
 		
 		/**
@@ -434,7 +448,8 @@ package model {
 															workflowData.flags,
 															workflowData.steps,
 															workflowData.connections,
-															workflowData.flow);
+															workflowData.flow,
+															workflowData.tags);
 			
 			workflowModel.source = this;
 			

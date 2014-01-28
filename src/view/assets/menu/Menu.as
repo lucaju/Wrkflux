@@ -5,6 +5,7 @@ package view.assets.menu {
 	import flash.events.MouseEvent;
 	
 	import events.WrkfluxEvent;
+	
 	import view.assets.buttons.AbstractButton;
 	import view.assets.buttons.ButtonFactory;
 	
@@ -47,7 +48,7 @@ package view.assets.menu {
 		 * @param color
 		 * 
 		 */
-		public function add(label:String, color:*):void {
+		public function add(label:String, color:*):AbstractButton {
 			
 			
 			//var bt:Button = new Button();
@@ -63,7 +64,7 @@ package view.assets.menu {
 				
 			} else if (orientation == MenuOrientation.HORIZONTAL && direction == MenuDirection.RIGHT) {
 				
-				bt.x = -this.width - gap;
+				if (items.length > 0)  bt.x = this.width + gap;
 				
 			} else if (orientation == MenuOrientation.VERTICAL && direction == MenuDirection.TOP) {
 				
@@ -72,11 +73,14 @@ package view.assets.menu {
 			} else if (orientation == MenuOrientation.VERTICAL && direction == MenuDirection.BOTTOM) {
 				
 				bt.y = -this.height -bt.height - gap;
-				
 			}
+			
+			
 			
 			this.addChild(bt);
 			items.push(bt);
+			
+			return bt;
 		}
 		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************

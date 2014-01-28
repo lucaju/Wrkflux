@@ -33,8 +33,11 @@ package model {
 		
 		public const label					:String = "Wrkflux [Build Mode]";
 		
-		public const menuRight				:Array = [{label:"Close"}];
-		public const menuLeft				:Array = [{label:"Save"}, {label:"Use"}];
+		public const menuRight				:Array = [{label:"Save"},
+													  {label:"Use"},
+													  {label:"Close"}];
+		
+		public const menuLeft				:Array = [{label:"Tags", togglable:true, toggle:true}];
 		
 		protected var workflowModel			:WorkflowModel;
 		protected var flagsPresets			:FlagsPreset;
@@ -318,7 +321,7 @@ package model {
 		}
 		
 		
-		//****************** PUBLIC TAGSMETHODS ****************** ****************** ******************
+		//****************** PUBLIC TAGS METHODS ****************** ****************** ******************
 		
 		/**
 		 * 

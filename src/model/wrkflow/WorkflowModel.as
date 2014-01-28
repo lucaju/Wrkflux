@@ -5,6 +5,8 @@ package model.wrkflow {
 	import model.WrkFlowModel;
 	import model.builder.StepConnection;
 	import model.builder.StepModel;
+	import model.builder.TagModel;
+	import model.builder.TagsManager;
 	
 	
 	/**
@@ -23,6 +25,7 @@ package model.wrkflow {
 		internal var _steps					:Array;
 		internal var _connections			:Array;
 		internal var _flow					:Array;
+		internal var _tags					:Array;
 		
 		internal var _source				:WrkFlowModel;
 		
@@ -45,7 +48,8 @@ package model.wrkflow {
 									  flags:Array = null,
 									  steps:Array = null,
 									  connections:Array = null,
-									  flow:Array = null) {
+									  flow:Array = null,
+									  tags:Array = null) {
 			
 			
 			_id = id;
@@ -66,6 +70,11 @@ package model.wrkflow {
 			//flow
 			_flow = new Array();
 			if (flow) this.initialFlowHandle(flow);
+			
+			//tags
+			_tags = new Array();
+			if (tags) this.initialTagsHandle(tags);
+			
 		}
 		
 		
@@ -131,6 +140,22 @@ package model.wrkflow {
 			}
 		}
 		
+		/**
+		 * 
+		 * @param tags
+		 * 
+		 */
+		protected function initialTagsHandle(tags:Array):void {
+			
+			var tag:TagModel;
+			
+			for each (var tagObject:Object in tags) {
+				tag = new TagModel(tagObject.uid, tagObject.label, tagObject.position);
+				_tags.push(tag);
+			}
+			
+			TagsManager.numUniqueTags = tags.length;
+		}
 		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
 		
@@ -380,6 +405,15 @@ package model.wrkflow {
 		 */
 		public function set source(value:WrkFlowModel):void {
 			_source = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get tags():Array {
+			return _tags;
 		}
 
 	}

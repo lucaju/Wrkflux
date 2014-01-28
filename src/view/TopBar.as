@@ -4,8 +4,8 @@ package view {
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.display.Sprite;
-	import flash.text.Font;
 	import flash.text.AntiAliasType;
+	import flash.text.Font;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
@@ -16,6 +16,8 @@ package view {
 	
 	import util.Colors;
 	
+	import view.assets.buttons.AbstractButton;
+	import view.assets.buttons.ButtonTopbar;
 	import view.assets.menu.Menu;
 	import view.assets.menu.MenuDirection;
 	import view.assets.menu.MenuOrientation;
@@ -89,14 +91,6 @@ package view {
 			
 			this.addChild(titleTF);
 			
-			
-			//3.menu left
-			/*
-			var optionsMenuLeft:Array = [
-				{title:"list"}
-			];
-			*/
-			
 		}
 		
 		
@@ -148,7 +142,11 @@ package view {
 				
 				
 				for each (var option:Object in options) {
-					menu.add(option.label, Colors.WHITE);
+					var bt:AbstractButton = menu.add(option.label, Colors.WHITE);
+					if (option.togglable) {
+						bt.togglable = option.togglable; 			//togglable
+						if (option.toggle) bt.doToggle()
+					}
 				}
 				
 				if (direction == MenuDirection.LEFT) {

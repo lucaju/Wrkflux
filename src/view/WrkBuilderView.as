@@ -283,6 +283,7 @@ package view {
 		 * 
 		 */
 		protected function updateComplete(event:WrkfluxEvent):void {
+			
 			lockPanels(false);
 			
 			//update recently added flags
@@ -293,6 +294,7 @@ package view {
 			
 			showMessage(event.data.message, event.data.messageType);
 			checkStrucutureOverlap();
+			
 		}
 		
 		
@@ -343,6 +345,10 @@ package view {
 				case "save":
 					WrkBuilderController(this.getController()).save();
 					lockPanels(true);
+					break;
+				
+				case "tags":
+					structureView.showTags();
 					break;
 			}
 		}

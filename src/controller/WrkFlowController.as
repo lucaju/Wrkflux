@@ -2,6 +2,7 @@ package controller {
 	
 	//imports
 	import model.FlagModel;
+	import model.WrkBuilderModel;
 	import model.WrkFlowModel;
 	import model.WrkfluxModel;
 	
@@ -229,6 +230,17 @@ package controller {
 		 */
 		public function removeDoc(uid:int):void {
 			WrkFlowModel(this.getModel("wrkflow")).removeDoc(uid);
+		}
+		
+		//****************** TAGS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function getTags():Array {
+			return WrkFlowModel(this.getModel("wrkflow")).getTags();
 		}
 		
 	}

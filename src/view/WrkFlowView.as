@@ -197,6 +197,8 @@ package view {
 			
 			flowView.addEventListener(WrkfluxEvent.ACTIVATE_PIN, pinSelected);
 			
+			if (Settings.pinListVisibility) this.showPinlist();
+			
 		}
 		
 		/**
@@ -479,6 +481,10 @@ package view {
 				
 				case "list":
 					showPinlist();
+					break;
+				
+				case "tags":
+					structureView.showTags();
 					break;
 			}
 		}

@@ -3,6 +3,7 @@ package view.assets.buttons {
 	//imports
 	import flash.display.Sprite;
 	import flash.text.TextField;
+	
 	import util.Colors;
 	
 	
@@ -31,6 +32,11 @@ package view.assets.buttons {
 		protected var _maxWidth				:Number;
 		protected var _maxHeight			:Number;
 		
+		protected var _togglable			:Boolean;
+		protected var _toggle				:Boolean;
+		protected var _toggleColor			:uint;
+		protected var _toggleColorAlpha		:Number;
+		
 		//****************** Constructor ****************** ****************** ******************
 		
 		public function AbstractButton() {
@@ -51,10 +57,15 @@ package view.assets.buttons {
 			maxWidth = 100;
 			maxHeight = 30;
 			
+			_togglable = false;
+			_toggle = false;
+			_toggleColor = Colors.getColorByName(Colors.GREEN);
+			_toggleColorAlpha = 1;
+			
 		}
 		
 		//****************** Initialize ****************** ****************** ******************
-		
+
 		/**
 		 * 
 		 * @param label
@@ -92,6 +103,14 @@ package view.assets.buttons {
 		 */
 		public function getLineColorName():String {
 			return Colors.getColorByUint(lineColor);
+		}
+	
+		/**
+		 * 
+		 * 
+		 */
+		public function doToggle():void {
+			
 		}
 		
 		
@@ -273,6 +292,78 @@ package view.assets.buttons {
 		 */
 		public function set maxHeight(value:Number):void {
 			_maxHeight = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get togglable():Boolean {
+			return _togglable;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set togglable(value:Boolean):void {
+			_togglable = value;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get toggle():Boolean {
+			return _toggle;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set toggle(value:Boolean):void {
+			_toggle = value;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get toggleColor():uint {
+			return _toggleColor;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set toggleColor(value:uint):void {
+			_toggleColor = value;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get toggleColorAlpha():Number {
+			return _toggleColorAlpha;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set toggleColorAlpha(value:Number):void {
+			_toggleColorAlpha = value;
 		}
 
 

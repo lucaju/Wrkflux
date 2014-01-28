@@ -297,6 +297,15 @@ package view.builder.structure {
 		 * @param value
 		 * 
 		 */
+		public function showTags():void {
+			tags.visible = !tags.visible;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
 		public function showDelete(value:Boolean):void {
 			if (value) {
 				TweenLite.to(deleteButton,.4,{y:background.y + background.height - (deleteButton.height/2), autoAlpha:.8});

@@ -10,6 +10,7 @@ if($_POST['action']) {
 	require_once("Steps.php");
 	require_once("Items.php");
 	require_once("StepConnections.php");
+	require_once("Tags.php");
 	require_once("functions.php");
 	
 	//MySql
@@ -54,6 +55,12 @@ if($_POST['action']) {
 	$itemsClass = new Items();
 	$ItemResults = $itemsClass->selectItemsByWFID($wfID);
 	$data["flow"] = $ItemResults;
+	
+	//get Tags info
+	$tagsClass = new Tags();
+	$tagsClass->wfid = $wfID;
+	$tagsResults = $tagsClass->selectTagsByWFID($wfID);
+	$data["tags"] = $tagsResults;
 	
 	//Convert to JSON
 	//print json_encode($data);

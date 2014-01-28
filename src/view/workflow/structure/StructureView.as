@@ -1,6 +1,9 @@
 package view.workflow.structure {
 	
 	//imports
+	import com.greensock.TweenLite;
+	import com.greensock.easing.Expo;
+	
 	import controller.WrkFlowController;
 	
 	import events.WrkfluxEvent;
@@ -8,10 +11,12 @@ package view.workflow.structure {
 	import mvc.AbstractView;
 	import mvc.IController;
 	
+	import settings.Settings;
+	
 	import view.workflow.structure.network.StructureNetwork;
 	import view.workflow.structure.steps.Step;
 	import view.workflow.structure.steps.StructureList;
-	
+	import view.workflow.tag.Tags;
 	
 	/**
 	 * 
@@ -24,6 +29,8 @@ package view.workflow.structure {
 		
 		protected var structureList		:StructureList;
 		protected var structureNetwork	:StructureNetwork;
+		
+		protected var tags				:view.workflow.tag.Tags;
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -65,6 +72,9 @@ package view.workflow.structure {
 			
 			structureList.network = structureNetwork;
 			
+			//tags
+			if (Settings.tagsVisibility) this.showTags();
+			
 			//listeners
 			structureList.addEventListener(WrkfluxEvent.SELECT, updateStructure);
 			
@@ -101,6 +111,29 @@ package view.workflow.structure {
 		 */
 		public function getAllSteps():Array {
 			return structureList.itemCollection
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function showTags():void {
+			
+			if (!tags) {
+				
+				var tagData:Array = WrkFlowController(this.getController()).getTags();
+				
+				tags = new view.workflow.tag.Tags(this);
+				this.addChild(tags);
+				tags.init(tagData);
+			
+			} else {
+	
+				TweenLite.to(tags,1,{y:100, alpha:0, onComplete:this.removeChild, onCompleteParams:[tags]});
+				tags = null;
+	
+			}
 		}
 		
 		//****************** GETTERS // SETTERS ****************** ****************** ******************

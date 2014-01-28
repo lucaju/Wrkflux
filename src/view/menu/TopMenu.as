@@ -69,7 +69,7 @@ package view.menu {
 			item = event.currentTarget as ButtonTopIcon;
 			item.toggle = !item.toggle;
 			
-			data.label = item.label;
+			data.label = item.getLabel();
 			data.toggle = item.toggle;
 
 			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.SELECT, data));

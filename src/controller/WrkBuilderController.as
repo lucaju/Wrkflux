@@ -3,8 +3,8 @@ package controller {
 	//imports
 	import flash.geom.Point;
 	
-	import model.WrkBuilderModel;
 	import model.WrkfluxModel;
+	import model.WrkBuilderModel;
 	import model.builder.StepModel;
 	
 	import mvc.AbstractController;

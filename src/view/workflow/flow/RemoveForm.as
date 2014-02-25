@@ -5,7 +5,6 @@ package view.workflow.flow {
 	import com.greensock.TweenLite;
 	
 	import flash.events.MouseEvent;
-	
 	import flash.text.TextFormatAlign;
 	
 	import controller.WrkFlowController;
@@ -17,8 +16,7 @@ package view.workflow.flow {
 	import util.Colors;
 	import util.MessageType;
 	
-	import view.assets.buttons.AbstractButton;
-	import view.assets.buttons.ButtonFactory;
+	import view.assets.buttons.Button;
 	import view.forms.AbstractForm;
 	import view.forms.MessageField;
 	
@@ -33,8 +31,8 @@ package view.workflow.flow {
 		
 		protected var itemUID				:int;
 		
-		protected var yesBT					:AbstractButton;
-		protected var noBT					:AbstractButton;
+		protected var yesBT					:Button;
+		protected var noBT					:Button;
 		
 		
 		//****************** Constructor ****************** ****************** ******************
@@ -85,11 +83,14 @@ package view.workflow.flow {
 			messageField.y = messageLabel.y + messageLabel.height - gap;
 			
 			//2. no Button
-			noBT = ButtonFactory.getButton((Colors.RED), ButtonFactory.FORM);
+			noBT = new Button();
 			this.addChild(noBT);
-			noBT.maxWidth = 55;
+			noBT.maxWidth = 70;
 			noBT.maxHeight = 35;
-			noBT.init("no");
+			noBT.color = Colors.getColorByName(Colors.RED);
+			noBT.textColor = Colors.getColorByName(Colors.WHITE);
+			noBT.toggleColor = Colors.getColorByName(Colors.DARK_GREY);
+			noBT.init("no");;
 			
 			noBT.x = gap;
 			//noBT.y = gap;
@@ -98,11 +99,15 @@ package view.workflow.flow {
 			fieldCollection.push(noBT);
 			
 			//3. yes Button
-			yesBT = ButtonFactory.getButton((Colors.GREEN), ButtonFactory.FORM);
+			yesBT = new Button();
 			this.addChild(yesBT);
-			yesBT.maxWidth = 55;
+			yesBT.maxWidth = 70;
 			yesBT.maxHeight = 35;
-			yesBT.init("yes");
+			yesBT.color = Colors.getColorByName(Colors.GREEN);
+			yesBT.textColor = Colors.getColorByName(Colors.WHITE);
+			yesBT.toggleColor = Colors.getColorByName(Colors.DARK_GREY);
+			yesBT.init("yes");;
+			
 			
 			yesBT.x = noBT.x + noBT.width + gap;
 			//yesBT.y = gap;
@@ -111,9 +116,15 @@ package view.workflow.flow {
 			fieldCollection.push(yesBT);
 			
 			//window
-			this.windowColor = Colors.getColorByName(Colors.WHITE);
-			this.drawWindow(125, this.height + (2*gap));
+			this.windowGlow = true;
+			this.windowLineColor = Colors.getColorByName(Colors.LIGHT_GREY);
+			this.windowColor = Colors.getColorByName(Colors.WHITE_ICE);
+			this.drawWindow(this.width + (2*gap), this.height + (2*gap));
+			this.maxHeight = this.window.height;
 			
+			messageLabel.x = this.window.width/2 - messageLabel.width/2;
+			messageField.x = this.window.width/2 - messageField.width/2;
+				
 			//listeners
 			this.addEventListener(MouseEvent.CLICK, formClick);
 		}		
@@ -154,7 +165,6 @@ package view.workflow.flow {
 					super.addProgressBar();
 					data.action = "removeItem";
 					data.uid = this.itemUID;
-					
 					this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_EVENT, data));
 					break;
 			}
@@ -168,7 +178,10 @@ package view.workflow.flow {
 		 * 
 		 */
 		override public function kill():void {
-			super.removeProgressBar();
+			super.kill();
+			if (yesBT) yesBT.kill();
+			if (noBT) noBT.kill();
+			this.removeEventListener(MouseEvent.CLICK, formClick);
 			TweenLite.to(this,.6,{y:0, autoAlpha: 0, delay: .8, onComplete:killView});
 		}
 		

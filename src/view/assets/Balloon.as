@@ -52,8 +52,8 @@ package view.assets {
 			
 			//draw balloon
 			shape = new Sprite();
-			shape.graphics.lineStyle(this.lineThickness, this.lineColor);
-			shape.graphics.beginFill(this.color);
+			if (this.line) shape.graphics.lineStyle(this.lineThickness, this.lineColor);
+			shape.graphics.beginFill(this.color,this.alphaColor);
 			shape.graphics.drawRoundRect(0,0,maxWidth,maxHeight,this.roundness);
 			shape.graphics.endFill();
 			
@@ -66,7 +66,7 @@ package view.assets {
 			
 			//draw arrow
 			arrow = new Sprite();
-			arrow.graphics.lineStyle(this.lineThickness, this.lineColor);
+			if (this.line) arrow.graphics.lineStyle(this.lineThickness, this.lineColor);
 			arrow.graphics.beginFill(this.color);
 			arrow.graphics.moveTo(-arrowWidth/2, -arrowHeight/2);
 			arrow.graphics.lineTo(arrowWidth/2, -arrowHeight/2);

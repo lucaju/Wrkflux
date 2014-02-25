@@ -19,7 +19,7 @@ package model.builder {
 		
 		protected var _id					:int
 		protected var _title				:String;
-		protected var _author				:String;
+		protected var _authorID				:int;
 		protected var _createdDate			:Date;
 		protected var _modifiedDate			:Date;
 		
@@ -51,7 +51,7 @@ package model.builder {
 		 */
 		public function WorkflowModel(id:int,
 									  title:String,
-									  author:String,
+									  authorID:int,
 									  createdDate:String,
 									  modifiedDate:String = "",
 									  flags:Array = null,
@@ -64,7 +64,7 @@ package model.builder {
 			
 			_id = id;
 			_title = title;
-			_author = author;
+			_authorID = authorID;
 			_createdDate = handleDate(createdDate);
 			_modifiedDate = handleDate(modifiedDate);
 			
@@ -352,8 +352,8 @@ package model.builder {
 		 * @return 
 		 * 
 		 */
-		public function get author():String {
-			return _author;
+		public function get authorID():int {
+			return _authorID;
 		}
 
 		/**

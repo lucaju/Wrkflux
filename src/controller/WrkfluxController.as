@@ -42,10 +42,20 @@ package controller {
 		/**
 		 * 
 		 * @param id
+		 * @param action
 		 * 
 		 */
 		public function loadWorkflow(id:int, action:String):void {
 			WrkfluxModel(this.getModel("wrkflux")).changeView(action,id);
+		}
+		
+		/**
+		 * 
+		 * @param id
+		 * 
+		 */
+		public function deleteWorkflow(id:int):void {
+			WrkfluxModel(this.getModel("wrkflux")).deleteWorkflow(id);
 		}
 		
 		/**
@@ -55,6 +65,35 @@ package controller {
 		public function getWorkflows():void {
 			WrkfluxModel(this.getModel("wrkflux")).getWorkflows();
 		}
+
+		/**
+		 * 
+		 * @param data
+		 * 
+		 */
+		public function register(data:Object):void {
+			if (data.name == "SignInForm") {
+				WrkfluxModel(this.getModel("wrkflux")).signIn(data);
+			} else {
+				WrkfluxModel(this.getModel("wrkflux")).signUp(data);
+			}
+		}
 		
+		/**
+		 * 
+		 * @param data
+		 * 
+		 */
+		public function forgotPass(data:Object):void {
+			WrkfluxModel(this.getModel("wrkflux")).forgotPass(data);
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function closeSession():void {
+			WrkfluxModel(this.getModel("wrkflux")).closeSession();
+		}
 	}
 }

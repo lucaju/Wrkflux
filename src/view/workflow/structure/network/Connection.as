@@ -57,7 +57,7 @@ package view.workflow.structure.network {
 			var dY:Number = y - this.y;
 			
 			line.graphics.clear();
-			line.graphics.lineStyle(6,Colors.getColorByName(Colors.DARK_GREY));
+			line.graphics.lineStyle(6,Colors.getColorByName(Colors.DARK_GREY),1,true);
 			line.graphics.lineTo(dX,dY);
 			
 			//angle

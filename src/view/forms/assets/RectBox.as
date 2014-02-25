@@ -2,8 +2,7 @@ package view.forms.assets {
 	
 	//imports
 	import flash.display.Sprite;
-	import flash.geom.Rectangle;
-	
+	import flash.display.LineScaleMode;
 	
 	/**
 	 * 
@@ -40,8 +39,8 @@ package view.forms.assets {
 			this.maxHeight = height;
 			
 			shape = new Sprite();
-			shape.graphics.lineStyle(this.lineThickness,this.lineColor);
-			shape.graphics.beginFill(this.color);
+			shape.graphics.lineStyle(this.lineThickness,this.lineColor,1,true,LineScaleMode.NONE);
+			shape.graphics.beginFill(this.color,this.alphaColor);
 			shape.graphics.drawRect(0, 0, maxWidth, maxHeight);
 			shape.graphics.endFill();
 			this.addChild(shape);

@@ -3,8 +3,9 @@ package controller {
 	//imports
 	import flash.geom.Point;
 	
-	import model.WrkfluxModel;
+	import model.Session;
 	import model.WrkBuilderModel;
+	import model.WrkfluxModel;
 	import model.builder.StepModel;
 	
 	import mvc.AbstractController;
@@ -39,6 +40,7 @@ package controller {
 		 * 
 		 */
 		public function closeBuilder():void {
+			Session.closeActiveWorkflow();
 			WrkfluxModel(this.getModel("wrkflux")).changeView("initial");
 		}
 		
@@ -66,8 +68,8 @@ package controller {
 		 * @param author
 		 * 
 		 */
-		public function createWorkflow(title:String, author:String):void {
-			WrkBuilderModel(this.getModel("wrkbuilder")).createWorkflow(title,author);
+		public function createWorkflow(title:String):void {
+			WrkBuilderModel(this.getModel("wrkbuilder")).createWorkflow(title);
 		}
 		
 		/**

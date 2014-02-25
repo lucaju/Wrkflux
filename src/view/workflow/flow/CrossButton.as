@@ -86,16 +86,33 @@ package view.workflow.flow {
 			
 			cross.rotation = rotation;
 			
-			this.alpha = .8;
+			cross.alpha = .8;
 			this.addChild(cross);
 			
 			//listeners
-			bg.addEventListener(MouseEvent.ROLL_OVER, over);
-			bg.addEventListener(MouseEvent.ROLL_OUT, out);
+			this.addListeners();
 			
 		}
 		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function addListeners():void {
+			this.addEventListener(MouseEvent.ROLL_OVER, over);
+			this.addEventListener(MouseEvent.ROLL_OUT, out);
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function removeListeners():void {
+			this.removeEventListener(MouseEvent.ROLL_OVER, over);
+			this.removeEventListener(MouseEvent.ROLL_OUT, out);
+		}
 		
 		/**
 		 * 
@@ -115,8 +132,6 @@ package view.workflow.flow {
 			highlight(false);
 		}				
 		
-		//****************** PUBLIC METHODS ****************** ****************** ******************
-		
 		/**
 		 * 
 		 * @param enable
@@ -127,7 +142,7 @@ package view.workflow.flow {
 			
 			if (enable && !highlighted) {
 				highlighted = true;
-				TweenMax.to(this,.6,{scaleX:1.5, scaleY:1.5, ease:Elastic.easeOut});
+				TweenMax.to(this,.6,{scaleX:1.3, scaleY:1.3, ease:Elastic.easeOut});
 				TweenMax.to(bg,.6,{tint:highlightedColor, ease:Elastic.easeOut});
 				TweenMax.to(cross,.6,{tint:highlightedCrossColor, ease:Elastic.easeOut});
 			} else if (!enable && highlighted) {
@@ -136,6 +151,14 @@ package view.workflow.flow {
 				TweenMax.to(bg,.6,{removeTint:true, ease:Elastic.easeOut});
 				TweenMax.to(cross,.6,{removeTint:true, ease:Elastic.easeOut});
 			}
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function kill():void {
+			this.removeListeners();
 		}
 		
 		//****************** GETTERS // SETTERS ****************** ****************** ******************
@@ -265,7 +288,6 @@ package view.workflow.flow {
 		override public function set rotation(value:Number):void {
 			_rotation = value;
 		}
-
 
 	}
 }

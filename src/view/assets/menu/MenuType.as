@@ -9,8 +9,9 @@ package view.assets.menu {
 		
 		//****************** Properties ****************** ****************** ******************
 		
-		static public const TOPBAR		:String = "topBar";
-		static public const INITIAL		:String = "initial";
+		static public const NONE		:String = "none";		
+		static public const UNIQUE		:String = "unique";
+		static public const MULTIPLE	:String = "multple";
 		
 	}
 }

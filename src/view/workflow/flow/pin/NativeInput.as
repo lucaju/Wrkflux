@@ -7,6 +7,7 @@ package view.workflow.flow.pin {
 	
 	import events.WrkfluxEvent;
 	
+	import model.Session;
 	
 	/**
 	 * 
@@ -64,7 +65,8 @@ package view.workflow.flow.pin {
 		protected function controlMouseDown(event:MouseEvent):void {
 			
 			//test for movement
-			source.addEventListener(MouseEvent.MOUSE_MOVE, pinStartDrag);
+			if (Session.credentialCheck()) source.addEventListener(MouseEvent.MOUSE_MOVE, pinStartDrag);
+			
 			source.addEventListener(MouseEvent.MOUSE_UP, pinClick);
 			
 			//bring to front

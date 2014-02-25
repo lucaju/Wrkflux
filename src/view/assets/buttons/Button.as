@@ -9,8 +9,8 @@ package view.assets.buttons {
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	
-	import font.FontFolio;
+	import flash.text.TextFormatAlign;
+	import font.HelveticaNeue;
 	
 	/**
 	 * 
@@ -58,10 +58,10 @@ package view.assets.buttons {
 			
 			//2.Label
 			var style:TextFormat = new TextFormat();
-			style.font = FontFolio.BOLD_CONDENSED;
-			style.bold = true;
-			style.size = 16;
-			style.color = 0xFFFFFF;
+			style.font = HelveticaNeue.CONDENSED_BOLD;
+			style.align = this.textAlign;
+			style.size = this.textSize;
+			style.color = this.textColor;
 			
 			labelTF = new TextField();
 			labelTF.selectable = false;
@@ -71,7 +71,22 @@ package view.assets.buttons {
 			labelTF.text = labelString;
 			labelTF.setTextFormat(style);
 			
-			labelTF.x = (shape.width/2) - (labelTF.width/2);
+			switch (this.textAlign) {
+				
+				case TextFormatAlign.LEFT:
+					labelTF.x = 5;
+					break;
+				
+				case TextFormatAlign.CENTER:
+					labelTF.x = (shape.width/2) - (labelTF.width/2);
+					break;
+				
+				case TextFormatAlign.RIGHT:
+					labelTF.x = shape.width - labelTF.width - 5;
+					break;
+			}
+			
+			
 			labelTF.y = (shape.height/2) - (labelTF.height/2);
 			
 			this.addChild(labelTF);
@@ -83,6 +98,35 @@ package view.assets.buttons {
 		}
 		
 		
+		//****************** PROTECTED METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function changeColor():void {
+			
+			shape.graphics.clear();
+			
+			if (this.line) shape.graphics.lineStyle(this.lineThickness,this.lineColor,this.lineColorAlpha,true);
+			
+			if (this.toggle) {
+				shape.graphics.beginFill(this.toggleColor,this.toggleColorAlpha);
+			} else {
+				shape.graphics.beginFill(this.color,this.colorAlpha);
+			}
+			
+			
+			if (this.shapeForm == ButtonShapeForm.RECT) {
+				shape.graphics.drawRect(0,0,this.maxWidth,this.maxHeight);
+			} else {
+				shape.graphics.drawRoundRect(0,0,this.maxWidth,this.maxHeight,10);
+			}
+			
+			shape.graphics.endFill();
+		}
+		
+		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************
 		
 		/**
@@ -91,7 +135,7 @@ package view.assets.buttons {
 		 * 
 		 */
 		protected function mouseOver(event:MouseEvent):void {
-			TweenMax.to(shape,.4,{alpha:.8});
+			TweenMax.to(shape,.4,{colorTransform:{tint:this.toggleColor, tintAmount:0.3}});
 		}	
 		
 		/**
@@ -100,10 +144,10 @@ package view.assets.buttons {
 		 * 
 		 */
 		protected function mouseOut(event:MouseEvent):void {
-			TweenMax.to(shape,.6,{alpha:1});
+			TweenMax.to(shape,.4,{removeTint:true});
 		}	
 		
-		//****************** PROTECTED METHODS ****************** ****************** ******************
+		//****************** PUBLIC METHODS ****************** ****************** ******************
 		
 		/**
 		 * 
@@ -112,6 +156,30 @@ package view.assets.buttons {
 		 */
 		override public function getLabel():String {
 			return labelTF.text;
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function kill():void {
+			this.removeEventListener(MouseEvent.MOUSE_OVER, mouseOver);
+			this.removeEventListener(MouseEvent.MOUSE_OUT, mouseOut);
+		}
+		
+		
+		//****************** GETTERS AND SETTERS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		override public function set toggle(value:Boolean):void {
+			if (this.togglable) {
+				super.toggle = value;
+				if (shape) changeColor();	
+			}
 		}
 		
 	}

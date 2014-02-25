@@ -2,6 +2,7 @@ package view.workflow.flow {
 	
 	//imports
 	import com.coreyoneil.collision.CollisionList;
+	import com.greensock.TweenLite;
 	import com.greensock.TweenMax;
 	import com.greensock.easing.Back;
 	
@@ -15,10 +16,9 @@ package view.workflow.flow {
 	
 	import events.WrkfluxEvent;
 	
+	import view.workflow.InterfaceSuport;
 	import view.workflow.flow.pin.PinView;
 	import view.workflow.structure.steps.Step;
-	import view.workflow.InterfaceSuport;
-	import settings.Settings;
 	
 	/**
 	 * 
@@ -386,7 +386,6 @@ package view.workflow.flow {
 					itemCollection.splice(itemCollection.indexOf(pin),1);
 					this.removeChild(pin);
 					return true;
-					break;
 				}
 			}
 			return false;
@@ -434,6 +433,23 @@ package view.workflow.flow {
 			}
 		}
 		
+
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function kill():void {
+			this.removeEventListener(WrkfluxEvent.DRAG_PIN, hitTest);
+			this.removeEventListener(WrkfluxEvent.ACTIVATE_PIN, pinOpened);
+			this.removeEventListener(WrkfluxEvent.SELECT, pinSelected);
+			
+			TweenLite.to(itemCollection,.6,{scaleX:4,scaleY:4});
+		}
+		
+		
+		//****************** PUBLIC EVENTS ****************** ****************** ******************
+		
 		/**
 		 * 
 		 * @param event
@@ -442,6 +458,7 @@ package view.workflow.flow {
 		protected function pinSelected(event:Event):void {
 			//trace ("oi")
 		}
+		
 		
 		//****************** GETTERS // SETTERS ****************** ****************** ******************
 

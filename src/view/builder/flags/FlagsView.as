@@ -12,8 +12,7 @@ package view.builder.flags {
 	
 	import util.Colors;
 	
-	import view.assets.buttons.Button;
-	import view.assets.buttons.ButtonShapeForm;
+	import view.workflow.flow.CrossButton;
 	
 	/**
 	 * 
@@ -24,10 +23,12 @@ package view.builder.flags {
 		
 		//****************** Properties ****************** ****************** ******************
 		
-		protected var plusButton			:Button;
+		protected var bg					:Sprite;
+		protected var addButton				:CrossButton;
 		protected var flagList				:FlagList;
 		
 		protected var separatorV			:Sprite;
+		
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -49,24 +50,35 @@ package view.builder.flags {
 		 */
 		public function init():void {
 			
+			//bg
+			//separator
+			bg = new Sprite();
+			bg.graphics.beginFill(Colors.getColorByName(Colors.WHITE_ICE),.6);
+			bg.graphics.drawRect(0,0,110,stage.stageHeight-this.y);
+			bg.graphics.endFill();
+			this.addChild(bg);
+			
 			//Header
 			var header:Header = new Header("Flags");
-			header.x = 5;
-			header.y = 5;
+			//header.x = 5;
+			//header.y = 5;
 			this.addChild(header);
 			
 			//Plus
-			var plusButton:Button = new Button();
-			plusButton.shapeForm = ButtonShapeForm.RECT;
-			plusButton.color = Colors.getColorByName(Colors.DARK_GREY);
-			plusButton.maxHeight = 20;
-			plusButton.maxWidth = 100;
-			this.addChild(plusButton);
-			
-			plusButton.x = 5;
-			plusButton.y = this.stage.stageHeight - 60;
-			
-			plusButton.init("Add");
+			//add button
+			addButton = new CrossButton();
+			addButton.color = Colors.getColorByName(Colors.WHITE);
+			addButton.highlightedColor = Colors.getColorByName(Colors.GREEN);
+			addButton.crossColor = Colors.getColorByName(Colors.GREEN);
+			addButton.lineThickness = 2;
+			addButton.lineColor = Colors.getColorByName(Colors.GREEN);
+			addButton.init();
+			addButton.buttonMode = true;
+			addButton.x = this.width/2;
+			addButton.y = this.stage.stageHeight - this.y - 30;
+			this.addChild(addButton);
+			addButton.scaleX = addButton.scaleY = .85;
+			addButton.name = "Add";
 			
 			//list
 			var flagsData:Array = WrkBuilderController(this.getController()).getflags();
@@ -78,13 +90,13 @@ package view.builder.flags {
 			
 			//separator
 			separatorV = new Sprite();
-			separatorV.graphics.lineStyle(1,Colors.getColorByName(Colors.DARK_GREY));
-			separatorV.graphics.lineTo(0,this.height + 15);
+			separatorV.graphics.lineStyle(2,Colors.getColorByName(Colors.LIGHT_GREY));
+			separatorV.graphics.lineTo(0,stage.stageHeight - this.y);
 			separatorV.x = 110;
 			this.addChild(separatorV);
 			
 			//listeners
-			plusButton.addEventListener(MouseEvent.CLICK, addFlag);
+			addButton.addEventListener(MouseEvent.CLICK, addFlag);
 			flagList.addEventListener(Event.CLOSING, removeFlag);
 			flagList.addEventListener(Event.SELECT, updateFlag);
 		}	
@@ -147,6 +159,16 @@ package view.builder.flags {
 		 */
 		public function updateFlagsUID(recentAddedFlags:Array):void {
 			flagList.updateFlagsUID(recentAddedFlags);
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function resize():void {
+			bg.height = stage.stageHeight-this.y;
+			separatorV.height = stage.stageHeight - this.y;
+			addButton.y = this.stage.stageHeight - this.y - 30;
 		}
 	}
 }

@@ -4,12 +4,13 @@ package view.forms.list.slider {
 	import flash.display.Sprite;
 	import flash.text.AntiAliasType;
 	import flash.text.TextField;
-	import flash.text.TextFormatAlign;
 	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import util.Colors;
+	
 	
 	/**
 	 * 
@@ -22,6 +23,8 @@ package view.forms.list.slider {
 		
 		protected var _id 			:int;
 		protected var labelTF		:TextField
+		protected var _maxWidth		:Number;
+		
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -31,7 +34,20 @@ package view.forms.list.slider {
 		 * @param label
 		 * 
 		 */
-		public function Item(id:int, label:String) {
+		public function Item(id:int) {
+			_id = id;
+			_maxWidth = 140;
+		}
+		
+		
+		//****************** INITIALIZE ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @param label
+		 * 
+		 */
+		public function init(label:String):void {
 			
 			this.mouseChildren = false;
 			this.mouseEnabled = false;
@@ -39,15 +55,15 @@ package view.forms.list.slider {
 			
 			//1.shape
 			var shape:Sprite = new Sprite();
-			shape.graphics.beginFill(0xFFFFFF,0);
-			shape.graphics.drawRect(0,0,190,23);
+			shape.graphics.beginFill(Colors.getColorByName(Colors.WHITE),0);
+			shape.graphics.drawRect(0,0,_maxWidth,23);
 			shape.graphics.endFill();
 			
 			this.addChild(shape);
 			
 			//2. Style
 			var style:TextFormat = new TextFormat();
-			style.font = FontFreightSans.BOOK;
+			style.font = HelveticaNeue.LIGHT;
 			style.color = Colors.getColorByName(Colors.BLACK);
 			style.size = 16;
 			style.align = TextFormatAlign.CENTER;
@@ -65,7 +81,10 @@ package view.forms.list.slider {
 			
 			labelTF.text = label;
 			
+			labelTF.y = -2;
+			
 			this.addChild(labelTF);
+			
 		}
 		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
@@ -88,6 +107,24 @@ package view.forms.list.slider {
 		 */
 		public function get id():int {
 			return _id;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get maxWidth():Number {
+			return _maxWidth;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set maxWidth(value:Number):void {
+			_maxWidth = value;
 		}
 
 

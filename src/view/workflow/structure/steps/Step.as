@@ -1,8 +1,6 @@
 package view.workflow.structure.steps {
 	
 	//imports
-	import com.greensock.TweenMax;
-	
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.filters.BitmapFilterQuality;
@@ -13,9 +11,7 @@ package view.workflow.structure.steps {
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	
-	import font.FontFreightSans;
-	
-	import settings.Settings;
+	import font.HelveticaNeue;
 	
 	import util.Colors;
 	
@@ -69,8 +65,8 @@ package view.workflow.structure.steps {
 			
 			//label
 			var style:TextFormat = new TextFormat();
-			style.font = FontFreightSans.MEDIUM;
-			style.size = 16;
+			style.font = HelveticaNeue.CONDENSED_BOLD;
+			style.size = 14;
 			style.color = Colors.getColorByName(Colors.WHITE);
 			
 			labelTF = new TextField();

@@ -27,7 +27,7 @@ if($_POST['action']) {
 	 	$data = $result->fetch_assoc();
 	 	
 	 	$data['title'] = utf8_encode($data['title']);
-	 	$data['author'] = utf8_encode($data['author']);
+	 	$data['authorID'] = $data['user_id'];
 		
 		/* free result set */
 		//$result->close();

@@ -21,24 +21,28 @@ if($_POST['wdata']) {
 	
 	//save data - Workflow
 	$title = utf8_decode($jData['title']);
-	$author = utf8_decode($jData['author']);
+	$authorID = $jData['userID'];
 	$date = getDateNow();
 	$time = getTimeNow();
 	$dateTime = $date." ".$time;
 	
 	//query - Insert new Workflow
-	$query = "INSERT INTO workflow (title, author, created_date, modified_date) VALUES ('$title', '$author', '$dateTime', '$dateTime')";
+	$query = "INSERT INTO workflow (title, user_id, created_date, modified_date) VALUES ('$title', '$authorID', '$dateTime', '$dateTime')";
 	
 	if ($dbConn->query($query)) {
 		
 		$wfid = $dbConn->insert_id;
 		
 		$data["id"] = $wfid;
+		$data["authorID"] = $authorID;
 		$data["title"] = utf8_encode($title);
-		$data["author"] = utf8_encode($author);
 		$data["created_date"] = $dateTime;
 		$data["modified_date"] = $dateTime;
 		
+		$data["result"] = "Sussess";
+		
+	} else {
+		$data["result"] = "error";
 	}
 	
 	//add preset flags

@@ -1,13 +1,15 @@
 package view.builder.structure {
 	
 	//imports
-	import com.greensock.events.LoaderEvent;
-	import com.greensock.loading.ImageLoader;
-	
 	import flash.display.Sprite;
-	import flash.filters.GlowFilter;
-	import flash.filters.BitmapFilterQuality;
 	
+	import util.Colors;
+	
+	/**
+	 * 
+	 * @author lucianofrizzera
+	 * 
+	 */
 	public class Background extends Sprite {
 		
 		//****************** Properties ****************** ****************** ******************
@@ -19,65 +21,18 @@ package view.builder.structure {
 		
 		/**
 		 * 
+		 * @param w
+		 * @param h
 		 * 
 		 */
-		public function Background() {
+		public function Background(w:Number, h:Number) {
 			
 			this.mouseChildren = false;
+			this.graphics.beginFill(Colors.getColorByName(Colors.WHITE),0);
+			this.graphics.drawRect(0,0,w,h);
+			this.graphics.endFill();
 			
-			//icon
-			image = new Sprite();
-			this.addChild(image);
-			
-			var glow:GlowFilter = new GlowFilter();
-			glow.color = 0x999999;
-			glow.alpha = 1; 
-			glow.blurX = 5; 
-			glow.blurY = 5; 
-			glow.quality = BitmapFilterQuality.MEDIUM;
-			
-			image.filters = [glow];
-			
-			var imageLoader:ImageLoader;
-			imageLoader = new ImageLoader("images/backgroundBuild.png", {name:"bg",
-																		estimatedBytes:1023000,
-																		container:image,
-																		width:1140,
-																		height:660, 
-																		//scaleMode:"proportionalInside", 
-																		onProgress:progressHandler, 
-																		onComplete:completeHandler, 
-																		onError:errorHandler});
-			imageLoader.load();
 		}
 		
-		//****************** PROTECTED EVENTS ****************** ****************** ******************
-		
-		/**
-		 * 
-		 * @param event
-		 * 
-		 */
-		protected function progressHandler(event:LoaderEvent):void {
-			//trace("progress: " + event.target.progress);
-		}
-		
-		/**
-		 * 
-		 * @param event
-		 * 
-		 */
-		protected function completeHandler(event:LoaderEvent):void {
-			//trace("Complete: " + event.target);
-		}
-		
-		/**
-		 * 
-		 * @param event
-		 * 
-		 */
-		protected function errorHandler(event:LoaderEvent):void {
-			//trace("error occured with " + event.target + ": " + event.text);
-		}
 	}
 }

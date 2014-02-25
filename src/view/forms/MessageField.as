@@ -11,7 +11,7 @@ package view.forms {
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import util.Colors;
 	import util.MessageType;
@@ -44,11 +44,12 @@ package view.forms {
 			
 			super();
 
-			
 			textArea = false;
-			fontSize = 12;
-			fontWeight = "medium";
+			fontSize = 10;
+			fontWeight = "condensed_bold";
 			textAlign = TextFormatAlign.LEFT;
+			this.maxHeight = fontSize * 1.3;
+			this.line = false;
 		}
 		
 		
@@ -76,16 +77,16 @@ package view.forms {
 			//weight
 			switch(fontWeight) {
 				
-				case "light":
-					style.font = FontFreightSans.LIGHT;
-					break;
-				
-				case "regular":
-					style.font = FontFreightSans.BOOK;
-					break;
-				
 				case "medium":
-					style.font = FontFreightSans.MEDIUM;
+					style.font = HelveticaNeue.MEDIUM;
+					break;
+				
+				case "condensed_bold":
+					style.font = HelveticaNeue.CONDENSED_BOLD;
+					break;
+				
+				default:
+					style.font = HelveticaNeue.LIGHT;
 					break;
 				
 			}
@@ -151,15 +152,15 @@ package view.forms {
 				switch (type) {
 					
 					case MessageType.SUCCESS:
-						imageLoader = new ImageLoader("images/icons/greenCheckmark.png", {name:"successIcon", estimatedBytes:500, container:icon, width:10, height:10, scaleMode:"proportionalInside", onProgress:progressHandler, onComplete:completeHandler, onError:errorHandler});
+						imageLoader = new ImageLoader("images/icons/darkCheckmark.png", {name:"successIcon", estimatedBytes:500, container:icon, width:10, height:10, scaleMode:"proportionalInside", onProgress:progressHandler, onComplete:completeHandler, onError:errorHandler});
 						break;
 					
 					case MessageType.WARNING:
-						imageLoader = new ImageLoader("images/icons/yellowTriangle.png", {name:"warningIcon", estimatedBytes:500, container:icon, width:10, height:10, scaleMode:"proportionalInside", onProgress:progressHandler, onComplete:completeHandler, onError:errorHandler});
+						imageLoader = new ImageLoader("images/icons/darkTriangle.png", {name:"warningIcon", estimatedBytes:500, container:icon, width:10, height:10, scaleMode:"proportionalInside", onProgress:progressHandler, onComplete:completeHandler, onError:errorHandler});
 						break;
 					
 					case MessageType.ERROR:
-						imageLoader = new ImageLoader("images/icons/redX.png", {name:"errorIcon", estimatedBytes:500, container:icon, width:10, height:10, scaleMode:"proportionalInside", onProgress:progressHandler, onComplete:completeHandler, onError:errorHandler});
+						imageLoader = new ImageLoader("images/icons/darkX.png", {name:"errorIcon", estimatedBytes:500, container:icon, width:10, height:10, scaleMode:"proportionalInside", onProgress:progressHandler, onComplete:completeHandler, onError:errorHandler});
 						break;
 				}
 				

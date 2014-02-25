@@ -30,10 +30,14 @@ package view.builder.structure {
 		
 		//****************** Properties ****************** ****************** ******************
 		
+		protected var _background		:Background;
+		
+		protected var maxWidth			:Number;
+		protected var maxHeight			:Number;
+		
 		protected var structureList		:StructureList;
 		protected var structureNetwork	:StructureNetwork;
 		
-		protected var _background		:Background;
 		protected var _deleteButton		:RemoveButton;
 		
 		protected var _pen				:ConnectionPen;
@@ -61,17 +65,16 @@ package view.builder.structure {
 		public function init():void {
 			
 			//Background
-			background = new Background();
-			background.x = 5;
-			background.y = 5;
+			maxWidth = stage.stageWidth - this.x;
+			maxHeight = stage.stageHeight - this.y;
+			
+			_background = new Background(maxWidth,maxHeight);
 			this.addChild(background);
 			
 			//list
 			var strucutureData:Array = WrkBuilderController(this.getController()).getSteps();
 			
 			structureList = new StructureList(this,strucutureData);
-			structureList.x = 5;
-			structureList.y = 5;
 			this.addChild(structureList);
 			
 			//network
@@ -79,8 +82,6 @@ package view.builder.structure {
 			
 			structureNetwork = new StructureNetwork(this);
 			structureNetwork.structureList = structureList;
-			structureNetwork.x = 5;
-			structureNetwork.y = 5;
 			structureNetwork.init(strucutureNetworkData);
 			this.addChildAt(structureNetwork,1);
 			
@@ -95,8 +96,8 @@ package view.builder.structure {
 			
 			//delete button
 			deleteButton = new RemoveButton();
-			deleteButton.x = background.x + background.width - (deleteButton.width/2);
-			deleteButton.y = background.y + background.height - (deleteButton.height/2) + 40;
+			deleteButton.x = maxWidth - deleteButton.width;
+			deleteButton.y = maxHeight - deleteButton.height + 40;
 			this.addChild(deleteButton);
 			deleteButton.visible = false;
 			
@@ -307,10 +308,11 @@ package view.builder.structure {
 		 * 
 		 */
 		public function showDelete(value:Boolean):void {
+			
 			if (value) {
-				TweenLite.to(deleteButton,.4,{y:background.y + background.height - (deleteButton.height/2), autoAlpha:.8});
+				TweenLite.to(deleteButton,.4,{y:background.height - deleteButton.height, autoAlpha:.8});
 			} else {
-				TweenLite.to(deleteButton,.4,{y:background.y + background.height - (deleteButton.height/2) + 40, autoAlpha:0});
+				TweenLite.to(deleteButton,.4,{y:background.height - deleteButton.height + 40, autoAlpha:0});
 				deleteButton.highlight(false);
 			}
 		}
@@ -347,22 +349,35 @@ package view.builder.structure {
 			return structureList.checkStrucutureOverlap();
 		}
 		
+		/**
+		 * 
+		 * 
+		 */
+		public function resize():void {
+			maxWidth = stage.stageWidth - this.x;
+			maxHeight = stage.stageHeight - this.y;
+			
+			background.width = maxWidth;
+			background.height = maxHeight;
+			
+			deleteButton.x = maxWidth - deleteButton.width;
+			deleteButton.y = maxHeight - deleteButton.height + 40;
+			
+			if (tags) tags.resize();
+		}
+		
 		
 		//****************** GETTERS // SETTERS ****************** ****************** ******************
-
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
 		public function get background():Background {
 			return _background;
 		}
-
-		/**
-		 * 
-		 * @param value
-		 * 
-		 */
-		public function set background(value:Background):void {
-			_background = value;
-		}
-
+		
 		/**
 		 * 
 		 * @return 
@@ -398,7 +413,6 @@ package view.builder.structure {
 		public function set pen(value:ConnectionPen):void {
 			_pen = value;
 		}
-
-
+		
 	}
 }

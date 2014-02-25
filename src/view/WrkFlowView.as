@@ -5,10 +5,10 @@ package view {
 	import com.greensock.TweenMax;
 	import com.greensock.TweenProxy;
 	
-	import flash.display.BlendMode;
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.ErrorEvent;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TransformGestureEvent;
 	import flash.geom.Point;
@@ -18,25 +18,30 @@ package view {
 	
 	import events.WrkfluxEvent;
 	
+	import model.Session;
+	
 	import mvc.AbstractView;
 	import mvc.IController;
 	
 	import settings.Settings;
 	
+	import util.Colors;
+	
+	import view.assets.buttons.AbstractButton;
+	import view.assets.menu.Menu;
 	import view.assets.menu.MenuDirection;
 	import view.forms.MessageWindow;
 	import view.tooltip.ToolTipManager;
 	import view.util.progressBar.ProgressBar;
 	import view.util.scroll.Scroll;
 	import view.util.scroll.ScrollEvent;
-	import view.workflow.assets.Background;
+	import view.workflow.InterfaceSuport;
 	import view.workflow.flow.FlowView;
 	import view.workflow.flow.pin.PinView;
 	import view.workflow.list.PinListView;
 	import view.workflow.structure.StructureView;
 	import view.workflow.structure.steps.Step;
-	
-	import view.workflow.InterfaceSuport;
+
 	/**
 	 * 
 	 * @author lucaju
@@ -47,12 +52,10 @@ package view {
 		//****************** Properties ****************** ****************** ******************
 		
 		protected var id						:int;
-		
-		protected var background				:Background
-		
+	
 		protected var topBar					:TopBar
 		
-		protected var structureView				:view.workflow.structure.StructureView;
+		protected var structureView				:StructureView;
 		protected var structureViewMask			:Sprite;
 		protected var structureViewScroll		:Scroll;
 		
@@ -94,21 +97,17 @@ package view {
 		 */
 		public function init(wfID:int = 0):void {
 			
-			//Background
-			background = new Background();
-			this.addChild(background);
-			
-			background.doubleClickEnabled = true;
-			
 			//action
 			if (wfID != 0) {
 				this.id = wfID;
 				WrkFlowController(this.getController()).loadWorkflow(wfID)
 			}
 			
-			//1. top bar
+			//top bar
 			topBar = new TopBar();
 			this.addChild(topBar);
+			topBar.backgroundColor = Colors.getColorByName(Colors.WHITE);
+			topBar.titleColor = Colors.getColorByName(Colors.DARK_GREY);
 			topBar.init();
 			
 			topBar.label = WrkFlowController(this.getController()).getLabel();
@@ -135,6 +134,8 @@ package view {
 			this.addEventListener(ScrollEvent.INERTIA, pinSemanticZoomUpdate);
 			this.addEventListener(ScrollEvent.SCROLL, pinSemanticZoomUpdate);
 			
+			this.stage.addEventListener(Event.RESIZE, resize);
+			
 			offsetY = topBar.height;
 			
 		}
@@ -148,11 +149,23 @@ package view {
 		 */
 		protected function buildInterface():void {
 			
+			//top bar
+			topBar.label = WrkFlowController(this.getController()).getLabel();
+			var topMenu:Menu = topBar.getMenu("right");
+			
+			//add menu Options
+			if (Session.credentialCheck()) topMenu.add("Edit");
+			
+			var tagBT:AbstractButton = topMenu.add("Tags");
+			tagBT.togglable = true;
+			
+			var listBT:AbstractButton = topMenu.add("List");
+			listBT.togglable = true;
+			
 			//add structure view
-			structureView = new view.workflow.structure.StructureView(this.getController());
-			structureView.x = offsetX//offset
+			structureView = new StructureView(this.getController());
+			structureView.x = offsetX
 			structureView.y = topBar.height;
-			structureView.blendMode = BlendMode.MULTIPLY;
 			this.addChild(structureView);
 			
 			structureView.init();
@@ -223,7 +236,8 @@ package view {
 			} else {
 				
 				pinListView.removeEventListener(WrkfluxEvent.ACTIVATE_PIN, pinSelected);
-				pinListView.addEventListener(WrkfluxEvent.SELECT, flowView.manageToolTip);
+				pinListView.removeEventListener(WrkfluxEvent.SELECT, flowView.manageToolTip);
+				pinListView.kill();
 				TweenMax.to(pinListView,.6,{x:-pinListView.width, onComplete:killChild, onCompleteParams:[pinListView]});
 				pinListView = null;
 				
@@ -276,20 +290,32 @@ package view {
 		 */
 		protected function showMessage(message:String, type:String):void {
 			//Add message
-			messageWindow = new MessageWindow(this.getController());
-			messageWindow.maxWidth = 110;
-			messageWindow.maxHeight = 17;
-			messageWindow.init();
+			if (!messageWindow) {
+				messageWindow = new MessageWindow(this.getController());
+				messageWindow.maxWidth = 160;
+				messageWindow.maxHeight = 17;
+				messageWindow.windowColor = Colors.getColorByName(Colors.LIGHT_GREY);
+				messageWindow.windowColorAlpha = .3;
+				messageWindow.windowLine = true;
+				messageWindow.windowLineColor = Colors.getColorByName(Colors.LIGHT_GREY);
+				messageWindow.windowLineThickness = 1;
+				messageWindow.init();
+				
+				this.addChildAt(messageWindow,0);
+				
+				messageWindow.sendMessage(message, type);
+				
+				messageWindow.x = (this.stage.stageWidth/2) - (messageWindow.width/2);
+				messageWindow.y = topBar ? topBar.height - 1: 0;
+				
+				TweenMax.from(messageWindow,.6,{y:"-60", autoAlpha: 0, delay:.6});
+				//TweenMax.to(messageWindow,1,{autoAlpha: 0, delay:3.6, onComplete:killMessageWindow});
+				
+			} else {
+				TweenMax.to(messageWindow,1,{y: topBar ? topBar.height - 2: 0});
+				messageWindow.sendMessage(message, type);
+			}
 			
-			this.addChild(messageWindow);
-			
-			messageWindow.sendMessage(message, type);
-			
-			messageWindow.x = (this.stage.stageWidth/2) - (messageWindow.width/2);
-			messageWindow.y = topBar.height + 10;
-			
-			TweenMax.from(messageWindow,.6,{y:"60", autoAlpha: 0});
-			TweenMax.to(messageWindow,1,{autoAlpha: 0, delay:3, onComplete:killMessageWindow});
 		}
 		
 		/**
@@ -317,7 +343,26 @@ package view {
 		 * 
 		 */
 		protected function killView():void {
-			this.parent.removeChild(this);
+			var contr:WrkFlowController = WrkFlowController(this.getController());
+			contr.getModel("wrkflow").removeEventListener(WrkfluxEvent.COMPLETE, processComplete);
+			contr.getModel("wrkflow").removeEventListener(WrkfluxEvent.ADD, pinAdded);
+			contr.getModel("wrkflow").removeEventListener(WrkfluxEvent.UPDATE_PIN, pinUpdated);
+			contr.getModel("wrkflow").removeEventListener(WrkfluxEvent.REMOVE, pinRemoved);
+			contr.getModel("wrkflow").removeEventListener(WrkfluxEvent.CHANGE, updateComplete);
+			contr.getModel("wrkflow").removeEventListener(ErrorEvent.ERROR, errorHandle);
+			
+			//this.removeEventListener(MouseEvent.CLICK, click);
+			this.removeEventListener(MouseEvent.DOUBLE_CLICK, click)
+			this.removeEventListener(TransformGestureEvent.GESTURE_ZOOM, zoom);
+			this.removeEventListener(TransformGestureEvent.GESTURE_ZOOM, zoom);
+			this.removeEventListener(ScrollEvent.INERTIA, pinSemanticZoomUpdate);
+			this.removeEventListener(ScrollEvent.SCROLL, pinSemanticZoomUpdate);
+			
+			this.stage.removeEventListener(Event.RESIZE, resize);
+			
+			topBar.removeEventListener(WrkfluxEvent.SELECT, topBarActions);
+			
+			contr = null
 		}
 		
 		
@@ -330,11 +375,13 @@ package view {
 		 */
 		protected function click(event:MouseEvent):void {
 			//click in the background clear selection
-			if (event.target is Background) {
+			trace (event.target)
+			/*if (event.target is Background) {
 				event.stopImmediatePropagation();
 				flowView.closeAllOpenedPins();
 				if (pinListView) pinListView.closeAllOpenedPins();
 			}
+			*/
 		}
 		
 		/**
@@ -346,15 +393,11 @@ package view {
 			
 			if (event.data.action == "workflowLoaded") {
 			
-				var message:String;
-				
-				message = "Workflow loaded."
-				
-				topBar.label = WrkFlowController(this.getController()).getLabel();
-				topBar.addMenu(WrkFlowController(this.getController()).getMenuOptions("left"),"left");
-				
+				Session.setActiveWorkflow(this.id, event.data.authorID);	
 				this.buildInterface();
 				
+				var message:String;
+				message = "Workflow loaded."
 				showMessage(message, event.data.messageType);
 				
 			}
@@ -443,6 +486,23 @@ package view {
 			}
 		}
 		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function resize(event:Event):void {
+			if (topBar) topBar.resize();
+			if (pinListView) {
+				pinListView.maxHeight = stage.stageHeight - topBar.height;
+				pinListView.resize();
+			}
+			
+			if (flowView) flowView.resize();
+			
+			//yet to resize the working area
+		}
+		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
 		
 		/**
@@ -450,11 +510,30 @@ package view {
 		 * 
 		 */
 		override public function kill():void {
-			TweenMax.to(topBar,.8,{y:-topBar.height, onComplete:killView});
-			if (structureView) TweenLite.to(structureView,.7,{x:"60",autoAlpha: 0});
+			
+			TweenLite.to(topBar,.6,{y:-topBar.height, onComplete:killView});
+			topBar.kill();
+			
 			if (messageWindow) TweenLite.to(messageWindow,.3,{autoAlpha: 0});
-			if (flowView) TweenLite.to(flowView,.3,{x:"30",autoAlpha: 0});
-			if (pinListView) TweenLite.to(pinListView,.3,{x:"-60",autoAlpha: 0});
+			
+			if (structureView) {
+				TweenLite.to(structureView,.6,{autoAlpha: 0});
+				structureView.kill();
+			}
+			
+			if (flowView) {
+				flowView.removeEventListener(WrkfluxEvent.ACTIVATE_PIN, pinSelected);
+				TweenLite.to(flowView,.6,{autoAlpha: 0});
+				flowView.kill();
+			}
+			
+			if (pinListView) {
+				pinListView.removeEventListener(WrkfluxEvent.ACTIVATE_PIN, pinSelected);
+				pinListView.removeEventListener(WrkfluxEvent.SELECT, flowView.manageToolTip);
+				pinListView.kill();
+				TweenLite.to(pinListView,.3,{x:-pinListView.width,autoAlpha: 0});
+			}
+			
 			
 		}
 		

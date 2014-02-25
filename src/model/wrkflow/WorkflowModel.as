@@ -20,7 +20,7 @@ package model.wrkflow {
 		
 		protected var _id					:int
 		protected var _title				:String;
-		
+		protected var _authorID				:int;
 		internal var _flags					:Array;
 		internal var _steps					:Array;
 		internal var _connections			:Array;
@@ -45,6 +45,7 @@ package model.wrkflow {
 		 */
 		public function WorkflowModel(id:int,
 									  title:String,
+									  authorID:int,
 									  flags:Array = null,
 									  steps:Array = null,
 									  connections:Array = null,
@@ -54,6 +55,7 @@ package model.wrkflow {
 			
 			_id = id;
 			_title = title;
+			_authorID = authorID;
 			
 			//flag
 			_flags = new Array();
@@ -200,9 +202,9 @@ package model.wrkflow {
 		 * 
 		 */
 		public function removeDoc(uid:int):Boolean {
-			for each (var pinModel:PinModel in flow) {
+			for each (var pinModel:PinModel in _flow) {
 				if (pinModel.uid == uid) {
-					flow.splice(flow.indexOf(flow),1);
+					_flow.splice(_flow.indexOf(pinModel),1);
 					return true;
 				}
 			}
@@ -215,7 +217,7 @@ package model.wrkflow {
 		 * 
 		 */
 		public function getDoc(uid:int):PinModel {
-			for each (var pinModel:PinModel in flow) {
+			for each (var pinModel:PinModel in _flow) {
 				if (pinModel.uid == uid) return pinModel;
 			}
 			return null;
@@ -269,7 +271,7 @@ package model.wrkflow {
 		 * 
 		 */
 		public function getFlag(flagUID:int):FlagModel {
-			for each (var flag:FlagModel in flags) {
+			for each (var flag:FlagModel in _flags) {
 				if (flag.uid == flagUID) return flag;
 			}
 			return null;
@@ -352,6 +354,15 @@ package model.wrkflow {
 		public function get title():String {
 			return _title;
 		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get authorID():int {
+			return _authorID;
+		}
 
 		/**
 		 * 
@@ -359,7 +370,7 @@ package model.wrkflow {
 		 * 
 		 */
 		public function get flags():Array {
-			return _flags.concat();
+			return _flags;
 		}
 		
 		/**
@@ -368,7 +379,7 @@ package model.wrkflow {
 		 * 
 		 */
 		public function get steps():Array {
-			return _steps.concat();
+			return _steps;
 		}
 		
 		/**
@@ -377,7 +388,7 @@ package model.wrkflow {
 		 * 
 		 */
 		public function get connections():Array {
-			return _connections.concat();
+			return _connections;
 		}
 		
 		/**
@@ -386,7 +397,7 @@ package model.wrkflow {
 		 * 
 		 */
 		public function get flow():Array {
-			return _flow.concat();
+			return _flow;
 		}
 
 		/**
@@ -415,6 +426,7 @@ package model.wrkflow {
 		public function get tags():Array {
 			return _tags;
 		}
+
 
 	}
 }

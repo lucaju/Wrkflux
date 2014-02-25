@@ -4,19 +4,30 @@ package view.builder {
 	
 	import com.greensock.TweenLite;
 	
+	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.text.AntiAliasType;
+	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
+	
+	import controller.WrkBuilderController;
 	
 	import events.WrkfluxEvent;
+	
+	import font.HelveticaNeue;
+	
+	import model.Session;
 	
 	import mvc.IController;
 	
 	import util.Colors;
+	import util.MessageType;
 	
-	import view.assets.buttons.AbstractButton;
-	import view.assets.buttons.ButtonFactory;
+	import view.assets.buttons.Button;
 	import view.forms.AbstractForm;
 	import view.forms.MessageField;
-	import util.MessageType;
 	import view.forms.TextFormField;
 	
 	/**
@@ -30,7 +41,8 @@ package view.builder {
 		
 		protected var titleField			:TextFormField;
 		protected var authorField			:TextFormField;
-		protected var okBT					:AbstractButton;
+		
+		protected var sendBT				:Button;
 		protected var messageField			:MessageField;
 		
 		//****************** Constructor ****************** ****************** ******************
@@ -43,50 +55,105 @@ package view.builder {
 		public function TitleForm(c:IController) {
 			super(c);
 			
-			//window
-			this.drawWindow(230,85);
-			
 			// FIELDS
+			//1. Label
+			var style:TextFormat = new TextFormat();
+			style.font = HelveticaNeue.CONDENSED_BOLD;
+			style.color = Colors.getColorByName(Colors.DARK_GREY);
+			style.size = 18;
 			
-			//1. Title
+			var formLabel:TextField = new TextField();
+			formLabel.selectable = false;
+			formLabel.embedFonts = true;
+			formLabel.antiAliasType = AntiAliasType.ADVANCED;
+			formLabel.autoSize = TextFieldAutoSize.LEFT;
+			formLabel.text = "New Workflow";
+			formLabel.setTextFormat(style);
+			this.addChild(formLabel);
+			
+			formLabel.y = gap;
+			
+				
+			//2. Title
 			titleField = new TextFormField();
 			titleField.maxChars = 30;
-			titleField.maxWidth = 220;
+			titleField.maxHeight = 35;
+			titleField.maxWidth = 190;
 			titleField.required = true;
+			titleField.textPlaceHolder = "title";
 			this.addChild(titleField);
-			titleField.init("title");
+			titleField.init("");
+			titleField.name = "title";
 			
 			titleField.x = gap;
-			titleField.y = gap;
+			titleField.y = formLabel.y + formLabel.height + gap;
 			
 			fieldCollection.push(titleField);
 			
-			//2. Author
-			authorField = new TextFormField();
-			authorField.maxChars = 30;
-			authorField.maxWidth = 175;
-			authorField.required = true;
-			this.addChild(authorField);
-			authorField.init("author");
-			
-			authorField.x = gap;
-			authorField.y = titleField.y + titleField.height + gap;
-			
-			fieldCollection.push(authorField);
-			
 			//3. Ok Button
-			var okBT:AbstractButton = ButtonFactory.getButton((Colors.BLUE), ButtonFactory.FORM);
-			this.addChild(okBT);
-			okBT.maxWidth = 40;
-			okBT.maxHeight = 35;
-			okBT.init("ok");
+			sendBT = new Button();
+			this.addChild(sendBT);
 			
-			okBT.x = authorField.x + authorField.width + gap;
-			okBT.y = titleField.y + titleField.height + gap;
+			sendBT.maxWidth = 190;
+			sendBT.maxHeight = 35;
+			sendBT.color = Colors.getColorByName(Colors.BLUE);
+			sendBT.textColor = Colors.getColorByName(Colors.WHITE);
+			sendBT.init("ok");
+			
+			sendBT.x = gap;
+			sendBT.y = titleField.y + titleField.height + gap;
+			
+			//window
+			this.windowLineColor = Colors.getColorByName(Colors.LIGHT_GREY);
+			this.windowColor = Colors.getColorByName(Colors.WHITE_ICE);
+			this.drawWindow(this.width + gap, this.height + (5*gap));
+
+			formLabel.x = this.window.width/2 - formLabel.width/2;
+			
+			//.warning
+			if (Session.userID == 0) {
+				
+				style.font = HelveticaNeue.LIGHT;
+				style.color = Colors.getColorByName(Colors.DARK_GREY);
+				style.align = TextFormatAlign.CENTER;
+				style.size = 12;
+				style.leading = 2;
+				style.letterSpacing = .5;
+				
+				var warningTF:TextField = new TextField();
+				warningTF.selectable = false;
+				warningTF.embedFonts = true;
+				warningTF.antiAliasType = AntiAliasType.ADVANCED;
+				warningTF.autoSize = TextFieldAutoSize.CENTER;
+				warningTF.width = 2*this.window.width;
+				warningTF.wordWrap = true;
+				warningTF.multiline = true;
+				warningTF.text = "You are about to create a new Workflow as an anonymous user.\n" +
+					"The workflow will be stored in our database, but you will not be able to edit or use it when you close this session.\n" +
+					"Please, consider sign up to be able to use, edit or delete your workflows whenver you need.";
+				warningTF.setTextFormat(style);
+				this.addChild(warningTF);
+				
+				warningTF.x = -warningTF.width/4;
+				warningTF.y = this.window.height + gap;
+				
+			}
+			
+			//listener
+			this.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 		}
 		
 		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		protected function processFormSubmit(value:String):void {
+			validateAndSendData();
+		}
 		
 		/**
 		 * 
@@ -97,6 +164,12 @@ package view.builder {
 			var readyToSend:Boolean = true;
 			var failToValidate:Array = new Array();
 			
+			//remove message field
+			if (messageField) {
+				this.removeChild(messageField);
+				messageField = null;
+			}
+			
 			//collect  data
 			var formData:Object = new Object();
 			formData.name = "TitleForm";
@@ -104,7 +177,7 @@ package view.builder {
 			//validation
 			for each (var form:TextFormField in fieldCollection) {
 				if (fillValidation(form)) {
-					formData[form.getLabel()] = form.getInput();
+					formData[form.name.toLowerCase()] = form.getInput();
 					form.validationWarning(false);
 				} else {
 					form.validationWarning(true);
@@ -114,6 +187,7 @@ package view.builder {
 			
 			//send data
 			if (readyToSend) {
+				WrkBuilderController(this.getController()).getModel("wrkflux").addEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);
 				this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_EVENT, formData));
 				super.addProgressBar();
 			} else {
@@ -133,7 +207,7 @@ package view.builder {
 			
 			if (field.required) {
 			
-				if (field.getInput() == "") {
+				if (field.getInput() == "" || field.getInput() == field.textPlaceHolder) {
 					return false;
 				} else {
 					return true;
@@ -150,6 +224,8 @@ package view.builder {
 		 * 
 		 */
 		protected function killView():void {
+			this.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
+			WrkBuilderController(this.getController()).getModel("wrkflux").removeEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);
 			this.parent.removeChild(this);
 		}
 		
@@ -164,11 +240,31 @@ package view.builder {
 			
 			super.formClick(event);
 			
-			if (event.target.name == "ok") {
+			if (event.target == sendBT) {
 				event.stopImmediatePropagation();
-				validateAndSendData();
+				processFormSubmit("submit");
 			}
-			
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function keyUp(event:KeyboardEvent):void {
+			event.stopImmediatePropagation();
+			if (event.charCode == 13) processFormSubmit("submit");
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function formFeedback(event:WrkfluxEvent):void {
+			super.removeProgressBar();
+			WrkBuilderController(this.getController()).getModel("wrkflux").removeEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);
+			if (!event.data.success) sendMessage(event.data.error,MessageType.ERROR);
 		}
 		
 		
@@ -192,10 +288,10 @@ package view.builder {
 				this.addChild(messageField);
 				
 				messageField.x = this.gap;
-				messageField.y = authorField.y + authorField.height + this.gap - 3;
+				messageField.y = sendBT.y + sendBT.height + this.gap - 3;
 				
 				TweenLite.from(messageField, .3, {alpha:0, delay:.2});
-				TweenLite.to(window, .3, {height:window.height + this.messageFieldHeight});
+				//TweenLite.to(window, .3, {height:window.height + this.messageFieldHeight});
 				
 			}
 			
@@ -207,7 +303,7 @@ package view.builder {
 		 */
 		override public function kill():void {
 			super.removeProgressBar();
-			TweenLite.to(this,.6,{y:0, autoAlpha: 0, delay: .8, onComplete:killView});
+			TweenLite.to(this,.6,{y:this.y-this.height, autoAlpha: 0, delay: .4, onComplete:killView});
 		}
 		
 	}

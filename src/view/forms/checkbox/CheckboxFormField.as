@@ -22,8 +22,6 @@ package view.forms.checkbox {
 		
 		protected var data						:Array;
 		
-		protected var gap						:Number = 5;
-		
 		//****************** Constructor ****************** ****************** ******************
 		
 		/**

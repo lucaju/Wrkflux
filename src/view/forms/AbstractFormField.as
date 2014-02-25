@@ -5,12 +5,14 @@ package view.forms {
 	
 	import flash.display.Shape;
 	import flash.display.Sprite;
+	import flash.display.LineScaleMode;
+	import flash.events.FocusEvent;
 	import flash.text.AntiAliasType;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import util.Colors;
 	
@@ -23,17 +25,26 @@ package view.forms {
 		
 		//****************** Properties ****************** ****************** ******************
 		
-		protected var background		:Shape;
-		protected var labelTF			:TextField;
+		protected var background			:Shape;
 		
-		protected var _required			:Boolean;
+		protected var _label				:String;
+		protected var labelTF				:TextField;
 		
-		protected var _maxWidth			:Number;
-		protected var _maxHeight		:Number;
+		protected var _required				:Boolean;
+		protected var _displayAsPassword	:Boolean;
 		
-		protected var _backgroundColor	:uint;
-		protected var _backgroundAlpha	:Number
+		protected var _maxWidth				:Number;
+		protected var _maxHeight			:Number;
 		
+		protected var _line					:Boolean;
+		protected var _backgroundColor		:uint;
+		protected var _backgroundAlpha		:Number
+		
+		protected var _textColor			:uint;
+		protected var _textSize				:int;
+		protected var _textPlaceHolder		:String;
+		
+		protected var gap					:Number = 5;
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -44,14 +55,21 @@ package view.forms {
 		public function AbstractFormField() {
 			
 			//initials
-			required = false;
+			_required = false;
+			_displayAsPassword = false;
+			
+			_label = "";
 			
 			maxWidth = 200;
 			maxHeight = 35;
 			
+			_line = true;
 			backgroundColor = Colors.getColorByName(Colors.WHITE);
-			backgroundAlpha = .5;
+			backgroundAlpha = .8;
 			
+			_textColor = Colors.getColorByName(Colors.DARK_GREY);
+			_textSize = 18;
+			_textPlaceHolder = "";
 		}
 		
 		//****************** Initialize ****************** ****************** ******************
@@ -64,22 +82,23 @@ package view.forms {
 			
 			//1. Background
 			background = new Shape();
+			if (this.line) background.graphics.lineStyle(1,Colors.getColorByName(Colors.LIGHT_GREY),.5,true,LineScaleMode.NONE);
 			background.graphics.beginFill(this.backgroundColor, this.backgroundAlpha);
 			background.graphics.drawRect(0,0,this.maxWidth,this.maxHeight);
 			background.graphics.endFill();
 			
 			this.addChildAt(background,0);
 			
-			if (label) {
-			
-				this.name = label;
+			if (label != "") {
 				
+				this.name = label;
 				
 				//2. Style
 				var labelStyle:TextFormat = new TextFormat();
-				labelStyle.font = FontFreightSans.BOOK;
+				labelStyle.font = HelveticaNeue.CONDENSED_BOLD;
 				labelStyle.color = Colors.getColorByName(Colors.BLACK);
 				labelStyle.size = 11;
+				labelStyle.letterSpacing = .4;
 				
 				//3. label
 				labelTF = new TextField();
@@ -95,7 +114,32 @@ package view.forms {
 				this.addChild(labelTF);
 			}
 			
+			this.addEventListener(FocusEvent.FOCUS_IN, focusIn);
+			this.addEventListener(FocusEvent.FOCUS_OUT, focusOut);
+			
 		}
+		
+		//****************** PROTECTED EVENTS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function focusIn(event:FocusEvent):void {
+			//to override
+		}
+		
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function focusOut(event:FocusEvent):void {
+			//to override
+		}
+		
 		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
 		
@@ -106,9 +150,11 @@ package view.forms {
 		public function validationWarning(value:Boolean = true):void {
 			
 			if (value) {
-				TweenMax.to(labelTF,.8,{tint:Colors.getColorByName(Colors.RED)});
+				//if (labelTF) TweenMax.to(labelTF,.8,{tint:Colors.getColorByName(Colors.RED)});
+				if (background) TweenMax.to(background,.8,{colorTransform:{tint:Colors.getColorByName(Colors.RED), tintAmount:0.3}});
 			} else {
-				TweenMax.to(labelTF,.8,{removeTint:true});
+				//if (labelTF) TweenMax.to(labelTF,.8,{removeTint:true});
+				if (background) TweenMax.to(background,.8,{removeTint:true});
 			}
 		}
 		
@@ -120,6 +166,15 @@ package view.forms {
 			
 			background.width = maxWidth;
 			background.height = maxHeight;
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function kill():void {
+			this.removeEventListener(FocusEvent.FOCUS_IN, focusIn);
+			this.removeEventListener(FocusEvent.FOCUS_OUT, focusOut);
 		}
 		
 		//****************** GETTERS // SETTERS ****************** ****************** ******************
@@ -183,6 +238,24 @@ package view.forms {
 		 * @return 
 		 * 
 		 */
+		public function get line():Boolean {
+			return _line;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set line(value:Boolean):void {
+			_line = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
 		public function get backgroundColor():uint {
 			return _backgroundColor;
 		}
@@ -214,5 +287,96 @@ package view.forms {
 			_backgroundAlpha = value;
 		}
 		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get label():String {
+			return _label;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set label(value:String):void {
+			_label = value;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get textColor():uint {
+			return _textColor;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set textColor(value:uint):void {
+			_textColor = value;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get textSize():int {
+			return _textSize;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set textSize(value:int):void {
+			_textSize = value;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get textPlaceHolder():String {
+			return _textPlaceHolder;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set textPlaceHolder(value:String):void {
+			_textPlaceHolder = value;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get displayAsPassword():Boolean {
+			return _displayAsPassword;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set displayAsPassword(value:Boolean):void {
+			_displayAsPassword = value;
+		}
+
+	
 	}
 }

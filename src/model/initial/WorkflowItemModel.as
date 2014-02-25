@@ -14,6 +14,7 @@ package model.initial {
 		
 		protected var _id					:int
 		protected var _title				:String;
+		protected var _authorID				:int;
 		protected var _author				:String;
 		protected var _createdDate			:Date;
 		protected var _modifiedDate			:Date;
@@ -34,6 +35,7 @@ package model.initial {
 		 */
 		public function WorkflowItemModel(id:int,
 									  title:String,
+									  authorID:int,
 									  author:String,
 									  createdDate:String,
 									  modifiedDate:String = "") {
@@ -43,6 +45,7 @@ package model.initial {
 			if (modifiedDate == "") modifiedDate = createdDate;
 			
 			_id = id;
+			_authorID = authorID;
 			_title = title;
 			_author = author;
 			_createdDate = handleDate(createdDate);
@@ -65,13 +68,13 @@ package model.initial {
 			var dateWFArray:Array = wfDateArray[0].split("-");
 			var timeWFArray:Array = wfDateArray[1].split(":");
 			
-			var year:String = dateWFArray[0];
-			var month:String = dateWFArray[1];
+			var year:int = dateWFArray[0];
+			var month:int = dateWFArray[1]-1;
 			var day:String = dateWFArray[2];
 			
-			var hour:String = timeWFArray[0];
-			var minute:String = timeWFArray[1];
-			var second:String = timeWFArray[2];
+			var hour:int = timeWFArray[0];
+			var minute:int = timeWFArray[1];
+			var second:int = timeWFArray[2];
 			
 			return new Date(year,month,day,hour,minute,second);
 		}
@@ -104,6 +107,15 @@ package model.initial {
 		 * @return 
 		 * 
 		 */
+		public function get authorID():int {
+			return _authorID;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
 		public function get author():String {
 			return _author;
 		}
@@ -125,7 +137,7 @@ package model.initial {
 		public function get modifiedDate():Date {
 			return _modifiedDate;
 		}
-		
+
 		
 	}
 }

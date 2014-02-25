@@ -1,6 +1,8 @@
 package view {
 	
 	//imports
+	import com.greensock.TweenLite;
+	
 	import controller.WrkBuilderController;
 	import controller.WrkFlowController;
 	
@@ -12,12 +14,14 @@ package view {
 	import mvc.AbstractView;
 	import mvc.IController;
 	
+	import view.assets.Background;
+	
 	public class WrkfluxView extends AbstractView {
 		
 		//****************** Properties ****************** ****************** ******************
 		
 		protected var currentView					:AbstractView;
-		
+		protected var _background					:Background;
 		
 		//****************** Constructor ****************** ****************** ******************		
 		
@@ -39,27 +43,16 @@ package view {
 		 */
 		public function init():void {
 			
+			background = new Background();
+			background.alpha = .6;
+			this.addChild(background);
+			
 			var jump:String = ""; //"use","edit","";
 			var WFload:int = 1;
 			
-			switch (jump) {
-				
-				case "edit":
 			
-					var wrkBuilderModel:WrkBuilderModel = new WrkBuilderModel();
-					wrkBuilderModel.addEventListener(WrkfluxEvent.CHANGE_VIEW, changeView);
-					
-					//Start controler
-					var wrkBuilderController:WrkBuilderController = new WrkBuilderController([this.getModel(),wrkBuilderModel]);
-					
-					//Starting View
-					var wrkBuilderView:WrkBuilderView = new WrkBuilderView(wrkBuilderController);
-					this.addChild(wrkBuilderView);
-					wrkBuilderView.init(WFload);
-					
-					currentView = wrkBuilderView;
-					
-					break;
+			
+			switch (jump) {
 				
 				case "use":
 					
@@ -75,6 +68,23 @@ package view {
 					wrkFlowView.init(WFload);
 					
 					currentView = wrkFlowView;
+					
+					break;
+				
+				case "edit":
+					
+					var wrkBuilderModel:WrkBuilderModel = new WrkBuilderModel();
+					wrkBuilderModel.addEventListener(WrkfluxEvent.CHANGE_VIEW, changeView);
+					
+					//Start controler
+					var wrkBuilderController:WrkBuilderController = new WrkBuilderController([this.getModel(),wrkBuilderModel]);
+					
+					//Starting View
+					var wrkBuilderView:WrkBuilderView = new WrkBuilderView(wrkBuilderController);
+					this.addChild(wrkBuilderView);
+					wrkBuilderView.init(WFload);
+					
+					currentView = wrkBuilderView;
 					
 					break;
 			
@@ -118,6 +128,7 @@ package view {
 			switch (data.view) {
 				
 				case "edit":
+					
 					//Start models
 					var wrkBuilderModel:WrkBuilderModel = new WrkBuilderModel();
 					wrkBuilderModel.addEventListener(WrkfluxEvent.CHANGE_VIEW, changeView);
@@ -128,7 +139,10 @@ package view {
 					//Starting View
 					var wrkBuilderView:WrkBuilderView = new WrkBuilderView(wrkBuilderController);
 					this.addChild(wrkBuilderView);
-					wrkBuilderView.init(data.id);
+					
+					//wrkBuilderView.init(data.id);
+					
+					TweenLite.to(wrkBuilderView,.3,{onComplete:wrkBuilderView.init, onCompleteParams:[data.id]});
 					
 					currentView = wrkBuilderView;
 					break;
@@ -145,7 +159,10 @@ package view {
 					//Starting View
 					var wrkflowView:WrkFlowView = new WrkFlowView(wrkFlowController);
 					this.addChild(wrkflowView);
-					wrkflowView.init(data.id);
+					
+					TweenLite.to(wrkflowView,.3,{onComplete:wrkflowView.init, onCompleteParams:[data.id]});
+					
+					//wrkflowView.init(data.id);
 					
 					currentView = wrkflowView;
 					
@@ -155,13 +172,36 @@ package view {
 					
 					var initialView:InitialView = new InitialView(this.getController());
 					this.addChild(initialView);
-					initialView.init();
+					
+					TweenLite.to(initialView,.3,{onComplete:initialView.init});
 					
 					currentView = initialView;
 					break;
 				
 			}
 		}
+
+		
+		//****************** GETTER AND SETTER ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get background():Background {
+			return _background;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set background(value:Background):void {
+			_background = value;
+		}
+
 		
 	}
 }

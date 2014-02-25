@@ -5,19 +5,25 @@ package view.workflow.flow {
 	import com.greensock.TweenLite;
 	
 	import flash.display.Sprite;
+	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.text.AntiAliasType;
+	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
 	
 	import controller.WrkFlowController;
 	
 	import events.WrkfluxEvent;
+	
+	import font.HelveticaNeue;
 	
 	import mvc.IController;
 	
 	import util.Colors;
 	import util.MessageType;
 	
-	import view.assets.buttons.AbstractButton;
-	import view.assets.buttons.ButtonFactory;
+	import view.assets.buttons.Button;
 	import view.forms.AbstractForm;
 	import view.forms.MessageField;
 	import view.forms.TextFormField;
@@ -39,8 +45,8 @@ package view.workflow.flow {
 		protected var stepField				:HorizontalSliderFormField;
 		protected var descriptionField		:TextFormField;
 		protected var flagField				:BulletList;
-		protected var okBT					:AbstractButton;
-		protected var cancelBT				:AbstractButton;
+		protected var sendBT				:Button;
+		protected var cancelBT				:Button;
 		protected var messageField			:MessageField;
 		
 		
@@ -54,10 +60,43 @@ package view.workflow.flow {
 		public function AddForm(c:IController) {
 			super(c);
 			
+			this.maxWidth = 245;
+			this.maxHeight = 150;
+		}
+			
+			
+		//****************** INITIALIZE ****************** ****************** ******************
+			
+		/**
+		 * 
+		 * 
+		 */
+		public function init():void {
+			
+			
+			
+			//1. Label
+			var style:TextFormat = new TextFormat();
+			style.font = HelveticaNeue.CONDENSED_BOLD;
+			style.color = Colors.getColorByName(Colors.DARK_GREY);
+			style.size = 18;
+			
+			var formLabel:TextField = new TextField();
+			formLabel.selectable = false;
+			formLabel.embedFonts = true;
+			formLabel.antiAliasType = AntiAliasType.ADVANCED;
+			formLabel.autoSize = TextFieldAutoSize.LEFT;
+			formLabel.text = "Add";
+			formLabel.setTextFormat(style);
+			this.addChild(formLabel);
+			
+			formLabel.x = this.maxWidth/2 - formLabel.width/2;
+			formLabel.y = gap;
+			
 			// FIELDS
 			content = new Sprite();
 			content.x = gap;
-			content.y = gap;
+			content.y = formLabel.y + formLabel.height + gap;
 			this.addChild(content);
 			
 			//1. Title
@@ -65,8 +104,11 @@ package view.workflow.flow {
 			titleField.maxChars = 80;
 			titleField.maxWidth = 190;
 			titleField.required = true;
+			titleField.maxHeight = 35;
+			titleField.textPlaceHolder = "title";
 			content.addChild(titleField);
-			titleField.init("title");
+			titleField.init("");
+			titleField.name = "title";
 			
 			fieldCollection.push(titleField);
 			
@@ -75,10 +117,12 @@ package view.workflow.flow {
 			
 			stepField = new HorizontalSliderFormField();
 			stepField.maxWidth = 190;
+			stepField.maxHeight = 35;
 			stepField.required = true;
 			stepField.data = stepData;
 			content.addChild(stepField);
-			stepField.init("step");
+			stepField.init("");
+			stepField.name = "step";
 			
 			stepField.y = titleField.y + titleField.height + gap;
 			
@@ -91,7 +135,8 @@ package view.workflow.flow {
 			flagField.maxWidth = 40;
 			flagField.data = flagData;
 			content.addChild(flagField);
-			flagField.init("flag");
+			flagField.init("");
+			flagField.name = "flag";
 			
 			//size height
 			if (flagField.maxHeight < 140) {
@@ -113,40 +158,51 @@ package view.workflow.flow {
 			descriptionField.y = stepField.y + stepField.height + gap;
 			
 			var descHeight:Number = flagField.height - descriptionField.y;
-			descriptionField.maxHeight = (descHeight > 60 ) ? descHeight : 60;
-			
-			descriptionField.init("description");
+			descriptionField.maxHeight = (descHeight > 60 ) ? descHeight : 54;
+			descriptionField.textPlaceHolder = "description";
+			descriptionField.init("");
+			descriptionField.name = "description";
 			
 			fieldCollection.push(descriptionField);
 			
 			//5. cancel Button
-			cancelBT = ButtonFactory.getButton((Colors.RED), ButtonFactory.FORM);
+			cancelBT = new Button();
 			content.addChild(cancelBT);
+			cancelBT.color = Colors.getColorByName(Colors.RED);
+			cancelBT.textColor = Colors.getColorByName(Colors.WHITE);
+			cancelBT.toggleColor = Colors.getColorByName(Colors.DARK_GREY);
 			cancelBT.maxWidth = 115;
 			cancelBT.maxHeight = 35;
-			cancelBT.init("cancel");
+			cancelBT.init("Cancel");
 			
 			cancelBT.y = descriptionField.y + descriptionField.height + gap;
 			
 			fieldCollection.push(cancelBT);
 			
 			//6. Ok Button
-			okBT = ButtonFactory.getButton((Colors.GREEN), ButtonFactory.FORM);
-			content.addChild(okBT);
-			okBT.maxWidth = 115;
-			okBT.maxHeight = 35;
-			okBT.init("ok");
+			sendBT = new Button();
+			content.addChild(sendBT);
+			sendBT.maxWidth = 115;
+			sendBT.maxHeight = 35;
+			sendBT.color = Colors.getColorByName(Colors.GREEN);
+			sendBT.textColor = Colors.getColorByName(Colors.WHITE);
+			sendBT.toggleColor = Colors.getColorByName(Colors.DARK_GREY);
+			sendBT.init("Send");
+			sendBT.x = cancelBT.x + cancelBT.width + gap;
+			sendBT.y = cancelBT.y;
 			
-			okBT.x = cancelBT.x + cancelBT.width + gap;
-			okBT.y = descriptionField.y + descriptionField.height + gap;
-			
-			fieldCollection.push(okBT);
+			fieldCollection.push(sendBT);
 			
 			//window
-			this.drawWindow(245, this.height + (2*gap));
+			this.windowGlow = true;
+			this.windowLineColor = Colors.getColorByName(Colors.LIGHT_GREY);
+			this.windowColor = Colors.getColorByName(Colors.WHITE_ICE);
+			this.drawWindow(maxWidth, this.height + (2*gap));
+			this.maxHeight = this.window.height;
 			
 			//listeners
 			this.addEventListener(MouseEvent.CLICK, formClick);
+			this.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 		}		
 		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
@@ -202,6 +258,25 @@ package view.workflow.flow {
 		
 		/**
 		 * 
+		 * @param value
+		 * 
+		 */
+		protected function processFormSubmit(value:String):void {
+			switch (value) {
+				case "submit":
+					validateAndSendData();
+					break;
+				
+				case "cancel":
+					var data:Object = {action:"addCanceled"};
+					this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_EVENT, data))
+					break;
+			}
+			
+		}
+		
+		/**
+		 * 
 		 * 
 		 */
 		protected function validateAndSendData():void {
@@ -209,12 +284,18 @@ package view.workflow.flow {
 			var readyToSend:Boolean = true;
 			var failToValidate:Array = new Array();
 			
+			//remove message field
+			if (messageField) {
+				this.removeChild(messageField);
+				messageField = null;
+			}
+			
 			//collect  data
 			var data:Object = new Object();
 			data.action = "addItem";
 			
 			//title
-			if (titleField.getInput() == "") {
+			if (titleField.getInput() == "" || titleField.getInput() == titleField.textPlaceHolder) {
 				readyToSend = false;
 				titleField.validationWarning(true);
 			} else {
@@ -232,6 +313,7 @@ package view.workflow.flow {
 			
 			//send data
 			if (readyToSend) {
+				//WrkFlowController(this.getController()).getModel("Wrkflow").addEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);
 				super.addProgressBar();
 				this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_EVENT, data));
 			} else {
@@ -246,6 +328,8 @@ package view.workflow.flow {
 		 * 
 		 */
 		protected function killView():void {
+			this.addEventListener(MouseEvent.CLICK, formClick);
+			this.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
 			this.parent.removeChild(this);
 		}
 		
@@ -260,18 +344,38 @@ package view.workflow.flow {
 			
 			event.stopImmediatePropagation();
 			
-			switch (event.target.name) {
+			switch (event.target.name.toLowerCase()) {
 				
 				case "cancel":
-					var data:Object = {action:"addCanceled"};
-					this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_EVENT, data));
+					processFormSubmit("cancel");
 					break;
 				
-				case "ok":
-					validateAndSendData();
+				case "send":
+					processFormSubmit("submit");
 					break;
 			}
 			
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function keyUp(event:KeyboardEvent):void {
+			event.stopImmediatePropagation();
+			if (event.charCode == 13) processFormSubmit("submit");
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function formFeedback(event:WrkfluxEvent):void {
+			super.kill();
+			//WrkFlowController(this.getController()).getModel("Wrkflow").removeEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);	
+			if (!event.data.success) sendMessage(event.data.error,MessageType.ERROR);
 		}
 		
 		
@@ -295,14 +399,9 @@ package view.workflow.flow {
 				this.addChild(messageField);
 				
 				messageField.x = this.gap;
-				messageField.y = this.gap/2;
-				
-				var offset:Number = messageField.y + messageField.height + (gap/2);
+				messageField.y = content.y + content.height + this.gap - 5;
 				
 				TweenLite.from(messageField, .3, {alpha:0, delay:.2});
-				TweenLite.to(content, .3, {y:content.y + offset});
-				TweenLite.to(window, .3, {height:window.height + offset})
-				TweenLite.to(this, .3, {y:this.y - offset})
 				
 			}
 			
@@ -313,7 +412,16 @@ package view.workflow.flow {
 		 * 
 		 */
 		override public function kill():void {
-			super.removeProgressBar();
+			super.kill();
+			
+			if (sendBT) sendBT.kill();
+			if (cancelBT) cancelBT.kill(); 
+			if (flagField) flagField.kill();
+			if (stepField) stepField.kill();
+			
+			this.removeEventListener(MouseEvent.CLICK, formClick);
+			//WrkFlowController(this.getController()).getModel("Wrkflow").removeEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);
+			
 			TweenLite.to(this,.6,{y:0, autoAlpha: 0, delay: .8, onComplete:killView});
 		}
 		

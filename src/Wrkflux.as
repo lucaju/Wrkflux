@@ -1,6 +1,7 @@
 package {
 	
 	//import
+	
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
@@ -14,7 +15,8 @@ package {
 	import view.WrkfluxView;
 	
 	
-	[SWF(width="1260", height="700", backgroundColor="#E6E7E8", frameRate="60")]
+	//[SWF(width="1260", height="700", backgroundColor="#FFFFFF", frameRate="60")]
+	[SWF(width="1260", height="800", backgroundColor="#FFFFFF", frameRate="60")]
 	public class Wrkflux extends Sprite {
 		
 		//****************** Properties ****************** ****************** ******************

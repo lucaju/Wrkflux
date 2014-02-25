@@ -333,7 +333,10 @@ package view.workflow.flow.pin.big {
 		 * @param event
 		 * 
 		 */
-		protected function controlPanelSelect(event:Event):void {
+		protected function controlPanelSelect(event:WrkfluxEvent):void {
+			
+			event.stopImmediatePropagation();
+			
 			if (source.currentFlag != pinControlPanel.selectedItem) {
 				event.stopImmediatePropagation();
 				saveOption(pinControlPanel.selectedItem);
@@ -401,6 +404,8 @@ package view.workflow.flow.pin.big {
 		public function close():void {
 			
 			//kill previous animation
+			closeBT.mouseEnabled = false;
+			
 			TweenMax.killTweensOf(window);
 			TweenMax.killTweensOf(pinControlPanel);
 			TweenMax.killTweensOf(closeBT);
@@ -434,7 +439,7 @@ package view.workflow.flow.pin.big {
 			//remove panels
 			TweenMax.to(pinControlPanel,.4,{scaleX:0, scaleY:0, onComplete:removeItem, onCompleteParams:[pinControlPanel]});
 			TweenMax.to(window,.4,{scaleX:0, scaleY:0, x:closeBT.x, y: closeBT.y, alpha:0, onComplete:removeItem, onCompleteParams:[window]});
-			TweenMax.to(closeBT,.4,{scaleX:0, scaleY:0, onComplete:removeItem, onCompleteParams:[closeBT]});
+			TweenMax.to(closeBT,.4,{alpha:0, width:0, height:0, onComplete:removeItem, onCompleteParams:[closeBT]});
 			
 			window.killPanels();
 			

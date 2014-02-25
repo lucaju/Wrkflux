@@ -13,6 +13,7 @@ package util {
 		static public const WHITE:String = "white";
 		static public const BLACK:String = "black";
 		static public const LIGHT_GREY:String = "light_gray";
+		static public const WHITE_ICE:String = "white_ice";
 		static public const DARK_GREY:String = "dark_gray";
 		static public const GREEN:String = "green";
 		static public const BLUE:String = "blue";
@@ -45,6 +46,10 @@ package util {
 				
 				case LIGHT_GREY:
 					color = 0xDADBDA;
+					break;
+				
+				case WHITE_ICE:
+					color = 0xF1F1F2;
 					break;
 				
 				case DARK_GREY:
@@ -99,6 +104,10 @@ package util {
 				
 				case 0xDADBDA:
 					return LIGHT_GREY;
+					break;
+				
+				case 0xF1F1F2:
+					return WHITE_ICE;
 					break;
 				
 				case 0xDADBDA:

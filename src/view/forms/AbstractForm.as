@@ -10,15 +10,14 @@ package view.forms {
 	
 	import util.Colors;
 	import util.Directions;
+	import util.MessageType;
 	
-	import view.forms.assets.AbstractWindow;
 	import view.assets.Balloon;
+	import view.forms.assets.AbstractWindow;
 	import view.forms.assets.RectBox;
 	import view.forms.assets.RoundBox;
 	import view.forms.assets.WindowShape;
 	import view.util.progressBar.ProgressBar;
-	
-	import util.MessageType;
 	
 	/**
 	 * 
@@ -29,24 +28,30 @@ package view.forms {
 		
 		//****************** Properties ****************** ****************** ******************
 		
-		protected var window				:AbstractWindow;
-		protected var gap					:Number	= 5;
+		protected var window					:AbstractWindow;
+		protected var gap						:Number	= 5;
 		
-		protected var _windowColor			:uint;
-		protected var _windowAlpha			:Number;
-		protected var _windowGlow			:Boolean;
-		protected var _windowShape			:String;
-		protected var _isWndowScale9Grid	:Boolean;
-		protected var _orientation			:String;
+		protected var _windowAlpha				:Number;
+		protected var _windowColor				:uint;
+		protected var _windowColorAlpha			:Number;
+			
+		protected var _windowLine				:Boolean;
+		protected var _windowLineColor			:uint;
+		protected var _windowLineThickness		:int;
 		
-		protected var _maxWidth				:Number;
-		protected var _maxHeight			:Number;
+		protected var _windowGlow				:Boolean;
+		protected var _windowShape				:String;
+		protected var _isWndowScale9Grid		:Boolean;
+		protected var _orientation				:String;
 		
-		protected var fieldCollection		:Array;
+		protected var _maxWidth					:Number;
+		protected var _maxHeight				:Number;
+			
+		protected var fieldCollection			:Array;
 		
-		protected var messageFieldHeight	:Number	= 15;
+		protected var messageFieldHeight		:Number	= 15;
 		
-		protected var progressBar			:ProgressBar;
+		protected var progressBar				:ProgressBar;
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -60,15 +65,19 @@ package view.forms {
 			
 			fieldCollection = new Array();
 			
-			windowColor = Colors.getColorByName(Colors.LIGHT_GREY);
-			windowAlpha = 1;
-			windowGlow = true;
-			windowShape = WindowShape.ROUND_RECTANGLE;
+			_windowAlpha = 1;
+			_windowColor = Colors.getColorByName(Colors.LIGHT_GREY);
+			_windowColorAlpha = 1;
+			_windowLine = true;
+			_windowLineColor = Colors.getColorByName(Colors.DARK_GREY);
+			_windowLineThickness = 1;
+			_windowGlow = false;
+			_windowShape = WindowShape.ROUND_RECTANGLE;
 			
-			isWndowScale9Grid = true;
+			_isWndowScale9Grid = true;
 			
-			maxWidth = 200;
-			maxHeight = 35;
+			_maxWidth = 200;
+			_maxHeight = 35;
 			
 			this.addEventListener(MouseEvent.CLICK, formClick);
 		}
@@ -94,33 +103,45 @@ package view.forms {
 				
 				case WindowShape.BALLOON:
 					window = new Balloon();
+					
 					window.isScale9Grid = this.isWndowScale9Grid;
-					window.lineColor = Colors.getColorByName(Colors.WHITE);
-					window.color = this.windowColor;
-					window.alpha = windowAlpha;
-					window.init(maxWidth,maxHeight);
+					window.line = this.windowLine;
+					if (this.windowLine) {
+						window.lineColor = this.windowLineColor;
+						window.lineThickness = this.windowLineThickness;
+					}
 					orientation = Directions.BOTTOM;
+					
 					break;
 				
 				case WindowShape.RECTANGLE:
 					window = new RectBox();
+					
+					if (this.windowLine) {
+						window.lineColor = this.windowLineColor;
+						window.lineThickness = this.windowLineThickness;
+					}
 					window.isScale9Grid = false;
-					window.lineColor = Colors.getColorByName(Colors.WHITE);
-					window.color = this.windowColor;
-					window.alpha = windowAlpha;
-					window.init(maxWidth,maxHeight);
+					
 					break;
 				
 				default:
 					window = new RoundBox();
-					window.lineColor = Colors.getColorByName(Colors.WHITE);
-					window.color = this.windowColor;
-					window.alpha = windowAlpha;
+					
+					if (this.windowLine) {
+						window.lineColor = this.windowLineColor;
+						window.lineThickness = this.windowLineThickness;
+					}
 					window.isScale9Grid = this.isWndowScale9Grid;
-					window.init(maxWidth,maxHeight);
+					
 					break;
 					
 			}
+			
+			window.color = this.windowColor;
+			window.alphaColor = this.windowColorAlpha;
+			window.alpha = this.windowAlpha;
+			window.init(this.maxWidth,this.maxHeight);
 			
 			this.addChildAt(window,0);
 			
@@ -155,8 +176,8 @@ package view.forms {
 		protected function addProgressBar():void {
 			if (!progressBar) {
 				progressBar = new ProgressBar();
-				progressBar.x = this.maxWidth/2;
-				progressBar.y = this.height/2;
+				progressBar.x = this.maxWidth/2 + progressBar.width/2;
+				progressBar.y = this.height/2 + progressBar.height/2;
 				this.addChild(progressBar);
 			}
 		}
@@ -214,9 +235,36 @@ package view.forms {
 			}
 		}
 		
+		/**
+		 * 
+		 * 
+		 */
+		override public function kill():void {
+			this.removeProgressBar();
+			this.removeEventListener(MouseEvent.CLICK, formClick);
+		}
+		
 		
 		//****************** GETTERS // SETTERS ****************** ****************** ******************
 
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get windowAlpha():Number {
+			return _windowAlpha;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set windowAlpha(value:Number):void {
+			_windowAlpha = value;
+		}
+		
 		/**
 		 * 
 		 * @return 
@@ -240,8 +288,8 @@ package view.forms {
 		 * @return 
 		 * 
 		 */
-		public function get windowAlpha():Number {
-			return _windowAlpha;
+		public function get windowColorAlpha():Number {
+			return _windowColorAlpha;
 		}
 		
 		/**
@@ -249,8 +297,62 @@ package view.forms {
 		 * @param value
 		 * 
 		 */
-		public function set windowAlpha(value:Number):void {
-			_windowAlpha = value;
+		public function set windowColorAlpha(value:Number):void {
+			_windowColorAlpha = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get windowLine():Boolean {
+			return _windowLine;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set windowLine(value:Boolean):void {
+			_windowLine = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get windowLineThickness():int {
+			return _windowLineThickness;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set windowLineThickness(value:int):void {
+			_windowLineThickness = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get windowLineColor():uint {
+			return _windowLineColor;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set windowLineColor(value:uint):void {
+			_windowLineColor = value;
 		}
 
 		/**
@@ -360,7 +462,6 @@ package view.forms {
 		public function set isWndowScale9Grid(value:Boolean):void {
 			_isWndowScale9Grid = value;
 		}
-
 		
 	}
 }

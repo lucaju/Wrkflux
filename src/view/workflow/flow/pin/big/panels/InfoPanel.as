@@ -11,7 +11,7 @@ package view.workflow.flow.pin.big.panels {
 	
 	import events.WrkfluxEvent;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import mvc.IController;
 	
@@ -124,8 +124,8 @@ package view.workflow.flow.pin.big.panels {
 				descriptionTF.wordWrap = true;
 				descriptionTF.multiline = true;
 				descriptionTF.text = "Description: "+ description;
-				descriptionTF.setTextFormat(labelStyle,0,6);
-				descriptionTF.setTextFormat(valueStyle,6,descriptionTF.length);
+				descriptionTF.setTextFormat(labelStyle,0,13);
+				descriptionTF.setTextFormat(valueStyle,13,descriptionTF.length);
 				
 				descriptionTF.x = margin;
 				descriptionTF.y = posY;
@@ -160,13 +160,13 @@ package view.workflow.flow.pin.big.panels {
 			
 			//Label
 			labelStyle = new TextFormat();
-			labelStyle.font = FontFreightSans.MEDIUM;
+			labelStyle.font = HelveticaNeue.CONDENSED_BOLD;
 			labelStyle.size = 14;
 			labelStyle.color = Colors.getColorByName(Colors.DARK_GREY);
 			
 			//Value
 			valueStyle = new TextFormat();
-			valueStyle.font = FontFreightSans.MEDIUM;
+			valueStyle.font = HelveticaNeue.LIGHT;
 			valueStyle.size = 14;
 			valueStyle.color = Colors.getColorByName(Colors.DARK_GREY);
 			
@@ -183,7 +183,7 @@ package view.workflow.flow.pin.big.panels {
 			
 			if (!flagValueStyle) {
 				flagValueStyle = new TextFormat();
-				flagValueStyle.font = FontFreightSans.MEDIUM;
+				flagValueStyle.font = HelveticaNeue.LIGHT;
 				flagValueStyle.size = 14;
 			}
 			

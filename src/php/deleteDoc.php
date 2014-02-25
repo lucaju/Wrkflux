@@ -6,6 +6,7 @@ if($_POST['wdata']) {
 	
 	//required
 	require_once("DBConn.php");
+	require_once("functions.php");
 	
 	//mysql
 	$dbConn = DBConn::getConnection();
@@ -19,31 +20,30 @@ if($_POST['wdata']) {
 	//save data - Workflow
 	$itemUID = $jData['itemUID'];
 	
-	//query - delete item	
-	$query = "DELETE FROM items WHERE uid = $itemUID";
-	if ($dbConn->query($query)) {
-		$result = "success";
-	} else {
-		$result = "error";
-	}
+	//result
+	$data['itemUID'] = $itemUID;
 	
 	//query - delete item	logs	
 	$query = "DELETE FROM items_log WHERE item_uid = $itemUID";
 	if ($dbConn->query($query)) {
-		$result = "Success";
+		$result = "success";
+		$data['log'] = "Removed Success";
 	} else {
-		$result = "Error";
+		$result = "error";
 	}
 	
-	//result
-	$data['itemUID'] = $itemUID;
+	//query - delete item	
+	$query = "DELETE FROM items WHERE uid = $itemUID";
+	if ($dbConn->query($query)) {
+		$result = "success";
+		$data['item'] = "Removed Success";
+	} else {
+		$result = "error";
+	}
+	
 	
 	//Convert to JSON and print
-	if ($result == "success") {
-		print json_encode($data);
-	} else {
-		print json_encode($result);
-	}
+	print jsonRemoveUnicodeSequences($data);
 	
 	/* close connection */
 	$dbConn->close();

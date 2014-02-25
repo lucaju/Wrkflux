@@ -2,9 +2,9 @@ package controller {
 	
 	//imports
 	import model.FlagModel;
-	import model.WrkBuilderModel;
 	import model.WrkFlowModel;
 	import model.WrkfluxModel;
+	import model.Session;
 	
 	import mvc.AbstractController;
 	
@@ -38,6 +38,7 @@ package controller {
 		 * 
 		 */
 		public function close():void {
+			Session.closeActiveWorkflow();
 			WrkfluxModel(this.getModel("wrkflux")).changeView("initial");
 		}
 		

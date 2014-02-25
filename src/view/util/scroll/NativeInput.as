@@ -6,9 +6,10 @@ package view.util.scroll {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TransformGestureEvent;
+	import flash.geom.Rectangle;
 	
 	import util.DeviceInfo;
-	
+	import settings.Settings;
 	
 	/**
 	 * 
@@ -38,7 +39,8 @@ package view.util.scroll {
 		override public function addEvents():void {
 			source.target.parent.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);			
 			source.target.parent.addEventListener(TransformGestureEvent.GESTURE_PAN, handlePan);
-			//source.target.parent.addEventListener(MouseEvent.MOUSE_WHEEL, scrollList);
+			if (source.roll) source.roll.addEventListener(MouseEvent.MOUSE_DOWN, rollDown);
+			if (Settings.platformTarget == "web") source.target.parent.addEventListener(MouseEvent.MOUSE_WHEEL, scrollList); //web browser
 		}
 		
 		/**
@@ -48,7 +50,8 @@ package view.util.scroll {
 		override public function removeEvents():void {
 			source.target.parent.removeEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);			
 			source.target.parent.removeEventListener(TransformGestureEvent.GESTURE_PAN, handlePan);
-			//source.target.parent.removeEventListener(MouseEvent.MOUSE_WHEEL, scrollList);
+			if (source.roll) source.roll.removeEventListener(MouseEvent.MOUSE_DOWN, rollDown);
+			if (Settings.platformTarget == "web") source.target.parent.removeEventListener(MouseEvent.MOUSE_WHEEL, scrollList); //web browser
 		}
 		
 		
@@ -70,6 +73,45 @@ package view.util.scroll {
 			
 			//dispatch event
 			source.dispatchEvent(new ScrollEvent(ScrollEvent.SCROLL,"stop", source.target.x, source.target.y));
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function rollDown(event:MouseEvent):void {
+			
+			event.stopPropagation();
+			
+			var limits:Rectangle = new Rectangle(0,0,0,source._hMax - source.height);
+			source.roll.startDrag(false,limits);
+			
+			source.roll.addEventListener(Event.ENTER_FRAME, rollMove);
+			source.roll.addEventListener(MouseEvent.MOUSE_UP, rollUp);
+			source.roll.addEventListener(MouseEvent.RELEASE_OUTSIDE, rollUp);
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function rollMove(event:Event):void {
+			source.target.y = - source.roll.y * source.ratePageY;
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function rollUp(event:MouseEvent):void {
+			source.roll.stopDrag();
+			
+			source.roll.removeEventListener(Event.ENTER_FRAME, rollMove);
+			source.roll.removeEventListener(MouseEvent.MOUSE_UP, rollUp);
+			source.roll.removeEventListener(MouseEvent.RELEASE_OUTSIDE, rollUp);
 		}
 		
 		/**

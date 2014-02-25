@@ -7,7 +7,7 @@ package view.workflow.flow.pin.big.panels {
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import util.Colors;
 	
@@ -179,9 +179,9 @@ package view.workflow.flow.pin.big.panels {
 			style.color = Colors.getColorByName(Colors.DARK_GREY);
 			
 			if (isHeader) {
-				style.font = FontFreightSans.MEDIUM;
+				style.font = HelveticaNeue.LIGHT;
 			} else {
-				style.font = FontFreightSans.BOOK;
+				style.font = HelveticaNeue.CONDENSED_BOLD;
 			}
 			
 			return style;

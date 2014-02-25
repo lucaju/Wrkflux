@@ -21,6 +21,7 @@ package events{
 		public static const CHANGE_VIEW				:String = "change_view";
 		public static const CHANGE					:String = "change";
 		public static const FORM_EVENT				:String = "form_event";
+		public static const FORM_FEEDBACK			:String = "form_feedback";
 		public static const COMPLETE				:String = "complete";
 		
 		public static const SELECT					:String = "select";

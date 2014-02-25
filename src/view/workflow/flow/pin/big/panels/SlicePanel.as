@@ -4,13 +4,11 @@ package view.workflow.flow.pin.big.panels {
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	
-	import controller.WrkFlowController;
-	
 	import events.WrkfluxEvent;
 	
-	import view.workflow.flow.pin.PinView;
 	import view.workflow.flow.pin.big.BigPin;
 	
+	import model.Session;
 	
 	/**
 	 * 
@@ -72,7 +70,8 @@ package view.workflow.flow.pin.big.panels {
 				
 			}
 			
-			this.addEventListener(MouseEvent.CLICK, buttonClick,false,0,true);
+			//check Credentials
+			if (Session.credentialCheck()) this.addEventListener(MouseEvent.CLICK, buttonClick,false,0,true);
 			
 		}
 			
@@ -120,7 +119,7 @@ package view.workflow.flow.pin.big.panels {
 				var slice:Slice = event.target as Slice;
 				selectedItem = slice.uid;
 				
-				this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.SELECT));
+				this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.SELECT,null,"",false));
 			}
 		}	
 		

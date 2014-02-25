@@ -2,13 +2,12 @@ package view.workflow.flow.pin.big.panels {
 	
 	//imports
 	import com.greensock.TweenMax;
-	
+	import model.Session;
 	import flash.display.Loader;
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.geom.ColorTransform;
 	import flash.net.URLRequest;
 	
 	import settings.Settings;
@@ -25,7 +24,7 @@ package view.workflow.flow.pin.big.panels {
 		//****************** Proprieties ****************** ****************** ******************
 		
 		protected var _uid						:int;
-		protected var _color						:uint;
+		protected var _color					:uint;
 		protected var _label					:String;
 		
 		protected var radius					:Number = 70;
@@ -68,9 +67,12 @@ package view.workflow.flow.pin.big.panels {
 			drawArc(0, 0, radius, starPos/360, arcLength/360, 40);
 
 			//
-			this.buttonMode = true;
-			this.addEventListener(MouseEvent.ROLL_OVER, over,false,0,true);
-			this.addEventListener(MouseEvent.ROLL_OUT, out,false,0,true);
+			if (Session.credentialCheck()) {
+				this.buttonMode = true;
+				
+				this.addEventListener(MouseEvent.ROLL_OVER, over,false,0,true);
+				this.addEventListener(MouseEvent.ROLL_OUT, out,false,0,true);
+			}
 		}
 		
 	
@@ -178,18 +180,24 @@ package view.workflow.flow.pin.big.panels {
 				
 				if (selected) {
 					//TweenMax.to(this.parent, 1, {glowFilter:{color:color, alpha:1, blurX:20, blurY:20,strength:1}});
-					TweenMax.to(shape, .5, {glowFilter:{color:Colors.getColorByName(Colors.DARK_GREY), alpha:.6, blurX:10, blurY:10,strength:3,inner:true}});
+					//TweenMax.to(shape, .5, {glowFilter:{color:Colors.getColorByName(Colors.DARK_GREY), alpha:.6, blurX:10, blurY:10,strength:3,inner:true}});
 					//TweenMax.to(shape, 1, {scaleX:1.05, scaleY:1.05});	
 					
-					if (color == 0xFFFFFF) {
-						if (_icon) TweenMax.to(_icon, 1, {tint:0x000000});
-					} else {
-						if (_icon) TweenMax.to(_icon, 1, {tint:0xFFFFFF});
-					}
+					//TweenMax.to(shape, .5, {colorTransform:{tint:color, tintAmount:0.6}});
+					
+					if (_icon) {
+						if (color == Colors.getColorByName(Colors.WHITE)) {
+							TweenMax.to(_icon, 1, {tint:Colors.getColorByName(Colors.BLACK)});
+						} else {
+							TweenMax.to(_icon, 1, {tint:Colors.getColorByName(Colors.WHITE)});
+						}
+					} 
 					
 				} else {
 					//TweenMax.to(this.parent, 1, {glowFilter:{color:color, alpha:0, blurX:0, blurY:0,strength:0,remove:true}});
-					TweenMax.to(shape, .5, {glowFilter:{color:Colors.getColorByName(Colors.DARK_GREY), alpha:.6, blurX:0, blurY:0,strength:1,inner:true}});
+					//TweenMax.to(shape, .5, {glowFilter:{color:Colors.getColorByName(Colors.DARK_GREY), alpha:.6, blurX:0, blurY:0,strength:1,inner:true}});
+					//TweenMax.to(shape, .5, {removeTint:true});
+					
 					//TweenMax.to(shape, 1, {scaleX:1, scaleY:1});
 					if (_icon) TweenMax.to(_icon, 1, {removeTint:true});
 				}

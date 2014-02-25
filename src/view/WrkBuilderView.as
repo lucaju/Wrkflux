@@ -5,6 +5,7 @@ package view {
 	import com.greensock.TweenMax;
 	
 	import flash.events.ErrorEvent;
+	import flash.events.Event;
 	
 	import controller.WrkBuilderController;
 	
@@ -13,8 +14,11 @@ package view {
 	import mvc.AbstractView;
 	import mvc.IController;
 	
+	import util.Colors;
 	import util.MessageType;
 	
+	import view.assets.buttons.AbstractButton;
+	import view.assets.menu.Menu;
 	import view.assets.menu.MenuDirection;
 	import view.builder.TitleForm;
 	import view.builder.flags.FlagsView;
@@ -33,19 +37,17 @@ package view {
 		
 		protected var id				:int;
 		
-		protected var topBar			:TopBar
+		protected var topBar			:TopBar;
 		protected var titleForm			:TitleForm;
 		
 		protected var flagsView			:FlagsView;
-		protected var structureView		:view.builder.structure.StructureView
+		protected var structureView		:StructureView
 		
 		protected var messageWindow		:MessageWindow;
 		
 		protected var progressBar		:ProgressBar;
 		
 		//****************** Constructor ****************** ****************** ******************
-
-		
 		
 		/**
 		 * 
@@ -71,12 +73,14 @@ package view {
 			//1. top bar
 			topBar = new TopBar();
 			this.addChild(topBar);
+			topBar.backgroundColor = Colors.getColorByName(Colors.WHITE);
+			topBar.titleColor = Colors.getColorByName(Colors.DARK_GREY);
 			topBar.init();
 			
 			topBar.label = WrkBuilderController(this.getController()).getLabel();
 			topBar.addMenu(WrkBuilderController(this.getController()).getMenuOptions("right"),MenuDirection.RIGHT);
 			
-			
+			//animation
 			TweenLite.from(topBar,.6,{y:-topBar.height,delay:.6});
 			
 			//listenerts
@@ -85,18 +89,24 @@ package view {
 			contr.getModel("wrkbuilder").addEventListener(WrkfluxEvent.COMPLETE, processComplete);
 			contr.getModel("wrkbuilder").addEventListener(WrkfluxEvent.CHANGE, updateComplete);
 			contr.getModel("wrkbuilder").addEventListener(ErrorEvent.ERROR, errorHandle);
+			
+			this.stage.addEventListener(Event.RESIZE, resize);
 		}
 		
 		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
 		
+		/**
+		 * 
+		 * 
+		 */
 		protected function newWorkflow():void {
 			
 			//Add Title Form
 			titleForm = new TitleForm(this.getController());
 			this.addChild(titleForm);
 			
-			titleForm.x = (this.stage.stageWidth/2) - (titleForm.width/2);
+			titleForm.x = (this.stage.stageWidth/2) - (titleForm.maxWidth/2);
 			titleForm.y = (this.stage.stageHeight/2) - (titleForm.height/2);
 			
 			titleForm.addEventListener(WrkfluxEvent.FORM_EVENT, formEvent);
@@ -125,16 +135,16 @@ package view {
 			this.addChild(flagsView);
 			flagsView.init();
 			
-			TweenMax.from(flagsView,.6,{x:-flagsView.width/4, autoAlpha: 0});
+			//TweenMax.from(flagsView,.6,{x:-flagsView.width/4, autoAlpha: 0});
 			
 			//add structure view
-			structureView = new view.builder.structure.StructureView(this.getController());
+			structureView = new StructureView(this.getController());
 			structureView.x = flagsView.width;
 			structureView.y = topBar.height;
 			this.addChild(structureView);
 			structureView.init();
 			
-			TweenMax.from(structureView,.6,{x:"60",autoAlpha: 0});
+			TweenMax.from(structureView,.6,{tint: Colors.getColorByName(Colors.WHITE_ICE)});
 			
 		}
 		
@@ -199,20 +209,31 @@ package view {
 		 */
 		protected function showMessage(message:String, type:String):void {
 			//Add message
-			messageWindow = new MessageWindow(this.getController());
-			messageWindow.maxWidth = 110;
-			messageWindow.maxHeight = 17;
-			messageWindow.init();
-			
-			this.addChild(messageWindow);
-			
-			messageWindow.sendMessage(message, type);
-			
-			messageWindow.x = (this.stage.stageWidth/2) - (messageWindow.width/2);
-			messageWindow.y = structureView.y + 10;
-			
-			TweenMax.from(messageWindow,.6,{y:"60", autoAlpha: 0});
-			TweenMax.to(messageWindow,1,{autoAlpha: 0, delay:3, onComplete:killMessageWindow});
+			if (!messageWindow) {
+				messageWindow = new MessageWindow(this.getController());
+				messageWindow.maxWidth = 160;
+				messageWindow.maxHeight = 17;
+				messageWindow.windowColor = Colors.getColorByName(Colors.LIGHT_GREY);
+				messageWindow.windowColorAlpha = .3;
+				messageWindow.windowLine = true;
+				messageWindow.windowLineColor = Colors.getColorByName(Colors.LIGHT_GREY);
+				messageWindow.windowLineThickness = 1;
+				messageWindow.init();
+				
+				this.addChildAt(messageWindow,0);
+				
+				messageWindow.sendMessage(message, type);
+				
+				messageWindow.x = (this.stage.stageWidth/2) - (messageWindow.width/2);
+				messageWindow.y = topBar ? topBar.height - 1: 0;
+				
+				TweenMax.from(messageWindow,.6,{y:"-60", autoAlpha: 0, delay:.6});
+				//TweenMax.to(messageWindow,1,{autoAlpha: 0, delay:3.6, onComplete:killMessageWindow});
+				
+			} else {
+				TweenMax.to(messageWindow,1,{y: topBar ? topBar.height - 2: 0});
+				messageWindow.sendMessage(message, type);
+			}
 		}
 		
 		/**
@@ -229,7 +250,14 @@ package view {
 		 * 
 		 */
 		protected function killView():void {
+			var contr:WrkBuilderController = WrkBuilderController(this.getController());
+			contr.getModel("wrkbuilder").removeEventListener(WrkfluxEvent.COMPLETE, processComplete);
+			contr.getModel("wrkbuilder").removeEventListener(WrkfluxEvent.CHANGE, updateComplete);
+			contr.getModel("wrkbuilder").removeEventListener(ErrorEvent.ERROR, errorHandle);
+			this.stage.removeEventListener(Event.RESIZE, resize);
 			this.parent.removeChild(this);
+			
+			contr = null;
 		}
 		
 		
@@ -242,7 +270,7 @@ package view {
 		 */
 		protected function formEvent(event:WrkfluxEvent):void {
 			var data:Object = event.data;
-			WrkBuilderController(this.getController()).createWorkflow(data.title, data.author);
+			WrkBuilderController(this.getController()).createWorkflow(data.title);
 		}
 		
 		/**
@@ -268,9 +296,17 @@ package view {
 			}
 			
 			this.id = event.data.id;
-			//trace(this.id)
+			
 			topBar.label = WrkBuilderController(this.getController()).getLabel();
-			topBar.addMenu(WrkBuilderController(this.getController()).getMenuOptions("left"),"left");
+			
+			var topMenu:Menu = topBar.getMenu("right");
+			topMenu.add("Use");
+			topMenu.add("Save");
+			var tagBT:AbstractButton = topMenu.add("Tags");
+			tagBT.togglable = true;
+			tagBT.toggle = true;
+			
+			//topBar.addMenu(WrkBuilderController(this.getController()).getMenuOptions("left"),"left");
 			
 			this.buildInterface();
 			
@@ -297,7 +333,6 @@ package view {
 			
 		}
 		
-		
 		/**
 		 * 
 		 * @param event
@@ -305,7 +340,24 @@ package view {
 		 */
 		protected function errorHandle(event:ErrorEvent):void {
 			if (titleForm) titleForm.sendMessage("Error. Please try again.", MessageType.ERROR);
-		}	
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function resize(event:Event):void {
+			if (topBar) topBar.resize();
+			if (titleForm) {
+				titleForm.x = (this.stage.stageWidth/2) - (titleForm.maxWidth/2);
+				titleForm.y = (this.stage.stageHeight/2) - (titleForm.height/2);
+			}
+			
+			if (flagsView) flagsView.resize();
+			
+			if (structureView) structureView.resize();
+		}
 		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
 		
@@ -314,10 +366,12 @@ package view {
 		 * 
 		 */
 		override public function kill():void {
-			TweenMax.to(topBar,.8,{y:-topBar.height, onComplete:killView});
-			if (titleForm) TweenLite.to(titleForm,.6,{y:"30", autoAlpha: 0});
-			if (flagsView) TweenLite.to(flagsView,.5,{x:-flagsView.width/4, autoAlpha: 0});
-			if (structureView) TweenLite.to(structureView,.7,{x:"60",autoAlpha: 0});
+			TweenLite.to(topBar,.6,{y:-topBar.height, onComplete:killView});
+			topBar.kill();
+			
+			if (titleForm) TweenLite.to(titleForm,.6,{autoAlpha: 0});
+			if (flagsView) TweenLite.to(flagsView,.5,{x:-flagsView.width, autoAlpha: 0});
+			if (structureView) TweenLite.to(structureView,.6,{tint:Colors.getColorByName(Colors.WHITE_ICE)});
 			if (messageWindow) TweenLite.to(messageWindow,.3,{autoAlpha: 0});
 		}
 		
@@ -352,6 +406,7 @@ package view {
 					break;
 			}
 		}
+
 		
 	}
 }

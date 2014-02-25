@@ -17,7 +17,7 @@ package view.workflow.list {
 	
 	import events.WrkfluxEvent;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import settings.Settings;
 	
@@ -88,12 +88,12 @@ package view.workflow.list {
 			
 			//styles
 			titleStyle = new TextFormat();
-			titleStyle.font = FontFreightSans.MEDIUM;
+			titleStyle.font = HelveticaNeue.LIGHT;
 			titleStyle.size = 13;
 			titleStyle.color = Colors.getColorByName(Colors.DARK_GREY);
 			
 			titleSelectedStyle = new TextFormat();
-			titleSelectedStyle.font = FontFreightSans.MEDIUM;
+			titleSelectedStyle.font = HelveticaNeue.LIGHT;
 			titleSelectedStyle.size = 12;
 			titleSelectedStyle.color = Colors.getColorByName(Colors.WHITE);
 			
@@ -117,9 +117,11 @@ package view.workflow.list {
 			titleTF.width = maxWidth - titleTF.x - (2*gap);
 			
 			//background
+			var bgHeight:Number = this.height + (2* gap);
+			
 			background = new Sprite();
 			background.graphics.beginFill(color);
-			background.graphics.drawRect(0,0,maxWidth,this.height + (2* gap));
+			background.graphics.drawRect(0,0,maxWidth,bgHeight);
 			background.graphics.endFill();
 			background.alpha = 0;
 			this.addChildAt(background,0);
@@ -203,6 +205,7 @@ package view.workflow.list {
 			
 			if (highlighted) {
 				
+				TweenLite.from(background,.4,{x:"-30"});
 				TweenLite.to(background,.4,{alpha:1});
 				
 				if (color != Colors.getColorByName(Colors.WHITE)) {

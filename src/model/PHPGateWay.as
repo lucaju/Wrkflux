@@ -11,7 +11,12 @@ package model {
 		
 		static public const PATH					:String = "http://labs.fluxo.art.br/wrkflux/php/";
 		
+		static protected const SignIn				:String = "getUser.php";
+		static protected const SignUp				:String = "insertUser.php";
+		static protected const ForgotPass			:String = "forgotPass.php";
+		
 		static protected const GetWorkflows			:String = "getWorkflows.php";
+		static protected const DeleteWorkflow		:String = "deleteWorkflow.php"
 		
 		static protected const InsertWorkflow		:String = "insertWorkflow.php";
 		static protected const GetWorkflowBuildInfo	:String = "getWorkflowBuildInfo.php";
@@ -38,12 +43,48 @@ package model {
 		//****************** STATIC PUBLIC METHODS - WORKFLUX ****************** ****************** ****************** 
 		
 		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		static public function signIn():String {
+			return PATH + SignIn;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		static public function signUp():String {
+			return PATH + SignUp;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		static public function forgotPass():String {
+			return PATH + ForgotPass;
+		}
+		
+		/**
 		 *
 		 * @return 
 		 * 
 		 */
 		static public function getWorkflows():String {
 			return PATH + GetWorkflows;
+		}
+		
+		/**
+		 *
+		 * @return 
+		 * 
+		 */
+		static public function deleteWorkflow():String {
+			return PATH + DeleteWorkflow;
 		}
 		
 		

@@ -52,7 +52,7 @@ package view.builder.structure.steps.info {
 			this._stepID = id;
 			
 			this.addEventListener(MouseEvent.CLICK, infoClick);
-			
+			this.maxWidth = 200;;
 		}
 		
 		
@@ -77,10 +77,13 @@ package view.builder.structure.steps.info {
 			//1. Title
 			titleField = new TextFormField();
 			titleField.maxChars = 20;
-			titleField.maxWidth = 140;
+			titleField.maxWidth = 190;
+			titleField.maxHeight = 35;
 			titleField.required = true;
+			titleField.textPlaceHolder = "title";
 			content.addChild(titleField);
-			titleField.init("title");
+			titleField.init("");
+			titleField.name = "title";
 			
 			titleField.setValue(stepData.title);
 			
@@ -89,57 +92,48 @@ package view.builder.structure.steps.info {
 			
 			fieldCollection.push(titleField);
 			
-			//2. Abbreviation
-			abbreviationField = new TextFormField();
-			abbreviationField.maxChars = 5;
-			abbreviationField.maxWidth = 45;
-			abbreviationField.required = true;
-			content.addChild(abbreviationField);
-			abbreviationField.init("abbr");
-			
-			abbreviationField.x = titleField.x + titleField.width + gap;
-			abbreviationField.y = gap;
-			
-			abbreviationField.setValue(stepData.abbreviation);
-			
-			fieldCollection.push(abbreviationField);
-			
-			//2.1 division
-			var line1:Sprite = new Sprite();
-			line1.graphics.lineStyle(1,Colors.getColorByName(Colors.LIGHT_GREY));
-			line1.graphics.lineTo(200,0);
-			line1.y = titleField.y + titleField.height + gap;
-			content.addChild(line1);
-			
-			//3. Shape
+			//2. Shape
 			var shapeData:Array = new Array({id:0, label:"Rectangle"},
 											{id:1, label:"Circle"},
 											{id:2, label:"Hexagon"},
 											{id:3, label:"Pentagon"});
 			
 			shapeField = new HorizontalSliderFormField();
-			shapeField.maxWidth = 190;
+			shapeField.maxWidth = 120;
+			shapeField.maxHeight = 35;
 			shapeField.required = true;
 			shapeField.data = shapeData;
 			content.addChild(shapeField);
-			shapeField.init("shape");
+			shapeField.init();
+			shapeField.name = "shape";
 			shapeField.x = gap;
 			shapeField.y = titleField.y + titleField.height + gap;
 			
 			fieldCollection.push(shapeField);
 			
-			//3.1 division
-			var line2:Sprite = new Sprite();
-			line2.graphics.lineStyle(1,Colors.getColorByName(Colors.LIGHT_GREY));
-			line2.graphics.lineTo(200,0);
-			line2.y = shapeField.y + shapeField.height + gap;
-			content.addChild(line2);
+			//3. Abbreviation
+			abbreviationField = new TextFormField();
+			abbreviationField.maxChars = 5;
+			abbreviationField.maxWidth = 65;
+			abbreviationField.maxHeight = 35;
+			abbreviationField.required = true;
+			abbreviationField.textPlaceHolder = "abbr";
+			content.addChild(abbreviationField);
+			abbreviationField.init("");
+			abbreviationField.name = "abbr";
+			
+			abbreviationField.x = shapeField.x + shapeField.maxWidth + gap;
+			abbreviationField.y = titleField.y + titleField.height + gap;
+			
+			abbreviationField.setValue(stepData.abbreviation);
+			
+			fieldCollection.push(abbreviationField);
 			
 			//4. Links
 			linksField = new Links(this,stepConnections);
 			linksField.maxWidth = 190;
 			content.addChild(linksField);
-			linksField.init("links");
+			linksField.init("Connections");
 			
 			linksField.x = gap;
 			linksField.y = shapeField.y + shapeField.height + gap;
@@ -148,8 +142,11 @@ package view.builder.structure.steps.info {
 			
 			//window
 			var windowHeight:Number = content.height + (2 * gap);
-			this.windowColor = Colors.getColorByName(Colors.WHITE);
-			this.drawWindow(200,windowHeight,WindowShape.BALLOON);
+			this.windowLine = false;
+			this.windowGlow = true;
+			this.windowLineColor = Colors.getColorByName(Colors.LIGHT_GREY);
+			this.windowColor = Colors.getColorByName(Colors.WHITE_ICE);
+			this.drawWindow(this.maxWidth,windowHeight,WindowShape.BALLOON);
 			
 			//positions
 			window.x = -window.width/2;

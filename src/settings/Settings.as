@@ -15,6 +15,7 @@ package settings {
 		//****************** Properties ****************** ****************** ******************
 		
 		//general
+		private static var _webPath						:String;			//url path
 		private static var _platformTarget				:String;			//["air","mobile","web"]
 		private static var _debug						:Boolean;			//Debug
 		
@@ -46,6 +47,7 @@ package settings {
 			//--------default values
 			
 			//-- General
+			_webPath = "http://labs.fluxo.art.br/wrkflux/";
 			_platformTarget = "air";
 			_debug = false;
 			
@@ -68,6 +70,14 @@ package settings {
 		
 		//****************** GETTERS & SETTERS - GENERAL ****************** ****************** ******************
 		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public static function get webPath():String {
+			return _webPath;
+		}
 		/**
 		 * 
 		 * @return 

@@ -131,8 +131,6 @@ package view.builder.structure.steps {
 				infoStep.addEventListener(WrkfluxEvent.SELECT, infoStepSelect);
 				infoStep.addEventListener(Event.CHANGE, textChange);
 				
-				
-				
 			
 			} else if (!show) {
 				
@@ -146,7 +144,7 @@ package view.builder.structure.steps {
 					infoStep = null;
 				}
 				
-				stage.removeEventListener(MouseEvent.CLICK, hideStepInfo);
+				if (stage) stage.removeEventListener(MouseEvent.CLICK, hideStepInfo);
 				
 			}
 		}

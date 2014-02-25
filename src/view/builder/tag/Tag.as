@@ -15,7 +15,7 @@ package view.builder.tag {
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import util.Colors;
 	
@@ -30,14 +30,17 @@ package view.builder.tag {
 		
 		protected var _tempUID			:String;
 		protected var _uid				:int;
-		protected var _label				:String;
+		protected var _label			:String;
 		
+		protected var tab				:Sprite;
 		protected var shape				:Sprite;
 		protected var textTF			:TextField;
 		protected var style				:TextFormat;
 		
 		
 		//****************** Properties ****************** ****************** ******************
+
+		
 		
 		/**
 		 * 
@@ -67,9 +70,9 @@ package view.builder.tag {
 			
 			//text
 			style = new TextFormat();
-			style.font = FontFreightSans.MEDIUM;
+			style.font = HelveticaNeue.LIGHT;
 			style.color = Colors.getColorByName(Colors.BLACK);
-			style.size = 13;
+			style.size = 12;
 			
 			textTF = new TextField();
 			textTF.embedFonts = true;
@@ -83,11 +86,12 @@ package view.builder.tag {
 			this.addChild(textTF);
 			
 			//tab
-			var tab:Sprite = new Sprite();
+			tab = new Sprite();
 			tab.mouseEnabled = false;
 			tab.graphics.beginFill(Colors.getColorByName(Colors.DARK_GREY));
-			//tab.graphics.drawRoundRectComplex(0,0,textTF.height/2,textTF.height,textTF.height/4,0,textTF.height/4,0);
-			tab.graphics.drawRoundRect(0,0,textTF.height/2,textTF.height,textTF.height/4);
+			tab.graphics.drawRoundRectComplex(0,0,textTF.height/2,textTF.height+1,textTF.height/4,0,textTF.height/4,0);
+			//tab.graphics.drawRoundRect(0,0,textTF.height/2,textTF.height,textTF.height/4);
+			//tab.graphics.drawRoundRect(0,0,textTF.height/2,textTF.height,textTF.height/4);
 			tab.graphics.endFill();
 			
 			this.addChildAt(tab,0);
@@ -95,13 +99,10 @@ package view.builder.tag {
 			//shape
 			shape = new Sprite();
 			shape.mouseEnabled = false;
-			shape.x = tab.width;
-			shape.graphics.beginFill(Colors.getColorByName(Colors.WHITE));
-			shape.graphics.drawRect(0,0,textTF.width+textTF.height/4,textTF.height);
-			shape.graphics.endFill();
-			
+			this.redrawShape();
 			this.addChildAt(shape,0);
 			
+			//postion text
 			textTF.x = tab.width;
 			
 			//glow
@@ -112,14 +113,15 @@ package view.builder.tag {
 			glow.blurY = 5;
 			glow.quality = BitmapFilterQuality.MEDIUM;
 			
-			this.filters=[glow];
+			//this.filters=[glow];
 			
 			//listeners
-			//this.mouseChildren = false;
+			
 			this.buttonMode = true;
 			
 			textTF.addEventListener(MouseEvent.MOUSE_DOWN, textTFMouseDown);
 			textTF.addEventListener(MouseEvent.MOUSE_UP, textTFMouseUp);
+			textTF.addEventListener(FocusEvent.FOCUS_IN, focusIn);
 			textTF.addEventListener(FocusEvent.FOCUS_OUT, focusOut);
 			textTF.addEventListener(Event.CHANGE, textChange);
 			
@@ -130,6 +132,20 @@ package view.builder.tag {
 			this.addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
 		}
 		
+		
+		//****************** PROTECTED METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function redrawShape():void {
+			shape.graphics.clear();
+			shape.graphics.lineStyle(1, Colors.getColorByName(Colors.LIGHT_GREY));
+			shape.graphics.beginFill(Colors.getColorByName(Colors.WHITE));
+			shape.graphics.drawRoundRectComplex(0,0,tab.width+textTF.width+textTF.height/4,textTF.height+1,textTF.height/4,0,textTF.height/4,0);
+			shape.graphics.endFill();
+		}
 		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************
 		
@@ -194,6 +210,15 @@ package view.builder.tag {
 		 * @param event
 		 * 
 		 */
+		protected function focusIn(event:FocusEvent):void {
+			if (textTF.text == "Add Tag") textTF.text = "";
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
 		protected function focusOut(event:FocusEvent):void {
 			
 			if (textTF.text == "") {
@@ -213,13 +238,8 @@ package view.builder.tag {
 		 * 
 		 */
 		protected function textChange(event:Event = null):void {
-			
 			if (event) event.stopImmediatePropagation();
-			
-			shape.graphics.clear();
-			shape.graphics.beginFill(Colors.getColorByName(Colors.WHITE));
-			shape.graphics.drawRect(0,0,textTF.width+textTF.height/4,textTF.height);
-			shape.graphics.endFill();
+			redrawShape();
 		}
 
 		

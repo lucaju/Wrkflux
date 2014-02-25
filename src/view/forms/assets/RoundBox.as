@@ -41,7 +41,7 @@ package view.forms.assets {
 			
 			shape = new Sprite();
 			shape.graphics.lineStyle(this.lineThickness,this.lineColor);
-			shape.graphics.beginFill(this.color);
+			shape.graphics.beginFill(this.color,this.alphaColor);
 			shape.graphics.drawRoundRect(0, 0, maxWidth, maxHeight, this.roundness);
 			shape.graphics.endFill();
 			this.addChild(shape);

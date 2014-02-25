@@ -33,11 +33,8 @@ package model {
 		
 		public const label					:String = "Wrkflux [Build Mode]";
 		
-		public const menuRight				:Array = [{label:"Save"},
-													  {label:"Use"},
-													  {label:"Close"}];
-		
-		public const menuLeft				:Array = [{label:"Tags", togglable:true, toggle:true}];
+		public const menuRight				:Array = [{label:"Close"}];
+		public const menuLeft				:Array = [];
 		
 		protected var workflowModel			:WorkflowModel;
 		protected var flagsPresets			:FlagsPreset;
@@ -66,14 +63,14 @@ package model {
 		 * @param author
 		 * 
 		 */
-		public function createWorkflow(title:String, author:String):void {
+		public function createWorkflow(title:String):void {
 			
 			//try to send in another formar... maybe not URL variables
 			
 			//get data
 			var wfData:Object = new Object();
 			wfData.title = title;
-			wfData.author = author;
+			wfData.userID = Session.userID;
 			wfData.flags = this.getFlagsPreset(3); //preset
 			wfData.steps = this.getStepsPreset(1);
 			
@@ -130,7 +127,7 @@ package model {
 			if (!workflowModel) {
 				return label;
 			} else {
-				var wfLabel:String = label + " - " + workflowModel.title;	
+				var wfLabel:String = workflowModel.title + " [Build Mode]";	
 				return wfLabel;
 			}
 		}
@@ -447,12 +444,12 @@ package model {
 		protected function completeHandler(event:LoaderEvent):void {
 			
 			var dataLoader:DataLoader = DataLoader(event.target);
-			trace (dataLoader.content);
+			//trace (dataLoader.content);
 			var workflowData:Object = JSON.parse(dataLoader.content);
 		
 			workflowModel = new WorkflowModel(workflowData.id,
 															workflowData.title,
-															workflowData.author,
+															workflowData.authorID,
 															workflowData.created_date,
 															workflowData.modified_date,
 															workflowData.flags,
@@ -464,7 +461,11 @@ package model {
 			
 			var data:Object = {id:workflowData.id};
 			data.messageType = MessageType.SUCCESS;
+			
+			Session.addToWorkflowCreated(workflowData.id);
+			
 			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.COMPLETE,data,dataLoader.name));
+			
 			
 		}
 		
@@ -477,7 +478,7 @@ package model {
 			
 			//get feedback
 			var dataLoader:DataLoader = DataLoader(event.target);
-			trace (dataLoader.content);
+			//trace (dataLoader.content);
 			var workflowData:Object = JSON.parse(dataLoader.content);
 			
 			//update uid in recently added flags and steps

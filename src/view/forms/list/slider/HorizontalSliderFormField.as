@@ -38,9 +38,7 @@ package view.forms.list.slider {
 		 * 
 		 */
 		public function HorizontalSliderFormField() {
-			
 			super();
-			
 		}
 		
 		//****************** Initialize ****************** ****************** ******************
@@ -54,16 +52,16 @@ package view.forms.list.slider {
 			//label
 			this.name = label;
 			super.init(label);
-			labelTF.x = (this.width/2) - (labelTF.width/2);
+			if (label) labelTF.x = (this.width/2) - (labelTF.width/2);
 			
 			//Containers
 			itemContainer = new Sprite();
-			itemContainer.y = 12;
+			itemContainer.y = label ? 14 : 8;
 			this.addChild(itemContainer);
 
 			maskContainer = new Sprite();
 			maskContainer.graphics.beginFill(0xFFFFFF,0);
-			maskContainer.graphics.drawRect(0,0,190,23);
+			maskContainer.graphics.drawRect(0,0,this.maxWidth,23);
 			maskContainer.graphics.endFill();
 			
 			maskContainer.y = itemContainer.y;
@@ -79,7 +77,9 @@ package view.forms.list.slider {
 				var item:Item;
 				var posX:Number = 0;
 				for each (var itemInfo:Object in data) {
-					item = new Item(itemInfo.id, itemInfo.label);
+					item = new Item(itemInfo.id);
+					item.maxWidth = this.maxWidth;
+					item.init(itemInfo.label);
 					item.x = posX;
 					
 					itemContainer.addChild(item);
@@ -114,6 +114,14 @@ package view.forms.list.slider {
 			this.addChild(rewButton);
 			
 			activateControl(rewButton,false);
+			
+			if (label) {
+				rewButton.y = (this.height/2) + (rewButton.height/2);
+				ffButton.y = (this.height/2) + (ffButton.height/2);
+			} else {
+				rewButton.y = (this.height/2);
+				ffButton.y = (this.height/2);
+			}
 			
 			//listeners
 			ffButton.addEventListener(MouseEvent.CLICK, ffClick);
@@ -284,6 +292,16 @@ package view.forms.list.slider {
 		 */
 		public function setSelectedItem(id:int):void {
 			listGoTo(id);
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		override public function kill():void {
+			super.kill();
+			ffButton.removeEventListener(MouseEvent.CLICK, ffClick);
+			rewButton.removeEventListener(MouseEvent.CLICK, rewClick);
 		}
 		
 		

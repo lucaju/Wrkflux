@@ -2,7 +2,8 @@ package view.workflow.structure {
 	
 	//imports
 	import com.greensock.TweenLite;
-	import com.greensock.easing.Expo;
+	
+	import flash.display.BlendMode;
 	
 	import controller.WrkFlowController;
 	
@@ -12,6 +13,8 @@ package view.workflow.structure {
 	import mvc.IController;
 	
 	import settings.Settings;
+	
+	import util.Colors;
 	
 	import view.workflow.structure.network.StructureNetwork;
 	import view.workflow.structure.steps.Step;
@@ -30,7 +33,7 @@ package view.workflow.structure {
 		protected var structureList		:StructureList;
 		protected var structureNetwork	:StructureNetwork;
 		
-		protected var tags				:view.workflow.tag.Tags;
+		protected var tags				:Tags;
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -68,6 +71,7 @@ package view.workflow.structure {
 			structureNetwork.x = 5;
 			structureNetwork.y = 5;
 			structureNetwork.init(strucutureNetworkData);
+			structureNetwork.blendMode = BlendMode.MULTIPLY;
 			this.addChildAt(structureNetwork,0);
 			
 			structureList.network = structureNetwork;
@@ -77,7 +81,7 @@ package view.workflow.structure {
 			
 			//listeners
 			structureList.addEventListener(WrkfluxEvent.SELECT, updateStructure);
-			
+
 		}		
 		
 		
@@ -124,7 +128,7 @@ package view.workflow.structure {
 				
 				var tagData:Array = WrkFlowController(this.getController()).getTags();
 				
-				tags = new view.workflow.tag.Tags(this);
+				tags = new Tags(this);
 				this.addChild(tags);
 				tags.init(tagData);
 			
@@ -134,6 +138,18 @@ package view.workflow.structure {
 				tags = null;
 	
 			}
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		override public function kill():void {
+			if (StructureList) {
+				structureList.removeEventListener(WrkfluxEvent.SELECT, updateStructure);
+				TweenLite.to(StructureList,.5,{tint:Colors.getColorByName(Colors.WHITE_ICE)});
+			}
+			if (StructureNetwork) TweenLite.to(StructureNetwork,.3,{autoAlpha: 0});
 		}
 		
 		//****************** GETTERS // SETTERS ****************** ****************** ******************

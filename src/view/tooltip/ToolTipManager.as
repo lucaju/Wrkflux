@@ -7,8 +7,6 @@ package view.tooltip {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
-	import view.StructureView;
-	
 	import util.Colors;
 	import util.Directions;
 	
@@ -139,10 +137,7 @@ package view.tooltip {
 		 * 
 		 */
 		static public function hasToolTip(value:int):Boolean {
-			if (getToolTipBySourceId(value)) {
-				return true;		
-			}
-			
+			if (getToolTipBySourceId(value)) return true;
 			return false;
 		}
 		

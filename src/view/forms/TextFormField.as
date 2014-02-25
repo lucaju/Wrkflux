@@ -1,14 +1,13 @@
 package view.forms {
 	
 	//imports
+	import flash.events.FocusEvent;
 	import flash.text.AntiAliasType;
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	
-	import font.FontFreightSans;
-	
-	import util.Colors;
+	import font.HelveticaNeue;
 	
 	/**
 	 * 
@@ -25,7 +24,6 @@ package view.forms {
 		
 		protected var _textArea			:Boolean;
 		protected var _maxChars			:int;
-		
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -57,16 +55,17 @@ package view.forms {
 			
 			//1. Style
 			var inputStyle:TextFormat = new TextFormat();
-			inputStyle.font = FontFreightSans.BOOK;
-			inputStyle.color = Colors.getColorByName(Colors.BLACK);
-			inputStyle.size = 16;
+			inputStyle.font = HelveticaNeue.THIN;
+			inputStyle.color = this.textColor;
+			inputStyle.size = this.textSize;
 			
 			//2. input
 			inputTF = new TextField();
 			inputTF.name = this.name + "_input";
 			inputTF.type = TextFieldType.INPUT;
-			inputTF.width = this.maxWidth;
-			inputTF.height = this.maxHeight - 12;
+			if (this.textPlaceHolder == "") inputTF.displayAsPassword = this.displayAsPassword;
+			inputTF.width = this.maxWidth - 2*gap;
+			inputTF.height = this.maxHeight- 2*gap;
 			inputTF.embedFonts = true;
 			inputTF.antiAliasType = AntiAliasType.ADVANCED;
 			if (this.labelTF) inputTF.y = -4;
@@ -79,10 +78,39 @@ package view.forms {
 			
 			if (this.maxChars > 0) inputTF.maxChars = this.maxChars;
 			inputTF.defaultTextFormat = inputStyle;
-			inputTF.y = 12;
+			
+			if (this.textPlaceHolder != "") inputTF.text = this.textPlaceHolder;
+			
+			inputTF.x = gap;
+			inputTF.y = gap;
 			
 			this.addChild(inputTF);
 			
+		}
+		
+		//****************** PROTECTED EVENTS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		override protected function focusIn(event:FocusEvent):void {
+			if (this.textPlaceHolder != "" && inputTF.text == this.textPlaceHolder) inputTF.text = "";
+			if (this.displayAsPassword) inputTF.displayAsPassword = this.displayAsPassword;
+		}
+		
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		override protected function focusOut(event:FocusEvent):void {
+			if (inputTF.text == "" && this.textPlaceHolder != "") {
+				inputTF.displayAsPassword = false;
+				inputTF.text = this.textPlaceHolder;
+			}
 		}
 		
 		//****************** PUBLIC METHODS ****************** ****************** ******************

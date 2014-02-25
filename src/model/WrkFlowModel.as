@@ -32,13 +32,12 @@ package model {
 		
 		public const label					:String = "Wrkflow";
 		
-		public const menuRight				:Array = [{label:"Close"},
-													  {label:"Edit"}];
+		public const menuRight				:Array = [{label:"Close"}];
 		
 		public const menuLeft				:Array = [{label:"List", togglable:true, toggle:Settings.tagsVisibility},
 													  {label:"Tags", togglable:true, toggle:Settings.tagsVisibility}];
 		
-		protected var workflowModel			:model.wrkflow.WorkflowModel;
+		protected var workflowModel			:WorkflowModel;
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -88,7 +87,7 @@ package model {
 			if (!workflowModel) {
 				return label;
 			} else {
-				var wfLabel:String = label + " - " + workflowModel.title;	
+				var wfLabel:String = workflowModel.title;	
 				return wfLabel;
 			}
 		}
@@ -411,12 +410,10 @@ package model {
 		protected function removeDocHandler(event:LoaderEvent):void {
 			
 			var dataLoader:DataLoader = DataLoader(event.target);
-			trace (dataLoader.content);
 			var itemData:Object = JSON.parse(dataLoader.content);
 			
 			if (workflowModel) workflowModel.removeDoc(itemData.itemUID);
-				
-				
+			
 			var data:Object = {itemUID:itemData.itemUID};
 			data.messageType = MessageType.SUCCESS;
 			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.REMOVE,data,dataLoader.name));
@@ -445,6 +442,7 @@ package model {
 			
 			workflowModel = new WorkflowModel(workflowData.id,
 															workflowData.title,
+															workflowData.authorID,
 															workflowData.flags,
 															workflowData.steps,
 															workflowData.connections,
@@ -453,7 +451,7 @@ package model {
 			
 			workflowModel.source = this;
 			
-			var data:Object = {id:workflowData.id};
+			var data:Object = {id:workflowData.id, authorID:workflowData.authorID};
 			data.action = "workflowLoaded";
 			data.messageType = MessageType.SUCCESS;
 			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.COMPLETE,data,dataLoader.name));

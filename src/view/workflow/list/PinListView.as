@@ -55,22 +55,21 @@ package view.workflow.list {
 		
 		/**
 		 * 
+		 * @param openedItems
 		 * 
 		 */
 		public function init(openedItems:Array = null):void {
 			
-			
-			
 			//Background
 			background = new Sprite();
-			background.graphics.beginFill(Colors.getColorByName(Colors.LIGHT_GREY));
-			background.graphics.drawRect(0,0,_maxWidth,maxHeight);
+			background.graphics.beginFill(Colors.getColorByName(Colors.WHITE),.5);
+			background.graphics.drawRect(0,0,maxWidth,maxHeight);
 			this.addChild(background);
 			
 			//Header
 			var header:Header = new Header("Items");
-			header.x = 5;
-			header.y = 5;
+			//header.x = 5;
+			//header.y = 5;
 			this.addChild(header);
 			
 			//list
@@ -84,9 +83,9 @@ package view.workflow.list {
 			
 			//separator
 			separatorV = new Sprite();
-			separatorV.graphics.lineStyle(2,Colors.getColorByName(Colors.DARK_GREY));
+			separatorV.graphics.lineStyle(2,Colors.getColorByName(Colors.LIGHT_GREY));
 			separatorV.graphics.lineTo(0,maxHeight);
-			separatorV.x = _maxWidth;
+			separatorV.x = maxWidth;
 			this.addChild(separatorV);
 			
 			this.addEventListener(MouseEvent.CLICK, click);
@@ -153,6 +152,25 @@ package view.workflow.list {
 			pinList.clearSelection();			
 		}
 		
+		/**
+		 * 
+		 * 
+		 */
+		public function resize():void {
+			background.height = maxHeight;
+			separatorV.height = maxHeight;
+			pinList.maxHeight = this.maxHeight - pinList.y;
+			pinList.resize();
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		override public function kill():void {
+			this.removeEventListener(MouseEvent.CLICK, click);
+		}
+		
 		//****************** GETTERS // SETTERS ****************** ****************** ******************
 
 		/**
@@ -190,7 +208,6 @@ package view.workflow.list {
 		public function set maxWidth(value:Number):void {
 			_maxWidth = value;
 		}
-
 
 	}
 }

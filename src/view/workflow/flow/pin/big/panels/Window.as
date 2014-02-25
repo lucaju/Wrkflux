@@ -1,9 +1,6 @@
 package view.workflow.flow.pin.big.panels {
 	
-	//imports
-	import com.greensock.TweenMax;
-	import com.greensock.easing.Back;
-	
+	//imports	
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.text.AntiAliasType;
@@ -14,12 +11,10 @@ package view.workflow.flow.pin.big.panels {
 	
 	import controller.WrkFlowController;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import mvc.AbstractView;
 	import mvc.IController;
-	
-	import settings.Settings;
 	
 	import util.Colors;
 	
@@ -100,8 +95,9 @@ package view.workflow.flow.pin.big.panels {
 			
 			//title
 			var titleStyle:TextFormat = new TextFormat();
-			titleStyle.font = FontFreightSans.MEDIUM;
+			titleStyle.font = HelveticaNeue.CONDENSED_BOLD;
 			titleStyle.size = 16;
+			titleStyle.letterSpacing = .2;
 			titleStyle.leading = 1.5;
 			titleStyle.color = Colors.getColorByName(Colors.DARK_GREY);
 			titleStyle.align = TextFormatAlign.CENTER;
@@ -177,10 +173,13 @@ package view.workflow.flow.pin.big.panels {
 			panel.init(pinUID);
 		}
 		
+		/**
+		 * 
+		 * 
+		 */
 		public function killPanels():void {
 			for each (var panel:AbstractPanel in panelCollection) {
 				panel.removeEvents();
-				
 			}
 		}
 		

@@ -15,7 +15,7 @@ package view.builder.flags {
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import util.Colors;
 	
@@ -103,7 +103,7 @@ package view.builder.flags {
 			
 			//label
 			var style:TextFormat = new TextFormat();
-			style.font = FontFreightSans.MEDIUM;
+			style.font = HelveticaNeue.LIGHT;
 			style.size = 13;
 			
 			_labelTF = new TextField();

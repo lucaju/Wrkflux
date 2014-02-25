@@ -19,6 +19,8 @@ package view.forms.assets {
 		protected var _roundness			:Number;
 		
 		protected var _color				:uint;
+		protected var _alphaColor			:Number;
+		protected var _line					:Boolean;
 		protected var _lineThickness		:uint;
 		protected var _lineColor			:uint;
 		protected var _isScale9Grid			:Boolean;
@@ -32,10 +34,12 @@ package view.forms.assets {
 		 * 
 		 */
 		public function AbstractWindow() {
-			roundness = 10;
-			lineThickness = 0;
-			lineColor = Colors.getColorByName(Colors.DARK_GREY);
-			color = Colors.getColorByName(Colors.WHITE);
+			_roundness = 10;
+			_line = true;
+			_lineThickness = 0;
+			_lineColor = Colors.getColorByName(Colors.DARK_GREY);
+			_color = Colors.getColorByName(Colors.WHITE);
+			_alphaColor = 1;
 		}
 		
 		//****************** PUBLIC METHODS ****************** ******************  ****************** 
@@ -139,6 +143,24 @@ package view.forms.assets {
 		public function set color(value:uint):void {
 			_color = value;
 		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get alphaColor():Number {
+			return _alphaColor;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set alphaColor(value:Number):void {
+			_alphaColor = value;
+		}
 
 		/**
 		 * 
@@ -210,6 +232,24 @@ package view.forms.assets {
 		 */
 		public function set isScale9Grid(value:Boolean):void {
 			_isScale9Grid = value;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get line():Boolean {
+			return _line;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set line(value:Boolean):void {
+			_line = value;
 		}
 
 		

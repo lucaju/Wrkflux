@@ -287,5 +287,13 @@ package view.builder.tag {
 		}
 		
 		
+		/**
+		 * 
+		 * 
+		 */
+		public function resize():void {
+			sourceLocation.x = this.stage.stageWidth - 105;
+			topTag.x = sourceLocation.x - topTag.width;
+		}
 	}
 }

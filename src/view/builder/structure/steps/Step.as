@@ -14,7 +14,7 @@ package view.builder.structure.steps {
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import util.Colors;
 	
@@ -75,8 +75,8 @@ package view.builder.structure.steps {
 			
 			//label
 			var style:TextFormat = new TextFormat();
-			style.font = FontFreightSans.MEDIUM;
-			style.size = 16;
+			style.font = HelveticaNeue.CONDENSED_BOLD;
+			style.size = 14;
 			style.color = Colors.getColorByName(Colors.WHITE);
 			
 			labelTF = new TextField();

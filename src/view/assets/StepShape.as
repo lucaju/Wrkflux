@@ -83,7 +83,7 @@ package view.assets {
 			}
 			
 			baseShape.graphics.lineStyle(2, Colors.getColorByName(Colors.DARK_GREY));
-			baseShape.graphics.beginFill(Colors.getColorByName(Colors.LIGHT_GREY));
+			baseShape.graphics.beginFill(Colors.getColorByName(Colors.WHITE));
 			baseShape.graphics.drawRect(0,0,80,100);
 			baseShape.graphics.endFill();
 			
@@ -129,7 +129,7 @@ package view.assets {
 			}
 			
 			baseShape.graphics.lineStyle(2, Colors.getColorByName(Colors.DARK_GREY));
-			baseShape.graphics.beginFill(Colors.getColorByName(Colors.LIGHT_GREY));
+			baseShape.graphics.beginFill(Colors.getColorByName(Colors.WHITE));
 			baseShape.graphics.moveTo(30,0);
 			baseShape.graphics.lineTo(85,0);
 			baseShape.graphics.lineTo(115,50);
@@ -167,7 +167,7 @@ package view.assets {
 			}
 			
 			mask.graphics.lineStyle(2, Colors.getColorByName(Colors.DARK_GREY));
-			mask.graphics.beginFill(Colors.getColorByName(Colors.LIGHT_GREY));
+			mask.graphics.beginFill(Colors.getColorByName(Colors.WHITE));
 			mask.graphics.moveTo(30,0);
 			mask.graphics.lineTo(85,0);
 			mask.graphics.lineTo(115,50);
@@ -198,7 +198,7 @@ package view.assets {
 			}
 			
 			baseShape.graphics.lineStyle(2, Colors.getColorByName(Colors.DARK_GREY));
-			baseShape.graphics.beginFill(Colors.getColorByName(Colors.LIGHT_GREY));
+			baseShape.graphics.beginFill(Colors.getColorByName(Colors.WHITE));
 			baseShape.graphics.moveTo(0,40);
 			baseShape.graphics.lineTo(56,0);
 			baseShape.graphics.lineTo(106,40);
@@ -265,7 +265,7 @@ package view.assets {
 			}
 			
 			baseShape.graphics.lineStyle(2, Colors.getColorByName(Colors.DARK_GREY));
-			baseShape.graphics.beginFill(Colors.getColorByName(Colors.LIGHT_GREY));
+			baseShape.graphics.beginFill(Colors.getColorByName(Colors.WHITE));
 			baseShape.graphics.drawCircle(0,0,50);
 			baseShape.graphics.endFill();
 			

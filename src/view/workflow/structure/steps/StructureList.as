@@ -5,11 +5,8 @@ package view.workflow.structure.steps {
 	
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
-	import flash.utils.Timer;
 	
 	import controller.WrkBuilderController;
-	
-	import events.WrkfluxEvent;
 	
 	import model.builder.StepModel;
 	
@@ -70,9 +67,8 @@ package view.workflow.structure.steps {
 				//animation
 				TweenLite.from(step,.6,{alpha:0, delay:i * 0.05});
 				i++;
+				
 			}
-			
-			//listeners
 			
 		}
 		

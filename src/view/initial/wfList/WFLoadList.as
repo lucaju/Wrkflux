@@ -3,7 +3,6 @@ package view.initial.wfList {
 	//imports
 	import com.greensock.TweenMax;
 	
-	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -15,10 +14,12 @@ package view.initial.wfList {
 	import mvc.AbstractView;
 	import mvc.IController;
 	
-	import view.forms.MessageField;
 	import util.MessageType;
+	
+	import view.forms.MessageField;
 	import view.util.progressBar.ProgressBar;
 	import view.util.scroll.Scroll;
+	import util.Colors;
 	
 	/**
 	 * 
@@ -29,19 +30,19 @@ package view.initial.wfList {
 		
 		//****************** Properties ****************** ****************** ******************
 		
-		protected var lineTop				:Shape;
-		protected var lineBottom			:Shape;
-		
 		protected var listWorkflows			:WFList;
 		protected var listMask				:Sprite;
 		
-		protected var maxWidth				:Number = 350;
-		protected var maxHeight				:Number = 150;
+		protected var bg					:Sprite;
+		
+		protected var _maxWidth				:Number;
+		protected var _maxHeight			:Number;
 		
 		protected var scroll				:Scroll;
 		
 		protected var progressBar			:ProgressBar;
 		protected var errorMessage			:MessageField;
+		
 		
 		//****************** Construtor ****************** ****************** ******************
 		
@@ -53,18 +54,8 @@ package view.initial.wfList {
 		public function WFLoadList(c:IController) {
 			super(c);
 			
-			//Boundaries
-			lineTop = new Shape();
-			lineTop.graphics.lineStyle(1,0x6D6E70);
-			lineTop.graphics.lineTo(maxWidth,0);
-			this.addChild(lineTop);
-			
-			lineBottom = new Shape();
-			lineBottom.graphics.lineStyle(1,0x6D6E70);
-			lineBottom.graphics.lineTo(maxWidth,0);
-			lineBottom.y = maxHeight;
-			this.addChild(lineBottom);
-
+			this.maxWidth = 800;
+			this.maxHeight = 80;
 		}
 		
 		
@@ -76,21 +67,18 @@ package view.initial.wfList {
 		 */
 		public function init():void {
 			
+			//bg
+			bg = new Sprite();
+			bg.graphics.beginFill(Colors.getColorByName(Colors.LIGHT_GREY),.5);
+			bg.graphics.drawRect(0,0,this.maxWidth,this.maxHeight);
+			bg.graphics.endFill();
+			bg.alpha = .5;
+			this.addChild(bg);
 			
 			//load existed workflows
-			
 			WrkfluxController(this.getController()).getWorkflows();
 			
-			if (!progressBar) {
-				progressBar = new ProgressBar();
-				progressBar.x = this.width/2;
-				progressBar.y = this.height/2;
-				this.addChild(progressBar);
-			}
-			
-			TweenMax.from(progressBar,1,{alpha:0});
-			TweenMax.from(lineTop,1,{x:lineTop.width/2, width:0});
-			TweenMax.from(lineBottom,1,{x:lineBottom.width/2, width:0, delay:.2});
+			if (!progressBar) this.addProgressBar();
 			
 			//listener
 			WrkfluxController(this.getController()).getModel("wrkflux").addEventListener(WrkfluxEvent.COMPLETE, loadCompleted);
@@ -101,36 +89,138 @@ package view.initial.wfList {
 		
 		/**
 		 * 
+		 * @param data
+		 * 
+		 */
+		protected function loadItems(data:Array):void {
+			//remove progress bar
+			if (progressBar) removeProgressBar();
+			
+			//define max height
+			TweenMax.to(bg,1,{height:this.maxHeight});
+			
+			//create list
+			if (!listWorkflows) {
+				
+				//1.add List
+				this.addListWorkflows(data);
+				
+				//2. add mask 
+				this.addListMask();
+				
+				//3.test scroll
+				this.testForScroll();
+				
+				//initiate
+				listWorkflows.show();
+				
+			}
+			
+			//dispatch
+			this.dispatchEvent(new Event(Event.COMPLETE));
+			
+			//listener
+			listWorkflows.addEventListener(Event.CHANGE, onListChange);
+		}
+		
+		/**
+		 * 
+		 * @param data
+		 * 
+		 */
+		protected function addListWorkflows(data:Array):void {
+			listWorkflows = new WFList(this);
+			this.addChild(listWorkflows);
+			listWorkflows.init(data);
+			
+			listWorkflows.addEventListener(Event.SELECT, workflowActivate);
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function addListMask():void {
+			listMask = new Sprite();
+			listMask.graphics.beginFill(0x999999,.2);
+			listMask.graphics.drawRect(0, 0, this.stage.stageWidth, this.maxHeight);
+			listMask.graphics.endFill();
+			listMask.y = 1;
+			
+			this.addChild(listMask);
+			
+			listWorkflows.mask = listMask;
+		}
+		
+		/**
+		 * 
 		 * 
 		 */
 		protected function testForScroll():void {
 			
+			//if list exists
 			if (listWorkflows) {
 				
+				//if scroll doesn't exists
 				if (!scroll) {
-					
-					if (listWorkflows.height > maxHeight) {
-						
-						listWorkflows.mask = listMask;
-						
-						//add scroll system
-						scroll = new Scroll();
-						scroll.x = listWorkflows.width - 6;
-						scroll.target = listWorkflows;
-						scroll.maskContainer = listMask;
-						this.addChild(scroll);
-						scroll.init();
-					}
-					
+				
+					// if needs scroll, create one
+					if (listWorkflows.height > maxHeight) this.addScroll();
+				
 				} else {
+				
+					//if scroll exists
 					
-					scroll.update();
+					//if doesn't need scroll anymore
+					if (listWorkflows.height <= maxHeight)  {
+						scroll.kill();
+						scroll = null;
+						
+					} else {
+						//update - mask width and height
+						scroll.update();
+					}
 					
 				}
 			}
 			
 		}
 		
+		/**
+		 * 
+		 * 
+		 */
+		protected function addScroll():void {
+			scroll = new Scroll();
+			scroll.rollVisible = true;
+			scroll.target = listWorkflows;
+			scroll.x = stage.stageWidth - 6;
+			scroll.maskContainer = listMask;
+			this.addChild(scroll);
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function addProgressBar():void {
+			progressBar = new ProgressBar();
+			progressBar.x = this.maxWidth/2;
+			progressBar.y = this.maxHeight/2;
+			this.addChild(progressBar);
+			
+			TweenMax.from(progressBar,1,{alpha:0});
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function removeProgressBar():void {
+			this.removeChild(progressBar);
+			progressBar = null;
+		}
+	
 		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************
 		
@@ -140,33 +230,12 @@ package view.initial.wfList {
 		 * 
 		 */
 		protected function loadCompleted(event:WrkfluxEvent):void {
-			
-			//remove progress bar
-			if (progressBar) {
-				this.removeChild(progressBar);
-				progressBar = null;
-			}
-			
-			//create list
-			if (!listWorkflows) {
-				listWorkflows = new WFList(event.data as Array);
-				this.addChild(listWorkflows);
-				
-				//2. edition Mask
-				listMask = new Sprite();
-				listMask.graphics.beginFill(0x999999,.2);
-				listMask.graphics.drawRect(0, 0, this.width, maxHeight);
-				listMask.graphics.endFill();
-				
-				TweenMax.from(listMask,1,{x:listMask.width/2, width:0});
-				
-				this.addChild(listMask);
-				
-				listWorkflows.mask = listMask;
-				
-				testForScroll();
-				
-				listWorkflows.addEventListener(Event.SELECT, workflowActivate);
+		
+			switch (event.data.action) {		
+				case "load":
+					event.stopImmediatePropagation();
+					loadItems(event.data.data);
+					break;
 			}
 			
 		}	
@@ -179,10 +248,7 @@ package view.initial.wfList {
 		protected function errorHandle(event:ErrorEvent):void {
 			
 			//remove progress bar
-			if (progressBar) {
-				this.removeChild(progressBar);
-				progressBar = null;
-			}
+			if (progressBar) this.removeProgressBar();
 			
 			if (!errorMessage) {
 				
@@ -204,9 +270,137 @@ package view.initial.wfList {
 		 * 
 		 */
 		protected function workflowActivate(event:Event):void {
-			event.stopImmediatePropagation();
-			WrkfluxController(this.getController()).loadWorkflow(listWorkflows.selectedItem, listWorkflows.selectedItemAction);
+			
+			switch (listWorkflows.selectedItemAction) {
+				
+				case "view":
+					WrkfluxController(this.getController()).loadWorkflow(listWorkflows.selectedItem, "use");
+					break;
+				
+				case "use":
+					WrkfluxController(this.getController()).loadWorkflow(listWorkflows.selectedItem, listWorkflows.selectedItemAction);
+					break;
+				
+				case "edit":
+					WrkfluxController(this.getController()).loadWorkflow(listWorkflows.selectedItem, listWorkflows.selectedItemAction);
+					break;
+				
+				case "delete":
+					listWorkflows.removeItem(listWorkflows.selectedItem);
+					WrkfluxController(this.getController()).deleteWorkflow(listWorkflows.selectedItem);
+					break;
+				
+				case "new":
+					WrkfluxController(this.getController()).newWorkflow();
+					break;
+			}
+			
+			
 		}
 		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function onListChange(event:Event):void {
+			testForScroll();
+		}
+		
+		//****************** PUBLIC METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function filter(userID:int = 0):void {
+			listWorkflows.filter(userID);
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function resize():void {
+			this.maxWidth = stage.stageWidth;
+			
+			bg.width = this.maxWidth;
+			bg.height = this.maxHeight;
+			
+			if (listMask) {
+				listMask.width = this.maxWidth;
+				listMask.height = this.maxHeight;
+			}
+			
+			if (listWorkflows) listWorkflows.resize();
+			
+			testForScroll();
+			
+			if (scroll) {
+				scroll.x = listMask.width - scroll.width - 2;
+				if (listWorkflows.y != 0) listWorkflows.y = -listWorkflows.height/2 + this.listMask.height/2 + 10;
+			}
+			
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		override public function kill():void {
+			WrkfluxController(this.getController()).getModel("wrkflux").removeEventListener(WrkfluxEvent.COMPLETE, loadCompleted);
+			WrkfluxController(this.getController()).getModel("wrkflux").removeEventListener(ErrorEvent.ERROR, errorHandle);
+			
+			if (listWorkflows) {
+				listWorkflows.removeEventListener(Event.CHANGE, onListChange);
+				listWorkflows.removeEventListener(Event.SELECT, workflowActivate);
+				listWorkflows.kill();
+			}
+			
+			if (errorMessage) errorMessage.kill();
+			
+			if (scroll) scroll.kill();
+			scroll = null;
+		}
+		
+		
+		//****************** GETTER AND SETTER ****************** ****************** ******************
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get maxWidth():Number {
+			return _maxWidth;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set maxWidth(value:Number):void {
+			_maxWidth = value;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get maxHeight():Number {
+			return _maxHeight;
+		}
+
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set maxHeight(value:Number):void {
+			_maxHeight = value;
+		}
+
 	}
 }

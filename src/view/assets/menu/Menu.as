@@ -1,13 +1,12 @@
 package view.assets.menu {
 	
 	//imports
-	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	
 	import events.WrkfluxEvent;
 	
 	import view.assets.buttons.AbstractButton;
-	import view.assets.buttons.ButtonFactory;
+	import view.assets.buttons.Button;
 	
 	
 	/**
@@ -15,19 +14,11 @@ package view.assets.menu {
 	 * @author lucaju
 	 * 
 	 */
-	public class Menu extends Sprite {
+	public class Menu extends AbstractMenu {
 		
 		//****************** Properties ****************** ****************** ******************
 		
-		protected const gap			:Number = 5;
-		
-		protected var items			:Array;
-		protected var _clickedItem	:String;
-		
-		protected var _orientation	:String = MenuOrientation.HORIZONTAL;
-		protected var _direction	:String = MenuDirection.LEFT;
-		protected var _type			:String = MenuType.TOPBAR;
-		
+
 		//****************** Constructor ****************** ****************** ******************
 		
 		/**
@@ -35,8 +26,9 @@ package view.assets.menu {
 		 * 
 		 */
 		public function Menu() {
-			items = new Array();
+			super();
 			
+			items = new Array();
 			this.addEventListener(MouseEvent.CLICK, menuClick);
 		}
 		
@@ -48,11 +40,30 @@ package view.assets.menu {
 		 * @param color
 		 * 
 		 */
-		public function add(label:String, color:*):AbstractButton {
+		override public function add(label:String):AbstractButton {
 			
+			var bt:Button = new Button();
 			
-			//var bt:Button = new Button();
-			var bt:AbstractButton = ButtonFactory.getButton(color, type);
+			bt.shapeForm = this.abstractBt.shapeForm;
+			
+			bt.color = this.abstractBt.color;
+			bt.colorAlpha = this.abstractBt.colorAlpha;
+			
+			bt.line = this.abstractBt.line;
+			bt.lineThickness = this.abstractBt.lineThickness;
+			bt.lineColor = this.abstractBt.lineColor;
+			bt.lineColorAlpha = this.abstractBt.lineColorAlpha;
+			
+			bt.textSize = this.abstractBt.textSize;
+			bt.textColor = this.abstractBt.textColor;
+			
+			bt.maxWidth = this.abstractBt.maxWidth;
+			bt.maxHeight = this.abstractBt.maxHeight;
+			
+			bt.togglable = this.abstractBt.togglable;
+			bt.toggle = this.abstractBt.toggle;
+			bt.toggleColor = this.abstractBt.toggleColor;
+			bt.toggleColorAlpha = this.abstractBt.toggleColorAlpha;
 			
 			bt.init(label);
 			
@@ -64,7 +75,7 @@ package view.assets.menu {
 				
 			} else if (orientation == MenuOrientation.HORIZONTAL && direction == MenuDirection.RIGHT) {
 				
-				if (items.length > 0)  bt.x = this.width + gap;
+				bt.x = - this.width - bt.width - gap;
 				
 			} else if (orientation == MenuOrientation.VERTICAL && direction == MenuDirection.TOP) {
 				
@@ -75,13 +86,66 @@ package view.assets.menu {
 				bt.y = -this.height -bt.height - gap;
 			}
 			
-			
-			
 			this.addChild(bt);
 			items.push(bt);
 			
 			return bt;
 		}
+		
+		/**
+		 * 
+		 * @param label
+		 * @return 
+		 * 
+		 */
+		override public function remove(label:String):AbstractButton {
+			
+			for each(var bt:Button in items) {
+				if (bt.name == label) {
+					items.splice(items.indexOf(bt),1);
+					if (this.contains(bt)) this.removeChild(bt);
+					return bt;
+				}
+			}
+			
+			return null;
+		}
+		
+		/**
+		 * 
+		 * @param label
+		 * @return 
+		 * 
+		 */
+		override public function getOptionByLabel(label:String):AbstractButton {
+			for each(var bt:Button in items) {
+				if (bt.name == label) return bt;
+			}
+			
+			return null;
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		override public function kill():void {
+			super.kill();
+			this.removeEventListener(MouseEvent.CLICK, menuClick);
+		}
+		
+		//****************** PROTECTED METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function deselectAll():void {
+			for each (var item:Button in items) {
+				if (item != this.lastClickedItem) item.toggle = false;
+			}
+		}
+		
 		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************
 		
@@ -90,86 +154,38 @@ package view.assets.menu {
 		 * @param event
 		 * 
 		 */
-		protected function menuClick(event:MouseEvent):void {
+		override public function menuClick(event:MouseEvent):void {
 			
 			event.stopImmediatePropagation();
 			
-			var bt:AbstractButton = AbstractButton(event.target);
-			this._clickedItem = bt.getLabel();
+			//save current select item or fail;
+			var bt:Button;
 			
-			var data:Object = {clickedItem:this.clickedItem};
+			if (event.target is AbstractButton) {
+				
+				bt = event.target as Button;
+				
+				if (lastClickedItem != bt) {
+					
+					//toggle
+					if (this.type == MenuType.UNIQUE) if (lastClickedItem) lastClickedItem.toggle = !lastClickedItem.toggle;
+					lastClickedItem = bt;
+					bt.toggle = !bt.toggle;
+				}
+				
+			} else {
+				lastClickedItem = null;
+				return;
+			}
 			
+			//deselect others
+			if (this.type == MenuType.UNIQUE) this.deselectAll();
+			
+			//send data
+			var data:Object = {clickedItem: bt.getLabel()};
 			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.SELECT,data));
 			
-			this._clickedItem = null;
 		}
-		
-		
-		//****************** GETTERS // SETTERS ****************** ****************** ******************
-
-		/**
-		 * 
-		 * @return 
-		 * 
-		 */
-		public function get clickedItem():String {
-			return _clickedItem;
-		}
-
-		/**
-		 * 
-		 * @return 
-		 * 
-		 */
-		public function get orientation():String {
-			return _orientation;
-		}
-
-		/**
-		 * 
-		 * @param value
-		 * 
-		 */
-		public function set orientation(value:String):void {
-			_orientation = value;
-		}
-
-		/**
-		 * 
-		 * @return 
-		 * 
-		 */
-		public function get direction():String {
-			return _direction;
-		}
-
-		/**
-		 * 
-		 * @param value
-		 * 
-		 */
-		public function set direction(value:String):void {
-			_direction = value;
-		}
-
-		/**
-		 * 
-		 * @return 
-		 * 
-		 */
-		public function get type():String {
-			return _type;
-		}
-
-		/**
-		 * 
-		 * @param value
-		 * 
-		 */
-		public function set type(value:String):void {
-			_type = value;
-		}
-
 		
 	}
 }

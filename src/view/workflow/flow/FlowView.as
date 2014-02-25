@@ -1,7 +1,7 @@
 package view.workflow.flow {
 	
 	//imports
-	import com.greensock.TweenMax;
+	import com.greensock.TweenLite;
 	
 	import flash.display.DisplayObject;
 	import flash.events.MouseEvent;
@@ -10,6 +10,8 @@ package view.workflow.flow {
 	import controller.WrkFlowController;
 	
 	import events.WrkfluxEvent;
+	
+	import model.Session;
 	
 	import mvc.AbstractView;
 	import mvc.IController;
@@ -70,40 +72,44 @@ package view.workflow.flow {
 			this.addChild(flowList);
 			flowList.addEventListener(WrkfluxEvent.SELECT, manageToolTip);
 			
-			//add button
-			addButton = new CrossButton();
-			addButton.color = Colors.getColorByName(Colors.WHITE);
-			addButton.highlightedColor = Colors.getColorByName(Colors.GREEN);
-			addButton.crossColor = Colors.getColorByName(Colors.GREEN);
-			addButton.lineThickness = 2;
-			addButton.lineColor = Colors.getColorByName(Colors.GREEN);
-			addButton.init();
-			addButton.buttonMode = true;
-			addButton.x = (this.stage.stageWidth/2) - this.x;
-			addButton.y = this.stage.stageHeight - (addButton.height * 1.75);
-			this.addChild(addButton);
+			if (Session.credentialCheck()) {
+				
+				//add button
+				addButton = new CrossButton();
+				addButton.color = Colors.getColorByName(Colors.WHITE);
+				addButton.highlightedColor = Colors.getColorByName(Colors.GREEN);
+				addButton.crossColor = Colors.getColorByName(Colors.GREEN);
+				addButton.lineThickness = 2;
+				addButton.lineColor = Colors.getColorByName(Colors.GREEN);
+				addButton.init();
+				addButton.buttonMode = true;
+				addButton.x = (stage.stageWidth/2) - this.x;
+				addButton.y = stage.stageHeight - (addButton.height * 2);
+				this.addChild(addButton);
 			
-			//delete button
-			_removeButton = new CrossButton();
-			removeButton.rotation = 45;
-			removeButton.init();
-			removeButton.x = (this.stage.stageWidth/2) - this.x;
-			removeButton.y = this.stage.stageHeight;
-			removeButton.mouseEnabled = false;
-			this.addChild(removeButton);
-			removeButton.visible = false;
+				//listeners
+				this.addButton.addEventListener(MouseEvent.CLICK, addButtonClick);
+			
+				//delete button
+				_removeButton = new CrossButton();
+				removeButton.rotation = 45;
+				removeButton.init();
+				removeButton.x = (stage.stageWidth/2) - this.x;
+				removeButton.y = stage.stageHeight;
+				removeButton.mouseEnabled = false;
+				this.addChild(removeButton);
+				removeButton.visible = false;
+			}
 			
 			//tooltip
 			toolTipManager = new ToolTipManager(this);
 			stage.addEventListener(MouseEvent.CLICK, ToolTipManager.removeAll);
 			
-			//listeners
-			this.addButton.addEventListener(MouseEvent.CLICK, addButtonClick);
-			
 		}
 			
 		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
+		
 		
 		/**
 		 * 
@@ -165,18 +171,22 @@ package view.workflow.flow {
 		 */
 		public function switchAddRemoveButton(value:String):void {
 			
-			switch (value) {
-				
-				case "add":
-					TweenMax.to(addButton,.4,{y:this.stage.stageHeight - (addButton.height * 1.75), autoAlpha:1});
-					TweenMax.to(removeButton,.4,{y:this.stage.stageHeight, autoAlpha:0});
-					break;
-				
-				
-				case "remove":
-					TweenMax.to(addButton,.4,{y:this.stage.stageHeight, autoAlpha:0});
-					TweenMax.to(removeButton,.4,{y:this.stage.stageHeight - (removeButton.height * 1.75), autoAlpha:1});
-					break
+			if (addButton && removeButton) {
+			
+				switch (value) {
+					
+					case "add":
+						TweenLite.to(addButton,.4,{y:stage.stageHeight - addButton.height*2, autoAlpha:1});
+						TweenLite.to(removeButton,.4,{y:stage.stageHeight, autoAlpha:0});
+						break;
+					
+					
+					case "remove":
+						TweenLite.to(addButton,.4,{y:stage.stageHeight, autoAlpha:0});
+						TweenLite.to(removeButton,.4,{y:stage.stageHeight - removeButton.height*2, autoAlpha:1});
+						break
+					
+				}
 				
 			}
 			
@@ -193,6 +203,7 @@ package view.workflow.flow {
 				
 				addForm = new AddForm(this.getController());
 				this.addChild(addForm);
+				addForm.init();
 				
 				var pos:Point = new Point(this.stage.stageWidth/2,this.stage.stageHeight);
 				pos = this.globalToLocal(pos);
@@ -202,12 +213,12 @@ package view.workflow.flow {
 				
 				addForm.addEventListener(WrkfluxEvent.FORM_EVENT, formEvent);
 				
-				TweenMax.from(addForm,.6,{y:this.stage.stageHeight});
+				TweenLite.from(addForm,.6,{y:this.stage.stageHeight});
 				
 			} else {
 				addForm.removeEventListener(WrkfluxEvent.FORM_EVENT, formEvent);
 				addForm.mouseChildren = false;
-				TweenMax.to(addForm,.6,{y:this.stage.stageHeight, onComplete:removeObject, onCompleteParams:[addForm]});
+				TweenLite.to(addForm,.6,{y:this.stage.stageHeight, onComplete:removeObject, onCompleteParams:[addForm]});
 				addForm = null;
 			}
 		}
@@ -232,12 +243,12 @@ package view.workflow.flow {
 				
 				removeForm.addEventListener(WrkfluxEvent.FORM_EVENT, formEvent);
 				
-				TweenMax.from(removeForm,.6,{y:this.stage.stageHeight});
+				TweenLite.from(removeForm,.6,{y:this.stage.stageHeight});
 				
 			} else {
 				removeForm.removeEventListener(WrkfluxEvent.FORM_EVENT, formEvent);
 				removeForm.mouseChildren = false;
-				TweenMax.to(removeForm,.6,{y:this.stage.stageHeight, onComplete:removeObject, onCompleteParams:[removeForm]});
+				TweenLite.to(removeForm,.6,{y:this.stage.stageHeight, onComplete:removeObject, onCompleteParams:[removeForm]});
 				removeForm = null;
 			}
 		}
@@ -305,6 +316,35 @@ package view.workflow.flow {
 			flowList.closeAllOpenedPins();			
 		}
 		
+		/**
+		 * 
+		 * 
+		 */
+		public function resize():void {
+			if (addButton) {
+				addButton.x = stage.stageWidth/2 - this.x;
+				addButton.y = stage.stageHeight - addButton.height * 2;
+			}
+			
+			if (removeButton) {
+				removeButton.x = stage.stageWidth/2 - this.x;
+				removeButton.y = stage.stageHeight;
+			}
+			
+			var pos:Point = new Point(this.stage.stageWidth/2,this.stage.stageHeight);
+			pos = this.globalToLocal(pos);
+			
+			if  (addForm) {
+				addForm.x = pos.x - (addForm.maxWidth/2);
+				addForm.y = pos.y - addForm.height - 5;
+			}
+			
+			if  (removeForm) {
+				removeForm.x = pos.x - (removeForm.maxWidth/2);
+				removeForm.y = pos.y - removeForm.height - 5;
+			}
+		}
+		
 		//****************** EVENTS - TOOLTIP ****************** ****************** ******************
 		
 		/**
@@ -334,6 +374,38 @@ package view.workflow.flow {
 			
 			} else {
 				ToolTipManager.removeToolTip(event.data.pinUID);
+			}
+			
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		override public function kill():void {
+			
+			if (addButton) {
+				addButton.kill();
+				addButton.removeEventListener(MouseEvent.CLICK, addButtonClick);
+			}
+			
+			if (removeButton) removeButton.kill();
+			
+			stage.removeEventListener(MouseEvent.CLICK, ToolTipManager.removeAll);
+			
+			if (addForm) {
+				addForm.kill();
+				addForm.removeEventListener(WrkfluxEvent.FORM_EVENT, formEvent);
+			}
+			
+			if (removeForm) {
+				removeForm.kill();
+				removeForm.removeEventListener(WrkfluxEvent.FORM_EVENT, formEvent);
+			}
+			
+			if (flowList) {
+				flowList.removeEventListener(WrkfluxEvent.SELECT, manageToolTip);
+				flowList.kill();
 			}
 			
 		}
@@ -371,8 +443,6 @@ package view.workflow.flow {
 		public function set structureView(value:StructureView):void {
 			if (!_structureView) _structureView = value;
 		}
-
-		
 
 	}
 }

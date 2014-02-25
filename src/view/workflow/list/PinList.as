@@ -62,46 +62,25 @@ package view.workflow.list {
 		 */
 		public function init(data:Array = null, openedItems:Array = null):void {	
 			
-			//container
-			container = new Sprite();
-			this.addChild(container);
-			
-			//array
-			itemCollection = new Array();
-			
-			//loop
+			//data
 			if (data) {
 				
+				//array
+				itemCollection = new Array();
+				
+				//container
+				container = new Sprite();
+				this.addChild(container);
+				
+				//load data
 				data = data.reverse();
+				this.loadContent(data);
 				
-				var item:PinListItem;		
-				var posY:Number = 0;
+				//add mask
+				this.addListMask();
 				
-				for each (var doc:PinModel in data) {
-					
-					//create pin view and pass the information
-					item = new PinListItem(doc.uid);
-					item.title = doc.title;
-					item.flagUID = doc.currentFlag;
-					item.color = WrkFlowController(target.getController()).getFlagColor(doc.currentFlag);
-					item.maxWidth = target.maxWidth;
-					item.init();
-					
-					if (DeviceInfo.os() != "Mac") item.scaleX = item.scaleY = 2;
-					
-					item.y = posY;
-					
-					//add pin view to a collection
-					itemCollection.push(item);
-					
-					//add to screen
-					container.addChild(item);
-	
-					posY += item.height + 1;
-					
-				}
-				
-				testForScroll();
+				//test Scroll;
+				this.testForScroll();
 				
 				//listeners
 				//this.addEventListener(MouseEvent.CLICK, itemClick);
@@ -124,6 +103,128 @@ package view.workflow.list {
 		
 		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @param data
+		 * 
+		 */
+		protected function loadContent(data:Array):void {
+			
+			var item:PinListItem;		
+			var posY:Number = 0;
+			
+			for each (var doc:PinModel in data) {
+				
+				//create pin view and pass the information
+				item = new PinListItem(doc.uid);
+				item.title = doc.title;
+				item.flagUID = doc.currentFlag;
+				item.color = WrkFlowController(target.getController()).getFlagColor(doc.currentFlag);
+				item.maxWidth = target.maxWidth;
+				item.init();
+				
+				if (DeviceInfo.os() != "Mac") item.scaleX = item.scaleY = 2;
+				
+				item.y = posY;
+				
+				//add pin view to a collection
+				itemCollection.push(item);
+				
+				//add to screen
+				container.addChild(item);
+				
+				posY += item.height + 1;
+				
+			}
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function addListMask():void {
+			containerMask = new Sprite();
+			containerMask.graphics.beginFill(0xFFFFFF,1);
+			containerMask.graphics.drawRect(container.x,container.y, container.width, maxHeight);
+			this.addChild(containerMask);
+			
+			container.mask = containerMask;
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function testForScroll():void {
+			
+			
+			
+			//if list exists
+			if (container) {
+				
+				if (!scroll) { //if scroll doesn't exists
+					
+					if (container.height > maxHeight) this.addScroll(); // if needs scroll, create one
+					
+				} else { //if scroll exists
+					
+					if (container.height <= maxHeight)  { //if doesn't need scroll anymore
+						scroll.kill();
+						scroll = null;
+						
+					} else { // else update - mask width and height
+						
+						scroll.update();
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function addScroll():void {
+			
+			scroll = new Scroll();
+			//scroll.gestureInput = "gestouch";
+			scroll.rollVisible = true;
+			scroll.target = container;
+			scroll.maskContainer = containerMask;
+			this.addChild(scroll);
+			scroll.x = containerMask.width - scroll.width;
+		}
+		
+		/**
+		 * 
+		 * @param fromItem
+		 * 
+		 */
+		protected function updateListPositions(fromItem:PinListItem = null):void {
+			
+			var index:int = (fromItem) ? itemCollection.indexOf(fromItem) : -1;
+			var posY:Number = (fromItem) ? fromItem.y : 0;
+			
+			for (var i:int = index + 1; i < itemCollection.length; i++) {
+				
+				TweenLite.to(itemCollection[i],.5,{y:posY});
+				posY += itemCollection[i].height + 1;
+			}
+			
+		}
+		
+		/**
+		 * 
+		 * @param item
+		 * 
+		 */
+		protected function removePinItem(item:PinListItem):void {
+			container.removeChild(item);
+		}
 		
 		/**
 		 * 
@@ -154,63 +255,6 @@ package view.workflow.list {
 			messageWindow.y = (this.maxHeight/4) - (messageWindow.height/2)	;
 			
 		}
-		
-		/**
-		 * 
-		 * @param contructor
-		 * @param diff
-		 * 
-		 */
-		protected function testForScroll(contructor:Boolean = true):void {
-			
-			if (!containerMask && container.height > maxHeight) {
-				
-				//mask for container
-				containerMask = new Sprite();
-				containerMask.graphics.beginFill(0xFFFFFF,1);
-				containerMask.graphics.drawRect(container.x,container.y, container.width, maxHeight);
-				this.addChild(containerMask);
-				
-				container.mask = containerMask;
-				
-				//add scroll system
-				scroll = new Scroll();
-				//scroll.gestureInput = "gestouch";
-				scroll.target = container;
-				scroll.maskContainer = containerMask;
-				this.addChild(scroll);
-				scroll.init();
-			}
-			
-		}
-		
-		/**
-		 * 
-		 * @param fromItem
-		 * 
-		 */
-		protected function updateListPositions(fromItem:PinListItem = null):void {
-			
-			var index:int = (fromItem) ? itemCollection.indexOf(fromItem) : -1;
-			var posY:Number = (fromItem) ? fromItem.y : 0;
-			
-			for (var i:int = index + 1; i < itemCollection.length; i++) {
-				
-				TweenLite.to(itemCollection[i],.5,{y:posY});
-				posY += itemCollection[i].height + 1;
-			}
-			
-		}
-		
-		/**
-		 * 
-		 * @param item
-		 * 
-		 */
-		protected function removePinItem(item:PinListItem):void {
-			container.removeChild(item);
-		}
-		
 		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
 		
@@ -364,6 +408,15 @@ package view.workflow.list {
 			pin.highlight(value);
 		}
 
+		/**
+		 * 
+		 * 
+		 */
+		public function resize():void {
+			if (containerMask) containerMask.height = maxHeight;
+			testForScroll();
+			if (scroll) if (container.y != 0) container.y = -container.height/2 + containerMask.height/2;
+		}
 		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************
 		

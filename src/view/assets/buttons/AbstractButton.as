@@ -3,6 +3,7 @@ package view.assets.buttons {
 	//imports
 	import flash.display.Sprite;
 	import flash.text.TextField;
+	import flash.text.TextFormatAlign;
 	
 	import util.Colors;
 	
@@ -29,6 +30,10 @@ package view.assets.buttons {
 		protected var _lineColor			:uint;
 		protected var _lineColorAlpha		:Number;
 		
+		protected var _textAlign			:String;
+		protected var _textSize				:int;
+		protected var _textColor			:uint;
+		
 		protected var _maxWidth				:Number;
 		protected var _maxHeight			:Number;
 		
@@ -46,20 +51,24 @@ package view.assets.buttons {
 			
 			shapeForm = ButtonShapeForm.RECT;
 			
-			_color = Colors.getColorByName(Colors.BLUE);
+			_color = Colors.getColorByName(Colors.WHITE);
 			_colorAlpha = 1;
 			
 			_line = false;
 			_lineThickness = 1;
-			_lineColor = Colors.getColorByName(Colors.WHITE);
+			_lineColor = Colors.getColorByName(Colors.DARK_GREY);
 			_lineColorAlpha = 1;
+			
+			_textSize = 16;
+			_textColor = Colors.getColorByName(Colors.DARK_GREY);
+			_textAlign = TextFormatAlign.CENTER;
 			
 			maxWidth = 100;
 			maxHeight = 30;
 			
 			_togglable = false;
 			_toggle = false;
-			_toggleColor = Colors.getColorByName(Colors.GREEN);
+			_toggleColor = Colors.getColorByName(Colors.LIGHT_GREY);
 			_toggleColorAlpha = 1;
 			
 		}
@@ -110,11 +119,11 @@ package view.assets.buttons {
 		 * 
 		 */
 		public function doToggle():void {
-			
+			//to override
 		}
 		
 		
-		//****************** GETTERTS // SETTERS ****************** ****************** ******************
+		//****************** GETTERS // SETTERS ****************** ****************** ******************
 
 		/**
 		 * 
@@ -257,7 +266,61 @@ package view.assets.buttons {
 		public function set lineColorAlpha(value:Number):void {
 			_lineColorAlpha = value;
 		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get textSize():int {
+			return _textSize;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set textSize(value:int):void {
+			_textSize = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get textColor():uint{
+			return _textColor;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set textColor(value:uint):void {
+			_textColor = value;
+		}
 
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get textAlign():String {
+			return _textAlign;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set textAlign(value:String):void {
+			_textAlign = value;
+		}
+		
 		/**
 		 * 
 		 * @return 

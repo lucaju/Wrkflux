@@ -8,7 +8,7 @@ package view.workflow.list {
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	
-	import font.FontFreightSans;
+	import font.HelveticaNeue;
 	
 	import util.Colors;
 	
@@ -30,16 +30,15 @@ package view.workflow.list {
 			//background
 			var bg:Shape = new Shape();
 			bg.graphics.beginFill(Colors.getColorByName(Colors.DARK_GREY));
-			bg.graphics.drawRect(0, 0, 100, 25);
+			bg.graphics.drawRect(0, 0, 110, 25);
 			bg.graphics.endFill();
 			
 			this.addChild(bg);
 			
 			//title
 			var style:TextFormat = new TextFormat();
-			style.font = FontFreightSans.MEDIUM;
-			style.bold = true;
-			style.size = 16;
+			style.font = HelveticaNeue.MEDIUM;
+			style.size = 14;
 			style.color = 0xFFFFFF;
 			
 			var titleTF:TextField = new TextField();

@@ -2,6 +2,7 @@ package view.forms.list.bullet {
 	
 	//imports
 	import flash.display.Sprite;
+	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
 	
 	import view.forms.AbstractFormField;
@@ -41,13 +42,13 @@ package view.forms.list.bullet {
 			//label
 			this.name = label;
 			super.init(label);
-			labelTF.x = (this.width/2) - (labelTF.width/2);
+			if (label) labelTF.x = (this.width/2) - (labelTF.width/2);
 			
 			//data
 			if (data) {
 				
 				itemContainer = new Sprite();
-				itemContainer.y = 30;
+				itemContainer.y = 20;
 				this.addChild(itemContainer);
 				
 				itemCollection = new Array();
@@ -116,7 +117,16 @@ package view.forms.list.bullet {
 				
 			}
 			
-		}		
+		}	
+		
+		/**
+		 * 
+		 * 
+		 */
+		override public function kill():void {
+			super.kill();
+			this.removeEventListener(MouseEvent.CLICK, itemClick);
+		}
 		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
 		

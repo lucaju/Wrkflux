@@ -7,8 +7,8 @@ Download: https://dl.dropboxusercontent.com/u/46079753/Wrkflux.air
 
 
 ####Previous versions
--iPad version: https://vimeo.com/70748726
--Version 1: https://vimeo.com/47347463
+- iPad version: https://vimeo.com/70748726
+- Version 1: https://vimeo.com/47347463
 
 
 Instructions

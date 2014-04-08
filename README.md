@@ -2,7 +2,7 @@ Wrkflux Beta 2
 =======
 
 Instructions
-=======
+-------
 
 There is no need to have an account to use Workflux.
 However, if you want to save you own workflows, you must register yourself. Your workflows will carry your name and you will be able to edit and delete your own workflows whenever you want.

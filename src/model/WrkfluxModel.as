@@ -231,9 +231,6 @@ package model {
 			_workflowCollection = new Array();
 			var workflows:Object = JSON.parse(LoaderMax.getContent("getWorkflows"));
 			
-			
-			
-			
 			for each (var workflow:Object in workflows) {
 				var wfProject:WorkflowItemModel = new WorkflowItemModel(workflow.id,
 																		workflow.title,
@@ -243,14 +240,15 @@ package model {
 																		workflow.modified_date);
 				
 				_workflowCollection.push(wfProject);
-				
 			}
+			
 			
 			var data:Object = new Object();
 			data.action = "load";
 			data.data = workflowCollection;
 			
 			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.COMPLETE, data));
+			
 		}
 		
 		/**

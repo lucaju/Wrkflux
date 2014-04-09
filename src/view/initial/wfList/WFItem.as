@@ -59,6 +59,11 @@ package view.initial.wfList {
 			_id = id;
 			_authorID = authorID;
 			
+			trace (authorID,author)
+			
+			if (author == null) author = " ";
+			
+			
 			//2. style
 			var styleTitle:TextFormat = new TextFormat();
 			styleTitle.font = HelveticaNeue.LIGHT;

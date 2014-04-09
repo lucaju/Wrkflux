@@ -15,8 +15,8 @@ package {
 	import view.WrkfluxView;
 	
 	
-	//[SWF(width="1260", height="700", backgroundColor="#FFFFFF", frameRate="60")]
-	[SWF(width="1260", height="800", backgroundColor="#FFFFFF", frameRate="60")]
+	//[SWF(width="2048", height="768", backgroundColor="#ffffff", frameRate="30")]
+	[SWF(width="1024", height="1536", backgroundColor="#ffffff", frameRate="30")]
 	public class Wrkflux extends Sprite {
 		
 		//****************** Properties ****************** ****************** ******************

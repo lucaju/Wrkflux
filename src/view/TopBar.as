@@ -3,12 +3,15 @@ package view {
 	//imports
 	import com.greensock.TweenMax;
 	
-	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.FocusEvent;
+	import flash.events.MouseEvent;
 	import flash.text.AntiAliasType;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	
 	import font.HelveticaNeue;
@@ -18,11 +21,13 @@ package view {
 	import util.Colors;
 	
 	import view.assets.buttons.AbstractButton;
+	import view.assets.graphics.LockIcon;
 	import view.assets.logo.Logo;
 	import view.assets.menu.Menu;
 	import view.assets.menu.MenuDirection;
 	import view.assets.menu.MenuOrientation;
 	import view.assets.menu.MenuType;
+	import view.profile.ProfileTopBar;
 	
 	/**
 	 * 
@@ -42,6 +47,8 @@ package view {
 		protected var _bottomLineColorAlpha		:Number;
 		protected var _bottomLineThickness		:int;
 		
+		protected var _type						:String;
+		
 		protected var _titleColor				:uint;
 		
 		protected var _hMax						:Number = 30;
@@ -52,10 +59,15 @@ package view {
 		protected var logo						:Logo;
 		protected var style						:TextFormat;
 		protected var titleTF					:TextField;
+		protected var _label						:String;
 		
 		protected var menuLeft					:Menu;
 		protected var menuRight					:Menu;
 		
+		protected var profile					:ProfileTopBar;
+		protected var profileMenu				:Menu;
+		
+		protected var visibilityIcon			:LockIcon;
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -76,8 +88,10 @@ package view {
 			
 			_titleColor = 0xFFFFFF;
 			
+			_type = "initial";
+			
 			style = new TextFormat();
-			style.font = HelveticaNeue.THIN;
+			style.font = HelveticaNeue.LIGHT;
 			style.size = 22;
 			
 			if (Settings.platformTarget == "mobile") {
@@ -121,7 +135,14 @@ package view {
 			logo.scaleX = logo.scaleY = .2;
 			logo.x = logo.width/2;
 			logo.y = this.hMax - logo.height/2;
-			TweenMax.to(logo,0,{tint:Colors.getColorByName(Colors.DARK_GREY)});
+			
+			if (type == "build") {
+				TweenMax.to(logo,0,{tint:Colors.getColorByName(Colors.WHITE)});
+			} else {
+				TweenMax.to(logo,0,{tint:Colors.getColorByName(Colors.DARK_GREY)});
+			}
+			
+			
 			this.addChild(logo);
 			
 			//4.Title
@@ -129,7 +150,15 @@ package view {
 			style.color = _titleColor;
 			
 			titleTF = new TextField();
-			titleTF.selectable = false;
+			
+			if (type == "build") {
+				titleTF.type = TextFieldType.INPUT;
+				titleTF.selectable = true;
+			} else {
+				titleTF.type = TextFieldType.DYNAMIC;
+				titleTF.selectable = false;
+			}
+			
 			titleTF.autoSize = TextFieldAutoSize.LEFT;
 			titleTF.embedFonts = true;
 			titleTF.antiAliasType = AntiAliasType.ADVANCED;
@@ -137,22 +166,118 @@ package view {
 			titleTF.x = logo.x + logo.width/2;
 			this.addChild(titleTF);
 			
+			if (type == "build") titleTF.addEventListener(FocusEvent.FOCUS_OUT, focusOut);
+				
 		}
 		
 		
-		//****************** PRIVATE METHODS ****************** ****************** ******************
+		//****************** PROTECTED METHODS ****************** ****************** ******************
 		
 		/**
 		 * 
-		 * @param value
 		 * 
 		 */
-		private function killChild(value:DisplayObject):void {
-			this.removeChild(value);	
+		protected function addProfileMenu():void {
+			profileMenu = new Menu();
+			profileMenu.orientation = MenuOrientation.VERTICAL;
+			profileMenu.direction = MenuDirection.TOP;
+			profileMenu.name = "profileMenu";
+			profileMenu.type = MenuType.NONE;
+			this.addChildAt(profileMenu,0);
+			
+			profileMenu.abstractBt.toggleColor = Colors.getColorByName(Colors.PURPLE);
+			profileMenu.abstractBt.toggleColorAlpha = .5;
+			
+			profileMenu.add("Edit Profile");
+			profileMenu.add("Sign Out");
+			
+			profileMenu.y = 31;
+			profileMenu.x = stage.stageWidth - profileMenu.width;
+			
+			profileMenu.addEventListener(MouseEvent.ROLL_OUT, profileMenuRollOut);
+			profileMenu.addEventListener(MouseEvent.CLICK, profileMenuClick);
+			
+			TweenMax.from(profileMenu, .7, {x: stage.stageWidth});
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function removeProfileMenu():void {
+			if (profileMenu) TweenMax.to(profileMenu, .5, {x: stage.stageWidth, onComplete:removeChild, onCompleteParams:[profileMenu]});
+			profileMenu = null;
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function changeTitle():void {	
+			if (titleTF.text == "") {
+				titleTF.text = this.label;
+			} else {
+				this.label = titleTF.text;
+				this.dispatchEvent(new Event(Event.CHANGE)); 
+			}
 		}
 		
 		
+		//****************** PROTECTED EVENTS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function focusOut(event:FocusEvent):void {
+			event.stopImmediatePropagation();
+			changeTitle();
+		}
+		
+		//****************** PUBLIC EVENTS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function showProfileMenu(event:MouseEvent):void {
+			profileMenu ? removeProfileMenu() : addProfileMenu();
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function profileMenuClick(event:MouseEvent):void {
+			removeProfileMenu();
+		}	
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function profileMenuRollOut(event:MouseEvent):void {
+			event.stopPropagation();
+			removeProfileMenu();
+		}		
+		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function addProfile():void {
+			profile = new ProfileTopBar();
+			profile.x = stage.stageWidth - profile.width;
+			this.addChild(profile);
+			
+			profile.addEventListener(MouseEvent.CLICK, showProfileMenu);
+		}
 		
 		/**
 		 * 
@@ -175,9 +300,21 @@ package view {
 				menu.type = MenuType.NONE;
 				this.addChild(menu);
 				
+				//setting buttons in this menu
+				menu.abstractBt.shapeAlpha = 0;
 				menu.abstractBt.toggleColor = Colors.getColorByName(Colors.PURPLE);
-				menu.abstractBt.toggleColorAlpha = .5;
 				
+				if (type == "build") {
+					menu.abstractBt.toggleAlpha = .8;
+					menu.abstractBt.color = Colors.getColorByName(Colors.DARK_GREY);
+					menu.abstractBt.textColor = Colors.getColorByName(Colors.WHITE);
+					menu.abstractBt.toggleColorAlpha = 1;
+				} else {
+					menu.abstractBt.toggleAlpha = .4;
+					menu.abstractBt.toggleColorAlpha = .5;
+				}
+				
+				//adding buttons to this menu
 				for each (var option:Object in options) {
 					var bt:AbstractButton = menu.add(option.label);
 					if (option.togglable) {
@@ -189,7 +326,7 @@ package view {
 				if (direction == MenuDirection.LEFT) {
 					menu.x = 5;	
 				} else if (direction == MenuDirection.RIGHT) {	
-					menu.x = stage.stageWidth;
+					menu.x = profile ? stage.stageWidth - profile.width : stage.stageWidth;
 				}
 				
 				menu.y = (hMax/2) - (menu.height/2);
@@ -241,10 +378,21 @@ package view {
 		 * 
 		 * 
 		 */
+		public function updateProfileImage():void {
+			if (profile) profile.update();
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
 		public function resize():void {
 			if (hasBackground) bg.width = stage.stageWidth;
 			if (hasBottomLine) line.width = stage.stageWidth;
-			if (menuRight) menuRight.x = stage.stageWidth;
+			if (profile) profile.x = stage.stageWidth - profile.width;
+			if (profileMenu) profileMenu.x = stage.stageWidth - profileMenu.width;
+			if (menuRight) menuRight.x = profile ? stage.stageWidth - profile.width : stage.stageWidth;
+			
 			titleTF.x = logo.x + logo.width/2;
 		}
 		
@@ -255,6 +403,28 @@ package view {
 		public function kill():void {
 			if (menuRight) menuRight.kill();
 			if (menuLeft) menuLeft.kill();
+			if (profileMenu) profileMenu.kill();
+			if (profile) {
+				if (this.contains(profile)) this.removeChild(profile);
+				profile = null;
+			}
+			
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function showVisibility(value:Boolean):void {
+			if (value == true) {
+				visibilityIcon = new LockIcon();
+				this.addChild(visibilityIcon);
+				visibilityIcon.init();
+				
+				visibilityIcon.x = titleTF.x + titleTF.width + 5;
+				visibilityIcon.y = this.height/2 - visibilityIcon.maxHeight/2;
+			}
 		}
 		
 		//****************** GETTERS // SETTERS ****************** ****************** ******************
@@ -390,6 +560,24 @@ package view {
 		 * @return 
 		 * 
 		 */
+		public function get type():String {
+			return _type;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set type(value:String):void {
+			_type = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
 		public function get titleColor():uint {
 			return _titleColor;
 		}
@@ -426,9 +614,20 @@ package view {
 		 * @param value
 		 * 
 		 */
-		public function set label(value:String):void {
-			titleTF.text = value;
+		public function get label():String {
+			return _label;
 		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set label(value:String):void {
+			_label = value;
+			titleTF.text = _label;
+		}
+
 		
 	}
 }

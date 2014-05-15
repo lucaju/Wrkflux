@@ -15,9 +15,10 @@ package view.initial {
 	import util.Colors;
 	
 	import view.assets.buttons.Button;
-	import view.initial.login.ForgotPasswordForm;
-	import view.initial.login.SignInForm;
-	import view.initial.login.SignUpForm;
+	import view.initial.profile.ForgotPasswordForm;
+	import view.initial.profile.SignInForm;
+	import view.initial.profile.SignUpForm;
+	import view.initial.AutoLogin;
 	
 	/**
 	 * 
@@ -287,6 +288,11 @@ package view.initial {
 			
 			if (event.target.name == "Sign In") {
 				this.addSignInForm();
+				/*if (event.controlKey) {
+					if (AutoLogin.userInfo()) WrkfluxController(target.getController()).register(AutoLogin.userInfo());
+				} else {
+					this.addSignInForm();
+				}*/
 			} else {
 				this.addSignUpForm();
 			}

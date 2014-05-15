@@ -1,4 +1,4 @@
-package view.initial.login {
+package view.initial.profile {
 	
 	//imports
 	
@@ -17,22 +17,28 @@ package view.initial.login {
 	
 	import font.HelveticaNeue;
 	
+	import model.Session;
+	
 	import mvc.IController;
+	
+	import settings.Settings;
 	
 	import util.Colors;
 	import util.MessageType;
 	
 	import view.assets.buttons.Button;
 	import view.forms.AbstractForm;
+	import view.forms.AbstractFormField;
 	import view.forms.MessageField;
 	import view.forms.TextFormField;
+	import view.forms.image.ImageField;
 	
 	/**
 	 * 
 	 * @author lucaju
 	 * 
 	 */
-	public class SignUpForm extends AbstractForm {
+	public class EditProfileScreen extends AbstractForm {
 		
 		//****************** Properties ****************** ****************** ******************
 		
@@ -40,7 +46,9 @@ package view.initial.login {
 		protected var lastNameField				:TextFormField;
 		protected var emailField				:TextFormField;
 		protected var passField					:TextFormField;
+		protected var imageField				:ImageField;
 		protected var sendBT					:Button;
+		protected var closeBT					:Button;
 		protected var messageField				:MessageField;
 		
 		
@@ -51,7 +59,7 @@ package view.initial.login {
 		 * @param c
 		 * 
 		 */
-		public function SignUpForm(c:IController) {
+		public function EditProfileScreen(c:IController) {
 			super(c);	
 		}
 		
@@ -75,7 +83,7 @@ package view.initial.login {
 			formLabel.embedFonts = true;
 			formLabel.antiAliasType = AntiAliasType.ADVANCED;
 			formLabel.autoSize = TextFieldAutoSize.LEFT;
-			formLabel.text = "Sign Up";
+			formLabel.text = "Edit Profile";
 			formLabel.setTextFormat(style);
 			this.addChild(formLabel);
 			
@@ -86,8 +94,8 @@ package view.initial.login {
 			firstNameField.maxChars = 30;
 			firstNameField.maxHeight = 35;
 			firstNameField.maxWidth = 190;
-			firstNameField.required = true;
-			firstNameField.textPlaceHolder = "first name";
+			firstNameField.required = false;
+			firstNameField.text = Session.userFirstName;
 			this.addChild(firstNameField);
 			firstNameField.init("");
 			firstNameField.name = "firstName";
@@ -102,8 +110,8 @@ package view.initial.login {
 			lastNameField.maxChars = 30;
 			lastNameField.maxHeight = 35;
 			lastNameField.maxWidth = 190;
-			lastNameField.required = true;
-			lastNameField.textPlaceHolder = "last name";
+			lastNameField.required = false;
+			lastNameField.text = Session.userLastName;
 			this.addChild(lastNameField);
 			lastNameField.init("");
 			lastNameField.name = "lastName";
@@ -115,11 +123,12 @@ package view.initial.login {
 			
 			//4. Email
 			emailField = new TextFormField();
+			emailField.selectable = false;
 			emailField.maxChars = 30;
 			emailField.maxHeight = 35;
 			emailField.maxWidth = 190;
-			emailField.required = true;
-			emailField.textPlaceHolder = "email";
+			emailField.required = false;
+			emailField.textPlaceHolder = Session.userEmail;
 			this.addChild(emailField);
 			emailField.init("");
 			emailField.name = "email";
@@ -134,19 +143,35 @@ package view.initial.login {
 			passField.maxChars = 30;
 			passField.maxHeight = 35;
 			passField.maxWidth = 190;
-			passField.required = true;
-			passField.textPlaceHolder = "password";
+			passField.required = false;
+			passField.textPlaceHolder = "new password";
 			passField.displayAsPassword = true;
 			this.addChild(passField);
 			passField.init("");
 			passField.name = "password";
 			
-			passField.x = emailField.x + emailField.width + gap;;
+			passField.x = emailField.x + emailField.width + gap;
 			passField.y = emailField.y;
 			
 			fieldCollection.push(passField);
 			
-			//6. Ok Button
+			//6. Image
+			imageField = new ImageField();
+			imageField.maxHeight = 75;
+			imageField.maxWidth = 75;
+			imageField.required = false;
+			this.addChild(imageField);
+			imageField.init("Add Photo");
+			imageField.name = "image";
+			
+			imageField.x = lastNameField.x + lastNameField.width + gap;
+			imageField.y = lastNameField.y;
+			
+			imageField.addEventListener(WrkfluxEvent.FORM_EVENT, imageEvent);
+			
+			fieldCollection.push(imageField);
+			
+			//7. Ok Button
 			sendBT = new Button();
 			this.addChild(sendBT);
 			sendBT.color = Colors.getColorByName(Colors.GREEN);
@@ -154,10 +179,23 @@ package view.initial.login {
 			sendBT.toggleColor = Colors.getColorByName(Colors.DARK_GREY);
 			sendBT.maxWidth = 190;
 			sendBT.maxHeight = 35;
-			sendBT.init("SIGN UP");
+			sendBT.init("Update");
 			
-			sendBT.x = sendBT.width/2 + gap;
+			sendBT.x = gap;
 			sendBT.y = passField.y + passField.height + gap;
+			
+			//8. Close Button
+			closeBT = new Button();
+			this.addChild(closeBT);
+			closeBT.color = Colors.getColorByName(Colors.YELLOW);
+			closeBT.textColor = Colors.getColorByName(Colors.WHITE);
+			closeBT.toggleColor = Colors.getColorByName(Colors.DARK_GREY);
+			closeBT.maxWidth = 190;
+			closeBT.maxHeight = 35;
+			closeBT.init("Close");
+			
+			closeBT.x = sendBT.x + sendBT.width + gap;
+			closeBT.y = passField.y + passField.height + gap;
 			
 			//window
 			this.drawWindow(this.width + 2*gap, this.height + 5*gap);
@@ -167,17 +205,32 @@ package view.initial.login {
 			//listener
 			this.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 		}
-		
+			
 		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
-
+		
 		/**
 		 * 
 		 * @param value
 		 * 
 		 */
 		protected function processFormSubmit(value:String):void {
-			validateAndSendData();
+			
+			// check if there is a new profile picture. (1) no, go direct to test forms, (2) pic removed, update with the form (3) new pic, uploade and updat pic first.
+			switch (imageField.getInput()) {
+				case null:
+					validateAndSendData();
+					break;
+					
+				case "":
+					validateAndSendData();
+					break;
+				
+				default:
+					imageField.uploadImage()
+					break;				
+			}
+			
 		}
 		
 		/**
@@ -198,13 +251,31 @@ package view.initial.login {
 			
 			//collect  data
 			var formData:Object = new Object();
-			formData.name = "SignUpForm";
+			formData.name = "updateProfile";
 			
 			//validation
-			for each (var form:TextFormField in fieldCollection) {
+			for each (var form:AbstractFormField in fieldCollection) {
+				
 				if (fillValidation(form)) {
-					formData[form.name.toLocaleLowerCase()] = form.getInput();
+					
+					if (form.name.toLowerCase() == "firstname") if (form.getInput() != Session.userFirstName) formData[form.name.toLowerCase()] = form.getInput();
+					if (form.name.toLowerCase() == "lastname") if (form.getInput() != Session.userLastName) formData[form.name.toLowerCase()] = form.getInput();
+					if (form.name.toLowerCase() == "email") if (form.getInput() != form.textPlaceHolder) formData[form.name.toLowerCase()] = form.getInput();
+					if (form.name.toLowerCase() == "password") if (form.getInput() != form.textPlaceHolder) formData[form.name.toLowerCase()] = form.getInput();
+					
+					if (form.name.toLowerCase() == "image") {
+						if (imageField.hasNewImage) {
+							formData[form.name.toLowerCase()] = form.getInput();
+						} else {
+							if (imageField.isRemovingImage) formData[form.name.toLowerCase()] = "remove";
+						}	
+					}
+					
+					//if (form.getInput() != form.textPlaceHolder) formData[form.name.toLocaleLowerCase()] = form.getInput();
+					
+					
 					form.validationWarning(false);
+				
 				} else {
 					form.validationWarning(true);
 					readyToSend = false;
@@ -213,9 +284,15 @@ package view.initial.login {
 			
 			//send data
 			if (readyToSend) {
-				WrkfluxController(this.getController()).getModel("wrkflux").addEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);
-				this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_EVENT, formData));
-				super.addProgressBar();
+				
+				if (!formData.firstname && !formData.lastname && !formData.password && !formData.image) {
+					if (Settings.debug) trace ("Nothing to send");
+				} else {
+					WrkfluxController(this.getController()).getModel("wrkflux").addEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);
+					this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_EVENT, formData));
+					super.addProgressBar();
+				}
+				
 			} else {
 				sendMessage("Please fill all required fields.",MessageType.WARNING);
 				super.removeProgressBar();
@@ -229,7 +306,7 @@ package view.initial.login {
 		 * @return 
 		 * 
 		 */
-		protected function fillValidation(field:TextFormField):Boolean {
+		protected function fillValidation(field:AbstractFormField):Boolean {
 			if (field.required) {
 				if (field.getInput() == "" || field.getInput() == field.textPlaceHolder) {
 					return false;
@@ -237,7 +314,7 @@ package view.initial.login {
 					return true;
 				}
 			}
-
+			
 			return true;
 		}
 		
@@ -246,7 +323,7 @@ package view.initial.login {
 		 * 
 		 */
 		protected function killView():void {
-		
+			
 			firstNameField.kill();
 			lastNameField.kill();
 			emailField.kill();
@@ -268,11 +345,41 @@ package view.initial.login {
 		 * @param event
 		 * 
 		 */
-		override protected function formClick(event:MouseEvent):void {
-			if (event.target == sendBT) {
-				event.stopImmediatePropagation();
-				processFormSubmit("submit");
+		protected function imageEvent(event:WrkfluxEvent):void {
+			switch (event.data.success) {
+				case true:
+					if (event.data.successType == "file chosen") if (messageField)  messageField.kill();
+					if (event.data.successType == "file uploaded") validateAndSendData();
+					break;
+				
+				case false:
+					if (event.data.errorType == "warning") sendMessage(event.data.errorMessage,MessageType.WARNING);
+					if (event.data.errorType == "error") sendMessage(event.data.errorMessage,MessageType.ERROR);
+					break;
 			}
+		}	
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		override protected function formClick(event:MouseEvent):void {
+			switch (event.target) {
+				
+				case sendBT:
+					event.stopImmediatePropagation();
+					processFormSubmit("submit");
+					break;
+				
+				case closeBT:
+					var data:Object = new Object();
+					data.name = "updateProfileClose";
+					this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_EVENT, data));
+					break;
+			}
+			
+			
 		}
 		
 		/**
@@ -291,6 +398,7 @@ package view.initial.login {
 		 * 
 		 */
 		protected function formFeedback(event:WrkfluxEvent):void {
+			
 			super.removeProgressBar();
 			WrkfluxController(this.getController()).getModel("wrkflux").removeEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);	
 			
@@ -298,6 +406,15 @@ package view.initial.login {
 				var message:String = "An error occurred.";
 				if (event.data.errno == 1062) message = "This email was already registered.";
 				sendMessage(message,MessageType.ERROR);
+			} else {
+				
+				//change imageField's Label
+				if (event.data.profileImage == "remove") {
+					imageField.updateState("image removed");
+				} else {
+					imageField.updateState("image added");
+				}
+				
 			}
 		}
 		
@@ -333,11 +450,23 @@ package view.initial.login {
 		
 		/**
 		 * 
+		 * 
+		 */
+		public function updated():void {
+			super.removeProgressBar();
+		}
+	
+		
+		/**
+		 * 
 		 */
 		override public function kill():void {
 			super.kill();
+			imageField.removeEventListener(WrkfluxEvent.FORM_EVENT, imageEvent);
+			this.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
 			TweenLite.to(this,.6,{y:0, autoAlpha: 0, delay: .8, onComplete:killView});
 		}
 		
-	}
+	}	
 }
+

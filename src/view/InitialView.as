@@ -25,11 +25,11 @@ package view {
 	import util.Colors;
 	import util.MessageType;
 	
-	import view.assets.menu.MenuDirection;
 	import view.forms.MessageWindow;
 	import view.initial.Brand;
 	import view.initial.LoginScreen;
 	import view.initial.WFListFrame;
+	import view.initial.profile.EditProfileScreen;
 	
 	/**
 	 * 
@@ -40,16 +40,19 @@ package view {
 		
 		//****************** Properties ****************** ****************** ******************
 		
-		protected var brand				:Brand;
-		protected var wfListFrame		:WFListFrame;
-		protected var loginScreen		:LoginScreen;
-		protected var credits			:TextField;
-		protected var greeting			:TextField;
-		protected var topBar			:TopBar;
-		
-		protected var messageWindow		:MessageWindow;
+		protected var brand						:Brand;
+		protected var wfListFrame				:WFListFrame;
+		protected var loginScreen				:LoginScreen;
+		protected var editProfileScreen			:EditProfileScreen;
+		protected var credits					:TextField;
+		protected var greeting					:TextField;
+		protected var topBar					:TopBar;
+		protected var greestingStyle			:TextFormat;
+		protected var messageWindow				:MessageWindow;
 		
 		//****************** Constructor ****************** ****************** ******************
+
+		
 
 		/**
 		 * 
@@ -154,6 +157,7 @@ package view {
 		protected function showNonUserView():void {
 			if (topBar) removeTopBar();
 			if (greeting) removeGreeting();
+			if (editProfileScreen) removeEditProfileScreen();
 			addLoginForm();
 			wfListFrame.removeUserOptions();
 		}
@@ -198,10 +202,10 @@ package view {
 		protected function addGreeting(userName:String):void {
 			if (!greeting) {
 				//1. Style
-				var style:TextFormat = new TextFormat();
-				style.font = HelveticaNeue.THIN;
-				style.size = 52;
-				style.color = Colors.getColorByName(Colors.DARK_GREY);
+				greestingStyle = new TextFormat();
+				greestingStyle.font = HelveticaNeue.THIN;
+				greestingStyle.size = 52;
+				greestingStyle.color = Colors.getColorByName(Colors.DARK_GREY);
 				
 				//2. textfields	
 				greeting = new TextField();
@@ -211,7 +215,7 @@ package view {
 				greeting.autoSize = TextFieldAutoSize.RIGHT;
 				greeting.antiAliasType = AntiAliasType.ADVANCED;
 				greeting.text = "Hello "+userName+"!";
-				greeting.setTextFormat(style);
+				greeting.setTextFormat(greestingStyle);
 				
 				greeting.x = this.stage.stageWidth/2 - greeting.width/2;
 				greeting.y = 230;
@@ -219,6 +223,15 @@ package view {
 				
 				TweenMax.from(greeting,1,{y:greeting.y - 10, autoAlpha:0, delay:1});
 			}
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function updateGreeting():void {
+			greeting.text = "Hello "+Session.userFirstName+"!";
+			greeting.setTextFormat(greestingStyle);
 		}
 		
 		/**
@@ -244,12 +257,13 @@ package view {
 			if (!topBar) {
 				topBar = new TopBar();
 				this.addChild(topBar);
+				topBar.type = "initial";
 				topBar.backgroundColor = Colors.getColorByName(Colors.WHITE);
 				topBar.titleColor = Colors.getColorByName(Colors.DARK_GREY);
 				topBar.init();
 				
 				topBar.label = "Wrkflux";
-				topBar.addMenu([{label:"Sign Out"}],MenuDirection.RIGHT);
+				topBar.addProfile();
 				
 				//animation
 				TweenLite.from(topBar,.6,{y:-topBar.hMax,delay:.6});
@@ -270,6 +284,68 @@ package view {
 				topBar.kill();
 				topBar = null;
 			}
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function showEditProfile():void {
+			
+			TweenMax.to(brand,.6,{y:100, scaleX:.6, scaleY:.6});
+			brand.spin(1);
+			TweenMax.to(greeting,.6,{alpha:0});
+			
+			editProfileScreen ? removeEditProfileScreen() : addEditProfileScreen();
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function addEditProfileScreen():void {
+			if (!editProfileScreen) {
+
+				editProfileScreen = new EditProfileScreen(this.getController());
+				this.addChild(editProfileScreen);
+				
+				editProfileScreen.windowLineColor = Colors.getColorByName(Colors.LIGHT_GREY);
+				editProfileScreen.windowColor = Colors.getColorByName(Colors.WHITE_ICE);
+				
+				editProfileScreen.init();
+				
+				editProfileScreen.x = stage.stageWidth/2 - editProfileScreen.width/2;
+				editProfileScreen.y = 150;
+				
+				TweenMax.from(editProfileScreen,.6,{y:200, alpha:0});
+				
+				//listeners
+				editProfileScreen.addEventListener(WrkfluxEvent.FORM_EVENT, formEvent);
+			}
+		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		protected function removeEditProfileScreen():void {
+			if (editProfileScreen) {
+				TweenMax.to(editProfileScreen,.6,{y:editProfileScreen.y+50, autoAlpha:0, onComplete:removeChild, onCompleteParams:[editProfileScreen]});
+				editProfileScreen.removeEventListener(WrkfluxEvent.FORM_EVENT, formEvent);
+				editProfileScreen.kill();
+				editProfileScreen = null;
+				
+				
+				
+				if (greeting) {
+					brand.removeTipo();
+					brand.spin(1);
+					TweenMax.to(greeting,.6,{alpha:1});
+					TweenMax.to(brand,.6,{y:150, scaleX:1, scaleY:1});
+				} else {
+					TweenMax.to(brand,.6,{scaleX:1, scaleY:1});
+				}
+			};
 		}
 		
 		/**
@@ -350,6 +426,24 @@ package view {
 		 * @param event
 		 * 
 		 */
+		protected function formEvent(event:WrkfluxEvent):void {
+			switch (event.data.name) {
+				case "updateProfile": 
+					WrkfluxController(this.getController()).updateProfile(event.data);
+					break;
+				
+				case "updateProfileClose":
+					updateGreeting();
+					this.removeEditProfileScreen();
+					break;
+			}
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
 		protected function formFeedback(event:WrkfluxEvent):void {
 			switch (event.data.action) {
 				
@@ -367,6 +461,13 @@ package view {
 					
 				case "forgotPass":
 					if (event.data.success) loginScreen.removeForgotPassForm();
+					break;
+				
+				case "updateProfile":
+					if (event.data.success) editProfileScreen.updated();
+					this.showMessage("Profile Updated.",MessageType.SUCCESS);
+					brand.spin(1);
+					if(topBar) topBar.updateProfileImage();
 					break;
 				
 			}
@@ -410,6 +511,8 @@ package view {
 			
 			if (topBar) topBar.resize();
 			
+			if (editProfileScreen) editProfileScreen.x = stage.stageWidth/2 - editProfileScreen.width/2;
+			
 			wfListFrame.resize();
 		}
 		
@@ -421,6 +524,7 @@ package view {
 		 * 
 		 */
 		protected function topBarActions(event:WrkfluxEvent):void {
+			
 			event.stopImmediatePropagation();
 			var data:Object = event.data;
 			
@@ -430,8 +534,13 @@ package view {
 					WrkfluxController(this.getController()).closeSession();
 					break;
 				
+				case "edit profile":
+					showEditProfile();
+					break;
+				
 			}
 		}
+		
 		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
 		
@@ -461,6 +570,11 @@ package view {
 			if (messageWindow) {
 				messageWindow.kill()
 				TweenLite.to(messageWindow,.3,{autoAlpha: 0});
+			}
+			
+			if (editProfileScreen) {
+				editProfileScreen.kill();
+				TweenLite.to(editProfileScreen,.3,{autoAlpha: 0});
 			}
 			
 			TweenMax.to(brand,.6,{y:0, alpha:0, onComplete:killView});

@@ -1,4 +1,4 @@
-package view.initial.login {
+package view.initial.profile {
 	
 	//imports
 	
@@ -10,7 +10,6 @@ package view.initial.login {
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	import flash.text.TextFormatAlign;
 	
 	import controller.WrkfluxController;
 	
@@ -33,13 +32,16 @@ package view.initial.login {
 	 * @author lucaju
 	 * 
 	 */
-	public class ForgotPasswordForm extends AbstractForm {
+	public class SignUpForm extends AbstractForm {
 		
 		//****************** Properties ****************** ****************** ******************
 		
-		protected var emailField			:TextFormField;
-		protected var sendBT				:Button;
-		protected var messageField			:MessageField;
+		protected var firstNameField			:TextFormField;
+		protected var lastNameField				:TextFormField;
+		protected var emailField				:TextFormField;
+		protected var passField					:TextFormField;
+		protected var sendBT					:Button;
+		protected var messageField				:MessageField;
 		
 		
 		//****************** Constructor ****************** ****************** ******************
@@ -49,7 +51,7 @@ package view.initial.login {
 		 * @param c
 		 * 
 		 */
-		public function ForgotPasswordForm(c:IController) {
+		public function SignUpForm(c:IController) {
 			super(c);	
 		}
 		
@@ -64,28 +66,54 @@ package view.initial.login {
 			// FIELDS
 			//1. Label
 			var style:TextFormat = new TextFormat();
-			style.font = HelveticaNeue.LIGHT;
+			style.font = HelveticaNeue.CONDENSED_BOLD;
 			style.color = Colors.getColorByName(Colors.DARK_GREY);
-			style.size = 12;
-			style.letterSpacing = 0.2;
-			style.leading = 1.2;
+			style.size = 18;
 			
 			var formLabel:TextField = new TextField();
-			formLabel.width = 190 - (2*gap);
 			formLabel.selectable = false;
-			formLabel.multiline = true;
-			formLabel.wordWrap = true;
 			formLabel.embedFonts = true;
 			formLabel.antiAliasType = AntiAliasType.ADVANCED;
 			formLabel.autoSize = TextFieldAutoSize.LEFT;
-			formLabel.text = "Please enter your email address. You will receive your password via email.";
+			formLabel.text = "Sign Up";
 			formLabel.setTextFormat(style);
 			this.addChild(formLabel);
 			
-			formLabel.x = gap;
 			formLabel.y = gap;
 			
-			//2. email
+			//2. First Name
+			firstNameField = new TextFormField();
+			firstNameField.maxChars = 30;
+			firstNameField.maxHeight = 35;
+			firstNameField.maxWidth = 190;
+			firstNameField.required = true;
+			firstNameField.textPlaceHolder = "first name";
+			this.addChild(firstNameField);
+			firstNameField.init("");
+			firstNameField.name = "firstName";
+			
+			firstNameField.x = gap;
+			firstNameField.y = formLabel.y + formLabel.height + gap;
+			
+			fieldCollection.push(firstNameField);
+			
+			//3. Last Name
+			lastNameField = new TextFormField();
+			lastNameField.maxChars = 30;
+			lastNameField.maxHeight = 35;
+			lastNameField.maxWidth = 190;
+			lastNameField.required = true;
+			lastNameField.textPlaceHolder = "last name";
+			this.addChild(lastNameField);
+			lastNameField.init("");
+			lastNameField.name = "lastName";
+			
+			lastNameField.x = firstNameField.x + firstNameField.width + gap;;
+			lastNameField.y = formLabel.y + formLabel.height + gap;
+			
+			fieldCollection.push(lastNameField);
+			
+			//4. Email
 			emailField = new TextFormField();
 			emailField.maxChars = 30;
 			emailField.maxHeight = 35;
@@ -97,25 +125,44 @@ package view.initial.login {
 			emailField.name = "email";
 			
 			emailField.x = gap;
-			emailField.y = formLabel.y + formLabel.height + gap;
+			emailField.y = lastNameField.y + lastNameField.height + gap;
 			
 			fieldCollection.push(emailField);
 			
-			//3. Send Button
+			//5. password
+			passField = new TextFormField();
+			passField.maxChars = 30;
+			passField.maxHeight = 35;
+			passField.maxWidth = 190;
+			passField.required = true;
+			passField.textPlaceHolder = "password";
+			passField.displayAsPassword = true;
+			this.addChild(passField);
+			passField.init("");
+			passField.name = "password";
+			
+			passField.x = emailField.x + emailField.width + gap;;
+			passField.y = emailField.y;
+			
+			fieldCollection.push(passField);
+			
+			//6. Ok Button
 			sendBT = new Button();
 			this.addChild(sendBT);
-			sendBT.maxWidth = 190;
-			sendBT.maxHeight = 35;
-			sendBT.color = Colors.getColorByName(Colors.BLUE);
+			sendBT.color = Colors.getColorByName(Colors.GREEN);
 			sendBT.textColor = Colors.getColorByName(Colors.WHITE);
 			sendBT.toggleColor = Colors.getColorByName(Colors.DARK_GREY);
-			sendBT.init("Send");
+			sendBT.maxWidth = 190;
+			sendBT.maxHeight = 35;
+			sendBT.init("SIGN UP");
 			
-			sendBT.x = gap;
-			sendBT.y = emailField.y + emailField.height + gap;
+			sendBT.x = sendBT.width/2 + gap;
+			sendBT.y = passField.y + passField.height + gap;
 			
 			//window
 			this.drawWindow(this.width + 2*gap, this.height + 5*gap);
+			
+			formLabel.x = this.window.width/2 - formLabel.width/2;
 			
 			//listener
 			this.addEventListener(KeyboardEvent.KEY_UP, keyUp);
@@ -123,7 +170,7 @@ package view.initial.login {
 		
 		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
-		
+
 		/**
 		 * 
 		 * @param value
@@ -151,13 +198,12 @@ package view.initial.login {
 			
 			//collect  data
 			var formData:Object = new Object();
-			formData.name = "forgotPassForm";
-			formData.action = "submit";
+			formData.name = "SignUpForm";
 			
 			//validation
 			for each (var form:TextFormField in fieldCollection) {
 				if (fillValidation(form)) {
-					formData[form.name.toLowerCase()] = form.getInput();
+					formData[form.name.toLocaleLowerCase()] = form.getInput();
 					form.validationWarning(false);
 				} else {
 					form.validationWarning(true);
@@ -191,9 +237,8 @@ package view.initial.login {
 					return true;
 				}
 			}
-			
+
 			return true;
-			
 		}
 		
 		/**
@@ -201,8 +246,11 @@ package view.initial.login {
 		 * 
 		 */
 		protected function killView():void {
-			
+		
+			firstNameField.kill();
+			lastNameField.kill();
 			emailField.kill();
+			passField.kill();
 			sendBT.kill();
 			
 			if (messageField) messageField.kill();
@@ -211,7 +259,6 @@ package view.initial.login {
 			WrkfluxController(this.getController()).getModel("wrkflux").removeEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);
 			
 			if (this.parent) if (this.parent.contains(this)) this.parent.removeChild(this);
-	
 		}
 		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************
@@ -246,7 +293,12 @@ package view.initial.login {
 		protected function formFeedback(event:WrkfluxEvent):void {
 			super.removeProgressBar();
 			WrkfluxController(this.getController()).getModel("wrkflux").removeEventListener(WrkfluxEvent.FORM_FEEDBACK, formFeedback);	
-			if (!event.data.success) sendMessage(event.data.error,MessageType.ERROR);
+			
+			if (!event.data.success) {
+				var message:String = "An error occurred.";
+				if (event.data.errno == 1062) message = "This email was already registered.";
+				sendMessage(message,MessageType.ERROR);
+			}
 		}
 		
 		

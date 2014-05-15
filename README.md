@@ -3,7 +3,7 @@ Wrkflux Beta 2
 
 Demo: http://labs.fluxo.art.br/wrkflux/
 
-Download: https://dl.dropboxusercontent.com/u/46079753/Wrkflux.air
+Download: http://labs.fluxo.art.br/wrkflux/app/Wrkflux.air
 
 
 ####Previous versions
@@ -24,17 +24,20 @@ Initial Screen
 
 If you are not logged in you will see a list of public workflows made by other users. You can browse and open them, but not edit or interact with them.
 
-If you decided to create your own workflow without an account, it will be assigned to an anonymous user. You can edit and itneract with only during the current session. After that you won't be able to edit or delete it.
+If you decided to create your own workflow without an account, it will be assigned to an anonymous user. You can edit and interact with it only during the current session. After that you won't be able to edit or delete it.
 
-Create an account or log in to see your own workflows. You can create new ones, edit, and delete them.
+Create an account or log in to see your own workflows. You can create new ones, edit, and delete them. You can also edit your profile information in the initial screeen by clicking on your profile picture in the right top corner of the screen.
 
+New Workflows are public by default. You can change privacy setting in the build mode.
 
 Build Mode
 -------
 
 Here you can create or edit workflows. They are composed by Flags, Steps, Connections and Tags.
 
-If you are creating a new workflow, give it a title before you start (required).
+If you are creating a new workflow, give it a title before you start (required). You can change the title later by editing in the top bar.
+
+By default, new workflows are public. Ajusts the privacy setting in the top bar.
 
 ###FLAGS
 

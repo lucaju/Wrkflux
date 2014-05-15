@@ -28,6 +28,7 @@ if($_POST['action']) {
 	 	
 	 	$data['title'] = utf8_encode($data['title']);
 	 	$data['authorID'] = $data['user_id'];
+	 	$data['visibility'] = $data['visibility'];
 		
 		/* free result set */
 		//$result->close();

@@ -22,6 +22,7 @@ package model.builder {
 		protected var _authorID				:int;
 		protected var _createdDate			:Date;
 		protected var _modifiedDate			:Date;
+		protected var _visibility			:uint;
 		
 		protected var _flagsManager			:FlagsManager;
 		protected var _stepsManager			:StepsManager;
@@ -54,6 +55,7 @@ package model.builder {
 									  authorID:int,
 									  createdDate:String,
 									  modifiedDate:String = "",
+									  visibility = 1,
 									  flags:Array = null,
 									  steps:Array = null,
 									  connections:Array = null,
@@ -67,6 +69,7 @@ package model.builder {
 			_authorID = authorID;
 			_createdDate = handleDate(createdDate);
 			_modifiedDate = handleDate(modifiedDate);
+			_visibility = visibility;
 			
 			//Start managers
 			_flagsManager = new FlagsManager(this);
@@ -381,6 +384,24 @@ package model.builder {
 		 */
 		public function set modifiedDate(value:Date):void {
 			_modifiedDate = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get visibility():uint {
+			return _visibility;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set visibility(value:uint):void {
+			_visibility = value;
 		}
 
 		/**

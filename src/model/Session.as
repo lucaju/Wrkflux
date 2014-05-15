@@ -12,6 +12,8 @@ package model {
 		static protected var _userID				:int;
 		static protected var _userFirstName			:String;
 		static protected var _userLastName			:String;
+		static protected var _userEmail				:String;
+		static protected var _userProfileImage		:String;
 		
 		static protected var _workflowActive		:Object;
 		static protected var _workflowsCreated		:Array;
@@ -25,8 +27,8 @@ package model {
 		 * @param userLastName
 		 * 
 		 */
-		public function Session(userID:int, userFirtName:String, userLastName:String = "") {	
-			this.open(userID,userFirtName,userLastName);
+		public function Session(userID:int, userFirtName:String, userLastName:String = "", userEmail = '', userProfileImage = '') {	
+			this.open(userID,userFirtName,userLastName, userEmail, userProfileImage);
 		}
 		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
@@ -38,12 +40,14 @@ package model {
 		 * @param userLastName
 		 * 
 		 */
-		public function open(userID:int, userFirtName:String = "", userLastName:String = ""):Boolean {	
+		public function open(userID:int, userFirtName:String = "", userLastName:String = "", userEmail = '', userProfileImage = ''):Boolean {	
 			if (_userID == 0) {
-				
+	
 				_userID = userID;
 				_userFirstName = userFirtName;
 				_userLastName = userLastName;
+				_userEmail = userEmail;
+				_userProfileImage = userProfileImage;
 				return true;
 				
 			} else {
@@ -62,12 +66,39 @@ package model {
 				_userID = 0;
 				_userFirstName = null;
 				_userLastName = null;
+				_userEmail = null;
+				_userProfileImage = null;
 				
 				_workflowActive = null;
 				_workflowsCreated = null;
 				
 				return true;
 			
+			} else {
+				return false;
+			}
+		}
+		
+		/**
+		 * 
+		 * @param userInfo
+		 * @return 
+		 * 
+		 */
+		static public function updateUser(userInfo:Object):Boolean {
+			if (_userID != 0) {
+				if (userInfo.firstName) _userFirstName = userInfo.firstName;
+				if (userInfo.lastName) _userLastName = userInfo.lastName;
+				
+				if (userInfo.profileImage) {
+					if (userInfo.profileImage == "remove") {
+						_userProfileImage = "";
+					} else {
+						_userProfileImage = userInfo.profileImage;
+					}
+				}
+				return true;
+				
 			} else {
 				return false;
 			}
@@ -157,10 +188,29 @@ package model {
 		 * @return 
 		 * 
 		 */
+		static public function get userEmail():String {
+			return _userEmail;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
 		static public function get userFullName():String {
 			return _userFirstName + " " + _userLastName;
 		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		static public function get userProfileImage():String {
+			return  _userProfileImage;
+		}
 
+		
 		/**
 		 * 
 		 * @return 

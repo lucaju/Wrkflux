@@ -7,6 +7,8 @@ package view.initial {
 	import flash.display.Sprite;
 	import flash.events.Event;
 	
+	import controller.WrkfluxController;
+	
 	import events.WrkfluxEvent;
 	
 	import model.Session;
@@ -145,6 +147,8 @@ package view.initial {
 			switch (data.clickedItem.toLowerCase()) {
 				
 				case "my workflows":
+					WrkfluxController(target.getController()).getUserWorkflows(Session.userID);
+					wfLoadList.addProgressBar();
 					wfLoadList.filter(Session.userID);
 					break;
 				

@@ -65,6 +65,14 @@ package controller {
 		public function getWorkflows():void {
 			WrkfluxModel(this.getModel("wrkflux")).getWorkflows();
 		}
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function getUserWorkflows(userID:int):void {
+			WrkfluxModel(this.getModel("wrkflux")).getUserWorkflows(userID);
+		}
 
 		/**
 		 * 
@@ -84,6 +92,15 @@ package controller {
 		 * @param data
 		 * 
 		 */
+		public function updateProfile(data:Object):void {
+			WrkfluxModel(this.getModel("wrkflux")).updateProfile(data);
+		}
+		
+		/**
+		 * 
+		 * @param data
+		 * 
+		 */
 		public function forgotPass(data:Object):void {
 			WrkfluxModel(this.getModel("wrkflux")).forgotPass(data);
 		}
@@ -95,5 +112,6 @@ package controller {
 		public function closeSession():void {
 			WrkfluxModel(this.getModel("wrkflux")).closeSession();
 		}
+		
 	}
 }

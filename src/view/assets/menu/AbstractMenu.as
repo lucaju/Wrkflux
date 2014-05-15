@@ -4,8 +4,6 @@ package view.assets.menu {
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	
-	import events.WrkfluxEvent;
-	
 	import view.assets.buttons.AbstractButton;
 	import view.assets.buttons.Button;
 	

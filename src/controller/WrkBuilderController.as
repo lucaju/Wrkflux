@@ -116,6 +116,38 @@ package controller {
 			
 		}
 		
+		
+		//****************** GENERAL UPDATE ****************** ****************** ******************
+			
+		/**
+		 * 
+		 * @param label
+		 * 
+		 */
+		public function updateTitle(label:String):Boolean {
+			return WrkBuilderModel(this.getModel("wrkbuilder")).updateTitle(label);
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function getVisibility():Boolean {
+			return WrkBuilderModel(this.getModel("wrkbuilder")).getVisibility();
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * @return 
+		 * 
+		 */
+		public function changeVisibility(value:*):Boolean {
+			return WrkBuilderModel(this.getModel("wrkbuilder")).changeVisibility(value);
+		}
+		
+		
 		//****************** FLAGS ****************** ****************** ******************
 		
 		/**
@@ -328,7 +360,6 @@ package controller {
 			var tag:Object = WrkBuilderModel(this.getModel("wrkbuilder")).updateTag(id,data);
 			return tag;
 		}
-		
 		
 	}
 }

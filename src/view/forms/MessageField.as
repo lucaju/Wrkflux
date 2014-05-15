@@ -5,6 +5,7 @@ package view.forms {
 	import com.greensock.loading.ImageLoader;
 	
 	import flash.display.Sprite;
+	import flash.events.FocusEvent;
 	import flash.text.AntiAliasType;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
@@ -12,6 +13,8 @@ package view.forms {
 	import flash.text.TextFormatAlign;
 	
 	import font.HelveticaNeue;
+	
+	import settings.Settings;
 	
 	import util.Colors;
 	import util.MessageType;
@@ -187,7 +190,7 @@ package view.forms {
 		 * 
 		 */
 		protected function progressHandler(event:LoaderEvent):void {
-			//trace("progress: " + event.target.progress);
+			if (Settings.debug) trace("progress: " + event.target.progress);
 		}
 		
 		/**
@@ -197,6 +200,10 @@ package view.forms {
 		 */
 		protected function completeHandler(event:LoaderEvent):void {
 			messageTF.x = icon.width + 3;
+			
+			event.target.removeEventListener(LoaderEvent.COMPLETE, progressHandler);
+			event.target.removeEventListener(LoaderEvent.PROGRESS, completeHandler);
+			event.target.removeEventListener(LoaderEvent.ERROR, errorHandler);
 		}
 		
 		/**
@@ -205,9 +212,27 @@ package view.forms {
 		 * 
 		 */
 		protected function errorHandler(event:LoaderEvent):void {
-			//trace("error occured with " + event.target + ": " + event.text);
+			if (Settings.debug) trace("error occured with " + event.target + ": " + event.text);
+			
+			event.target.removeEventListener(LoaderEvent.COMPLETE, progressHandler);
+			event.target.removeEventListener(LoaderEvent.PROGRESS, completeHandler);
+			event.target.removeEventListener(LoaderEvent.ERROR, errorHandler);
 		}
 
+		
+		//****************** PROTECTED EVENTS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * 
+		 */
+		override public function kill():void {
+			super.kill();
+			
+			messageTF.text = "";
+			if (icon.numChildren > 0) icon.removeChildAt(0);
+		}
+		
 		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************
 		

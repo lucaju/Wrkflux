@@ -26,15 +26,17 @@ if($_POST['wdata']) {
 	$wfID = $jData['id'];
 	if ($jData['title']) $title = utf8_encode($jData['title']);
 	if ($jData['author']) $author = utf8_encode($jData['author']);
+	if (isset($jData['visibility'])) $visibility = $jData['visibility'];
 	$date = getDateNow();
 	$time = getTimeNow();
 	$dateTime = $date." ".$time;
-	
+
 	//Update Workflow Info
 	$query = "UPDATE workflow SET ";
 	
 	if($title ) $query .= "title = '$title', ";
 	if($author) $query .= "author = '$author', ";
+	if(isset($jData['visibility'])) $query .= "visibility = '$visibility', ";
 	$query .= "modified_date = '$dateTime' ";
 	$query .= "WHERE id = $wfID";
 	

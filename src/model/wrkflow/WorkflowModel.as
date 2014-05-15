@@ -21,6 +21,7 @@ package model.wrkflow {
 		protected var _id					:int
 		protected var _title				:String;
 		protected var _authorID				:int;
+		protected var _visibility			:uint;
 		internal var _flags					:Array;
 		internal var _steps					:Array;
 		internal var _connections			:Array;
@@ -46,6 +47,7 @@ package model.wrkflow {
 		public function WorkflowModel(id:int,
 									  title:String,
 									  authorID:int,
+									  visibility = 1,
 									  flags:Array = null,
 									  steps:Array = null,
 									  connections:Array = null,
@@ -56,6 +58,7 @@ package model.wrkflow {
 			_id = id;
 			_title = title;
 			_authorID = authorID;
+			_visibility = visibility;
 			
 			//flag
 			_flags = new Array();
@@ -363,6 +366,16 @@ package model.wrkflow {
 		public function get authorID():int {
 			return _authorID;
 		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get visibility():uint {
+			return _visibility;
+		}
+
 
 		/**
 		 * 
@@ -426,7 +439,6 @@ package model.wrkflow {
 		public function get tags():Array {
 			return _tags;
 		}
-
 
 	}
 }

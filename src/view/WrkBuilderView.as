@@ -11,6 +11,8 @@ package view {
 	
 	import events.WrkfluxEvent;
 	
+	import model.Session;
+	
 	import mvc.AbstractView;
 	import mvc.IController;
 	
@@ -73,8 +75,9 @@ package view {
 			//1. top bar
 			topBar = new TopBar();
 			this.addChild(topBar);
-			topBar.backgroundColor = Colors.getColorByName(Colors.WHITE);
-			topBar.titleColor = Colors.getColorByName(Colors.DARK_GREY);
+			topBar.type = "build";
+			topBar.backgroundColor = Colors.getColorByName(Colors.DARK_GREY);
+			topBar.titleColor = Colors.getColorByName(Colors.WHITE);
 			topBar.init();
 			
 			topBar.label = WrkBuilderController(this.getController()).getLabel();
@@ -85,14 +88,15 @@ package view {
 			
 			//listenerts
 			topBar.addEventListener(WrkfluxEvent.SELECT, topBarActions);
+			topBar.addEventListener(Event.CHANGE, topBarChanged);
+			
 			var contr:WrkBuilderController = WrkBuilderController(this.getController());
 			contr.getModel("wrkbuilder").addEventListener(WrkfluxEvent.COMPLETE, processComplete);
 			contr.getModel("wrkbuilder").addEventListener(WrkfluxEvent.CHANGE, updateComplete);
 			contr.getModel("wrkbuilder").addEventListener(ErrorEvent.ERROR, errorHandle);
 			
 			this.stage.addEventListener(Event.RESIZE, resize);
-		}
-		
+		}	
 		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
 		
@@ -300,8 +304,17 @@ package view {
 			topBar.label = WrkBuilderController(this.getController()).getLabel();
 			
 			var topMenu:Menu = topBar.getMenu("right");
+			
 			topMenu.add("Use");
+			
 			topMenu.add("Save");
+			
+			if (Session.userID > 0) {
+				var privateBT:AbstractButton = topMenu.add("Private");
+				privateBT.togglable = true;
+				privateBT.toggle = WrkBuilderController(this.getController()).getVisibility();
+			}
+			
 			var tagBT:AbstractButton = topMenu.add("Tags");
 			tagBT.togglable = true;
 			tagBT.toggle = true;
@@ -382,6 +395,15 @@ package view {
 		 * @param event
 		 * 
 		 */
+		protected function topBarChanged(event:Event):void {
+			WrkBuilderController(this.getController()).updateTitle(topBar.label);
+		}	
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
 		protected function topBarActions(event:WrkfluxEvent):void {
 			event.stopImmediatePropagation();
 			var data:Object = event.data;
@@ -403,6 +425,10 @@ package view {
 				
 				case "tags":
 					structureView.showTags();
+					break;
+				
+				case "private":
+					WrkBuilderController(this.getController()).changeVisibility(data.toggle);
 					break;
 			}
 		}

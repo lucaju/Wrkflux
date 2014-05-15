@@ -13,7 +13,10 @@ package model {
 		
 		static protected const SignIn				:String = "getUser.php";
 		static protected const SignUp				:String = "insertUser.php";
+		static protected const UpadteProfile		:String = "updateUserProfile.php";
 		static protected const ForgotPass			:String = "forgotPass.php";
+		
+		static protected const ReceiveFile			:String = "upload.php";
 		
 		static protected const GetWorkflows			:String = "getWorkflows.php";
 		static protected const DeleteWorkflow		:String = "deleteWorkflow.php"
@@ -47,7 +50,7 @@ package model {
 		 * @return 
 		 * 
 		 */
-		static public function signIn():String {
+		static public function get signIn():String {
 			return PATH + SignIn;
 		}
 		
@@ -56,7 +59,7 @@ package model {
 		 * @return 
 		 * 
 		 */
-		static public function signUp():String {
+		static public function get signUp():String {
 			return PATH + SignUp;
 		}
 		
@@ -65,7 +68,16 @@ package model {
 		 * @return 
 		 * 
 		 */
-		static public function forgotPass():String {
+		static public function get upadteProfile():String {
+			return PATH + UpadteProfile;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		static public function get forgotPass():String {
 			return PATH + ForgotPass;
 		}
 		
@@ -74,7 +86,7 @@ package model {
 		 * @return 
 		 * 
 		 */
-		static public function getWorkflows():String {
+		static public function get getWorkflows():String {
 			return PATH + GetWorkflows;
 		}
 		
@@ -83,8 +95,17 @@ package model {
 		 * @return 
 		 * 
 		 */
-		static public function deleteWorkflow():String {
+		static public function get deleteWorkflow():String {
 			return PATH + DeleteWorkflow;
+		}
+		
+		/**
+		 *
+		 * @return 
+		 * 
+		 */
+		static public function get receiveFile():String {
+			return PATH + ReceiveFile;
 		}
 		
 		

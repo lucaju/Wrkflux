@@ -14,12 +14,12 @@ package view.initial.wfList {
 	import mvc.AbstractView;
 	import mvc.IController;
 	
+	import util.Colors;
 	import util.MessageType;
 	
 	import view.forms.MessageField;
 	import view.util.progressBar.ProgressBar;
 	import view.util.scroll.Scroll;
-	import util.Colors;
 	
 	/**
 	 * 
@@ -128,6 +128,28 @@ package view.initial.wfList {
 		 * @param data
 		 * 
 		 */
+		protected function loadUserItems(data:Array):void {
+			//remove progress bar
+			if (progressBar) removeProgressBar();
+			
+			//define max height
+			//TweenMax.to(bg,1,{height:this.maxHeight});
+			
+			//1.add to List
+			listWorkflows.addUserItems(data);
+			
+			//3.test scroll
+			//this.testForScroll();
+			
+			//dispatch
+			this.dispatchEvent(new Event(Event.COMPLETE));
+		}
+		
+		/**
+		 * 
+		 * @param data
+		 * 
+		 */
 		protected function addListWorkflows(data:Array):void {
 			listWorkflows = new WFList(this);
 			this.addChild(listWorkflows);
@@ -163,7 +185,7 @@ package view.initial.wfList {
 				
 				//if scroll doesn't exists
 				if (!scroll) {
-				
+					
 					// if needs scroll, create one
 					if (listWorkflows.height > maxHeight) this.addScroll();
 				
@@ -203,19 +225,6 @@ package view.initial.wfList {
 		 * 
 		 * 
 		 */
-		protected function addProgressBar():void {
-			progressBar = new ProgressBar();
-			progressBar.x = this.maxWidth/2;
-			progressBar.y = this.maxHeight/2;
-			this.addChild(progressBar);
-			
-			TweenMax.from(progressBar,1,{alpha:0});
-		}
-		
-		/**
-		 * 
-		 * 
-		 */
 		protected function removeProgressBar():void {
 			this.removeChild(progressBar);
 			progressBar = null;
@@ -235,6 +244,11 @@ package view.initial.wfList {
 				case "load":
 					event.stopImmediatePropagation();
 					loadItems(event.data.data);
+					break;
+				
+				case "loadUserWorkflows":
+					event.stopImmediatePropagation();
+					loadUserItems(event.data.data);
 					break;
 			}
 			
@@ -286,7 +300,7 @@ package view.initial.wfList {
 					break;
 				
 				case "delete":
-					listWorkflows.removeItem(listWorkflows.selectedItem);
+					listWorkflows.deleteItem(listWorkflows.selectedItem);
 					WrkfluxController(this.getController()).deleteWorkflow(listWorkflows.selectedItem);
 					break;
 				
@@ -308,6 +322,21 @@ package view.initial.wfList {
 		}
 		
 		//****************** PUBLIC METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function addProgressBar():void {
+			if (!progressBar) {
+				progressBar = new ProgressBar();
+				progressBar.x = this.maxWidth/2;
+				progressBar.y = this.maxHeight/2;
+				this.addChild(progressBar);
+				
+				TweenMax.from(progressBar,1,{alpha:0});
+			}
+		}
 		
 		/**
 		 * 

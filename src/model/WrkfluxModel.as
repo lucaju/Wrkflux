@@ -17,6 +17,8 @@ package model {
 	
 	import mvc.Observable;
 	
+	import settings.Settings;
+	
 	/**
 	 * 
 	 * @author lucaju
@@ -75,7 +77,7 @@ package model {
 			variables.wdata = Jdata;
 			
 			//define request url
-			var request:URLRequest = new URLRequest(PHPGateWay.signIn());
+			var request:URLRequest = new URLRequest(PHPGateWay.signIn);
 			request.data = variables;
 			request.method = URLRequestMethod.POST;
 			
@@ -110,7 +112,7 @@ package model {
 			variables.wdata = Jdata;
 			
 			//define request url
-			var request:URLRequest = new URLRequest(PHPGateWay.signUp());
+			var request:URLRequest = new URLRequest(PHPGateWay.signUp);
 			request.data = variables;
 			request.method = URLRequestMethod.POST;
 			
@@ -142,17 +144,17 @@ package model {
 			variables.wdata = Jdata;
 			
 			//define request url
-			var request:URLRequest = new URLRequest(PHPGateWay.forgotPass());
+			var request:URLRequest = new URLRequest(PHPGateWay.forgotPass);
 			request.data = variables;
 			request.method = URLRequestMethod.POST;
 			
 			//send data
 			var dataLoader:DataLoader = new DataLoader(request,
 														{name:"forgotPass",
-															estimatedBytes:200,
-															onProgress:progressHandler,
-															onComplete:forgotPassComplete,
-															onError:errorHandler});
+														 estimatedBytes:200,
+														 onProgress:progressHandler,
+														 onComplete:forgotPassComplete,
+														 onError:errorHandler});
 			dataLoader.load();
 		}
 		
@@ -161,16 +163,45 @@ package model {
 		 * 
 		 */
 		public function getWorkflows():void {
-			var request:URLRequest = new URLRequest(PHPGateWay.getWorkflows());
+			var request:URLRequest = new URLRequest(PHPGateWay.getWorkflows);
 			var data:URLVariables = new URLVariables();
 			data.action = "getWorkflows";
 			data.id = "";
 			request.data = data;
 			request.method = URLRequestMethod.POST;
 			
-			var dataLoader:DataLoader = new DataLoader(request, {name:"getWorkflows", estimatedBytes:200, onProgress:progressHandler, onComplete:getWorkflowsComplete, onError:errorHandler});
+			var dataLoader:DataLoader = new DataLoader(request,
+													   {name:"getWorkflows",
+														estimatedBytes:200,
+														onProgress:progressHandler,
+														onComplete:getWorkflowsComplete,
+														onError:errorHandler});
+			
 			dataLoader.load();
 		
+		}
+		
+		/**
+		 * 
+		 * @param userID
+		 * 
+		 */
+		public function getUserWorkflows(userID:int):void {
+			var request:URLRequest = new URLRequest(PHPGateWay.getWorkflows);
+			var data:URLVariables = new URLVariables();
+			data.action = "getUserWorkflows";
+			data.userID = userID;
+			request.data = data;
+			request.method = URLRequestMethod.POST;
+			
+			var dataLoader:DataLoader = new DataLoader(request,
+												   	   {name:"getUserWorkflows",
+														estimatedBytes:200,
+														onProgress:progressHandler,
+														onComplete:getUserWorkflowsComplete,
+														onError:errorHandler});
+			
+			dataLoader.load();
 		}
 		
 		/**
@@ -180,7 +211,7 @@ package model {
 		 */
 		public function deleteWorkflow(id:int):void {
 			
-			var request:URLRequest = new URLRequest(PHPGateWay.deleteWorkflow());
+			var request:URLRequest = new URLRequest(PHPGateWay.deleteWorkflow);
 			var data:URLVariables = new URLVariables();
 			data.action = "deleteWorkflow";
 			data.id = id;
@@ -190,6 +221,42 @@ package model {
 			var dataLoader:DataLoader = new DataLoader(request, {name:"deleteWorkflow", estimatedBytes:200, onProgress:progressHandler, onComplete:deleteWorkflowComplete, onError:errorHandler});
 			dataLoader.load();
 			
+		}
+		
+		/**
+		 * 
+		 * @param data
+		 * 
+		 */
+		public function updateProfile(data:Object):void {
+			//get data
+			var wfData:Object = new Object();
+			wfData.userID = Session.userID;
+			if (data.firstname) wfData.firstName = data.firstname;
+			if (data.lastname) wfData.lastName = data.lastname;
+			if (data.password) wfData.password = data.password;
+			if (data.image) wfData.profileImage = data.image;
+			
+			//convert to Json
+			var Jdata:String = JSON.stringify(wfData);
+			
+			//Load to urlVariables
+			var variables:URLVariables = new URLVariables();
+			variables.wdata = Jdata;
+			
+			//define request url
+			var request:URLRequest = new URLRequest(PHPGateWay.upadteProfile);
+			request.data = variables;
+			request.method = URLRequestMethod.POST;
+			
+			//send data
+			var dataLoader:DataLoader = new DataLoader(request,
+														{name:"updateProfile",
+															estimatedBytes:200,
+															onProgress:progressHandler,
+															onComplete:updateProfilepComplete,
+															onError:errorHandler});
+			dataLoader.load();
 		}
 		
 		/**
@@ -207,6 +274,18 @@ package model {
 			}
 		}
 		
+		/**
+		 * 
+		 * @param wfID
+		 * @return 
+		 * 
+		 */
+		public function getWorkflowById(requestedwfID:int):WorkflowItemModel {
+			for each (var wf:WorkflowItemModel in _workflowCollection) {
+				if (requestedwfID == wf.id) return wf;
+			}
+			return null;
+		}
 		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************
 		
@@ -216,7 +295,7 @@ package model {
 		 * 
 		 */
 		protected function progressHandler(event:LoaderEvent):void {
-			//trace("progress: " + event.target.progress);
+			if (Settings.debug) trace("progress: " + event.target.progress);
 		}
 		
 		/**
@@ -228,6 +307,8 @@ package model {
 			
 			var dataLoader:DataLoader = DataLoader(event.target);
 			
+			if (Settings.debug) trace (LoaderMax.getContent("getWorkflows"))
+			
 			_workflowCollection = new Array();
 			var workflows:Object = JSON.parse(LoaderMax.getContent("getWorkflows"));
 			
@@ -237,14 +318,57 @@ package model {
 																		workflow.user_id,
 																		workflow.author,
 																		workflow.created_date,
-																		workflow.modified_date);
+																		workflow.modified_date,
+																		workflow.visibility);
 				
 				_workflowCollection.push(wfProject);
 			}
 			
-			
 			var data:Object = new Object();
 			data.action = "load";
+			data.data = workflowCollection;
+			
+			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.COMPLETE, data));
+			
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function getUserWorkflowsComplete(event:LoaderEvent):void {
+			
+			var dataLoader:DataLoader = DataLoader(event.target);
+			
+			if (Settings.debug) trace (LoaderMax.getContent("getUserWorkflows"))
+			
+			var workflows:Object = JSON.parse(LoaderMax.getContent("getUserWorkflows"));
+			
+			var alreadyLoaded:Boolean = true;
+			
+			for each (var workflow:Object in workflows) {
+
+				//check agains current list
+				if (!getWorkflowById(workflow.id)) {
+				
+					var wfProject:WorkflowItemModel = new WorkflowItemModel(workflow.id,
+																			workflow.title,
+																			workflow.user_id,
+																			workflow.author,
+																			workflow.created_date,
+																			workflow.modified_date,
+																			workflow.visibility);
+					
+					_workflowCollection.push(wfProject);
+					
+				}
+			}
+			
+			_workflowCollection.sortOn("id", Array.NUMERIC | Array.DESCENDING);
+			
+			var data:Object = new Object();
+			data.action = "loadUserWorkflows";
 			data.data = workflowCollection;
 			
 			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.COMPLETE, data));
@@ -289,7 +413,7 @@ package model {
 			var dataLoader:DataLoader = DataLoader(event.target);
 			var data:Object = JSON.parse(LoaderMax.getContent("signIn"));
 			
-			if (data.success) _session = new Session(data.userID, data.firstName, data.lastName);
+			if (data.success) _session = new Session(data.userID, data.firstName, data.lastName, data.email, data.profile_image);
 			
 			data.action = "signIn";
 			
@@ -307,7 +431,6 @@ package model {
 			var dataLoader:DataLoader = DataLoader(event.target);
 			var data:Object = JSON.parse(LoaderMax.getContent("forgotPass"));
 			
-			trace (LoaderMax.getContent("forgotPass"))
 			data.action = "forgotPass";
 			
 			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_FEEDBACK, data));
@@ -324,9 +447,28 @@ package model {
 			var dataLoader:DataLoader = DataLoader(event.target);
 			var data:Object = JSON.parse(LoaderMax.getContent("signUp"));
 			
-			if (data.success) _session = new Session(data.userID, data.firstName, data.lastName);
+			if (data.success) _session = new Session(data.userID, data.firstName, data.lastName, data.email);
 			
 			data.action = "signUp";
+			
+			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_FEEDBACK, data));
+			
+		}
+		
+		/**
+		 * 
+		 * @param event
+		 * 
+		 */
+		protected function updateProfilepComplete(event:LoaderEvent):void {
+			
+			if (Settings.debug) trace (LoaderMax.getContent("updateProfile"));
+			
+			var dataLoader:DataLoader = DataLoader(event.target);
+			var data:Object = JSON.parse(LoaderMax.getContent("updateProfile"));
+			if (data.success) Session.updateUser(data);
+			
+			data.action = "updateProfile";
 			
 			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.FORM_FEEDBACK, data));
 			

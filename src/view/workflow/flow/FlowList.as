@@ -20,6 +20,8 @@ package view.workflow.flow {
 	import view.workflow.flow.pin.PinView;
 	import view.workflow.structure.steps.Step;
 	
+	import settings.Settings;
+	
 	/**
 	 * 
 	 * @author lucaju
@@ -349,7 +351,7 @@ package view.workflow.flow {
 			
 			//transform from local to global
 			var pLocal:Point = new Point(xR,yR);
-			trace (stepContainer.parent.parent)
+			if (Settings.debug) trace (stepContainer.parent.parent)
 			var pGlobal:Point = stepContainer.parent.parent.localToGlobal(pLocal);
 			
 			pGlobal.x = pGlobal.x// - offsetX;
@@ -456,7 +458,7 @@ package view.workflow.flow {
 		 * 
 		 */
 		protected function pinSelected(event:Event):void {
-			//trace ("oi")
+			if (Settings.debug) trace ("PinSelect" + event)
 		}
 		
 		

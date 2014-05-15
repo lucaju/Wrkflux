@@ -17,6 +17,8 @@ package view.initial.wfList {
 	
 	import util.Colors;
 	
+	import view.assets.graphics.LockIcon;
+	
 	/**
 	 * 
 	 * @author lucaju
@@ -26,6 +28,9 @@ package view.initial.wfList {
 	public class WFItem extends Sprite {
 		
 		//****************** Properties ****************** ****************** ******************
+		
+		protected var _newX				:Number;
+		protected var _newY				:Number;
 		
 		protected var _id				:int;
 		protected var _authorID			:int;
@@ -38,8 +43,10 @@ package view.initial.wfList {
 		protected var dateTF			:TextField;
 		
 		protected var currentWidth		:Number = 240;
-		protected var currentHeight		:Number = 50;
+		protected var currentHeight		:Number = 55;
 		protected var gap				:int	= 5;
+		
+		protected var visibilityIcon	:LockIcon;
 		
 		protected var options			:WFItemOptions;
 		
@@ -53,16 +60,13 @@ package view.initial.wfList {
 		 * @param date
 		 * 
 		 */
-		public function WFItem(id:int, authorID:int, title:String, author:String, date:Date) {
+		public function WFItem(id:int, authorID:int, title:String, author:String, date:Date, visibility:Boolean) {
 			
 			//1. data
 			_id = id;
 			_authorID = authorID;
 			
-			trace (authorID,author)
-			
 			if (author == null) author = " ";
-			
 			
 			//2. style
 			var styleTitle:TextFormat = new TextFormat();
@@ -71,7 +75,7 @@ package view.initial.wfList {
 			
 			var styleDate:TextFormat = new TextFormat();
 			styleDate.font = HelveticaNeue.LIGHT;
-			styleDate.size = 10;
+			styleDate.size = 11;
 			styleDate.color = Colors.getColorByName(Colors.DARK_GREY);
 			
 			var styleAuthor:TextFormat = new TextFormat();
@@ -92,16 +96,16 @@ package view.initial.wfList {
 			
 			//3.2 title
 			titleTF = createTextfield();
+			//titleTF.border = true;
+			titleTF.width = currentWidth - 2*(gap);
+			titleTF.wordWrap = true;
+			titleTF.multiline = true;
 			titleTF.text = title;
 			titleTF.setTextFormat(styleTitle);
 			
 			titleTF.x = gap;
 			
-			if (authorTF) {
-				titleTF.y = authorTF.y + authorTF.height;
-			} else {
-				titleTF.y = gap;
-			}
+			titleTF.y = authorTF ? authorTF.y + authorTF.height + gap : gap;
 			
 			this.addChild(titleTF);
 			
@@ -112,15 +116,40 @@ package view.initial.wfList {
 			
 			dateTF.x = currentWidth - dateTF.width - gap;
 			dateTF.y = gap;
+			
+			
+			//3.3.1 date bg
+			var dateBG:Sprite = new Sprite();
+			dateBG.graphics.beginFill(0xEFEFEF);
+			dateBG.graphics.drawRect(0,0,dateTF.width+gap-1,dateTF.height);
+			dateBG.graphics.endFill();
+			dateBG.x = dateTF.x;
+			dateBG.y = dateTF.y;
+			this.addChild(dateBG)
+			
 			this.addChild(dateTF);
+			
+			//trace (currentHeight, this.height)
+			if (currentHeight < this.height - 6) currentHeight = this.height + (2*gap) - 1;
 			
 			//3. shape
 			shape = this.drawBaseShape();
 			shape.mouseEnabled = false;
 			this.addChildAt(shape,0);
 			
+			//4. add visibiity info
+			if (!visibility) {
+				visibilityIcon = new LockIcon();
+				this.addChild(visibilityIcon);
+				visibilityIcon.maxHeight = visibilityIcon.maxWidth = 8;
+				visibilityIcon.init();
+				
+				visibilityIcon.x = dateBG.x - visibilityIcon.maxWidth - 2;
+				visibilityIcon.y = dateBG.y + dateBG.height/2 - visibilityIcon.maxHeight/2;
+			}
+
 			
-			//4. interaction
+			//5. interaction
 			this.buttonMode = true;
 			
 			this.addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
@@ -295,6 +324,42 @@ package view.initial.wfList {
 		 * @return 
 		 * 
 		 */
+		public function get newX():Number {
+			return _newX;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set newX(value:Number):void {
+			_newX = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get newY():Number {
+			return _newY;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set newY(value:Number):void {
+			_newY = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
 		public function get id():int {
 			return _id;
 		}
@@ -307,5 +372,26 @@ package view.initial.wfList {
 		public function get authorID():int {
 			return _authorID;
 		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get title():String {
+			return titleTF.text;
+		}
+
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get visibility():Boolean {
+			if (visibilityIcon) return true;
+			return false;
+		}
+
+
 	}
 }

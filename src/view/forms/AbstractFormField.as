@@ -145,6 +145,16 @@ package view.forms {
 		
 		/**
 		 * 
+		 * @return 
+		 * 
+		 */
+		public function getInput():String {
+			//override
+			return null;
+		}
+		
+		/**
+		 * 
 		 * 
 		 */
 		public function validationWarning(value:Boolean = true):void {

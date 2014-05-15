@@ -8,6 +8,7 @@ package view.initial.wfList {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
+	import model.Session;
 	import model.initial.WorkflowItemModel;
 	
 	import view.assets.buttons.Button;
@@ -57,7 +58,7 @@ package view.initial.wfList {
 		}
 		
 		
-		//****************** I ****************** ****************** ******************
+		//****************** INITIALIZATION ****************** ****************** ******************
 			
 		/**
 		 * 
@@ -90,12 +91,27 @@ package view.initial.wfList {
 			//item loop
 			for each (var item:WorkflowItemModel in data) {
 				
-				wfItem = new WFItem(item.id, item.authorID, item.title, item.author, item.createdDate);
+				wfItem = new WFItem(item.id,
+									item.authorID,
+									item.title,
+									item.author,
+									item.createdDate,
+									item.visibility);
+				
+				//add to array
+				itemCollection.push(wfItem);
 				
 				//test positions
 				if (iColumns >= numColumns) {
 					iColumns = 0;
-					posY += wfItem.height + gap;
+					//posY += wfItem.height + gap;
+				}
+				
+				if (i==numColumns-1) {
+					posY = addBT.y + addBT.height + gap;
+				} else if (i>=numColumns) {
+					var prevColumTop:Sprite = itemCollection[itemCollection.length-numColumns-1];
+					posY = prevColumTop.y + prevColumTop.height + gap;
 				}
 				
 				//position
@@ -103,11 +119,9 @@ package view.initial.wfList {
 				wfItem.y = posY;
 				container.addChild(wfItem);
 				
-				//add to array
-				itemCollection.push(wfItem);
-				
 				//add tp posX
 				iColumns++;
+				i++;
 				
 			}
 			
@@ -129,14 +143,53 @@ package view.initial.wfList {
 		}
 		
 		
-		//****************** INITIALIZATION ****************** ****************** ******************
+		//****************** INITIALIZATION - ANIMATION****************** ****************** ******************
 		
 		/**
 		 * 
 		 * 
 		 */
 		public function show():void {
-			for (var i:int = 0; i < actualCollection.length; i++) TweenMax.from(actualCollection[i],.6,{x: 1400, y:500, rotation:Math.random()*20, delay:i*.1});
+			for (var i:int = 0; i < actualCollection.length; i++) TweenMax.from(actualCollection[i], .8,{x: 1400, y:500, rotation:Math.random()*20, delay:i*.05});
+		}
+		
+		/**
+		 * 
+		 * @param data
+		 * 
+		 */
+		public function addUserItems(data:Array):void {
+			
+			var wfItem:WFItem;
+			for each (var wfModel:WorkflowItemModel in data) {
+				
+				if (!getItemById(wfModel.id)) {
+					
+					wfItem = new WFItem(wfModel.id,
+										wfModel.authorID,
+										wfModel.title,
+										wfModel.author,
+										wfModel.createdDate,
+										wfModel.visibility);
+					
+					//add to array
+					itemCollection.push(wfItem);
+					itemCollection.sortOn("id", Array.NUMERIC | Array.DESCENDING)
+						
+					filteredItemCollection.push(wfItem);
+					filteredItemCollection.sortOn("id", Array.NUMERIC | Array.DESCENDING)
+					
+					container.addChild(wfItem);
+					
+					wfItem.y = -100;
+					
+				}
+				
+			}
+			
+			actualCollection = filteredItemCollection;
+			
+			filter(Session.userID);
 		}
 		
 		//****************** PROTECTED METHODS ****************** ****************** ******************
@@ -170,17 +223,32 @@ package view.initial.wfList {
 				//check position
 				if (iColumns >= numColumns) {
 					iColumns = 0;
-					posY += actualCollection[i].height + gap;
+					//posY += actualCollection[i].height + gap;
 				}
+				
+				var cur:WFItem = actualCollection[i]
+				
+				if (i==numColumns-1) {
+					posY = addBT.y + addBT.height + gap;
+				} else if (i>=numColumns) {
+					var prevColumTop:WFItem = actualCollection[i-numColumns];
+					posY = prevColumTop.newY + prevColumTop.height + gap;
+				}
+				
+				//change new position
+				actualCollection[i].newX = iColumns * slotWidth;
+				actualCollection[i].newY = posY;
 				
 				//animation
 				if (!actualCollection[i].visible) {
-					actualCollection[i].x = iColumns * slotWidth;;
-					actualCollection[i].y = posY;
-					TweenMax.to(actualCollection[i],.6,{autoAlpha:1,delay:.6});
-				} else {
-					TweenMax.to(actualCollection[i],.6,{x: iColumns * slotWidth, y:posY, delay:i*k});
+					//actualCollection[i].x = iColumns * slotWidth;;
+					//actualCollection[i].y = posY;
 					
+					TweenMax.to(actualCollection[i],.6,{autoAlpha:1,delay:.6});
+					
+				} else {
+					
+					//TweenMax.to(actualCollection[i],.6,{x: iColumns * slotWidth, y:posY, delay:i*k});
 					
 					if (i > 50) {
 						k = .001; 
@@ -189,13 +257,19 @@ package view.initial.wfList {
 					}
 				}
 				
-				//if it is the las, call update listSize in the end
-				if (i == actualCollection.length-1) TweenMax.to(actualCollection[i],.6,{autoAlpha:1,onComplete:updateListSize});
-				
 				//add tp posX
 				iColumns++;
 			}
 			
+			//animation
+			for (var q:int = 0; q < actualCollection.length; q++) {
+				if (q == actualCollection.length-1) {
+					//if it is the last, call update listSize in the end
+					TweenMax.to(actualCollection[q],.6,{x: actualCollection[q].newX, y:actualCollection[q].newY,onComplete:updateListSize, delay:q*k});;
+				} else {
+					TweenMax.to(actualCollection[q],.6,{x: actualCollection[q].newX, y:actualCollection[q].newY, delay:q*k});;
+				}
+			}
 			
 		}
 		
@@ -207,6 +281,16 @@ package view.initial.wfList {
 			bg.height = 0;
 			bg.height = this.height+20;
 			this.dispatchEvent(new Event(Event.CHANGE));
+		}
+		
+		/**
+		 * 
+		 * @param item
+		 * 
+		 */
+		protected function removeItem(item:WFItem):void {
+			itemCollection.splice(itemCollection.indexOf(item),1);
+			TweenMax.to(item,.6, {autoAlpha:0, y:-100, onComplete:container.removeChild, onCompleteParams:[item]});
 		}
 		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************
@@ -250,6 +334,19 @@ package view.initial.wfList {
 		
 		/**
 		 * 
+		 * @param wfID
+		 * @return 
+		 * 
+		 */
+		public function getItemById(wfID):WFItem {
+			for each(var wf:WFItem in itemCollection) {
+				if (wfID == wf.id) return wf;
+			}
+			return null;
+		}
+		
+		/**
+		 * 
 		 * 
 		 */
 		public function filter(userID:int = 0):void {
@@ -258,6 +355,12 @@ package view.initial.wfList {
 				
 				//unfilter
 				filteredItemCollection = null;
+				
+				for each(var wf:WFItem in itemCollection) {
+					if (wf.visibility == true) removeItem(wf)
+				}
+				
+				itemCollection.sortOn("id", Array.NUMERIC | Array.DESCENDING);
 				
 				actualCollection = itemCollection;
 				
@@ -298,7 +401,7 @@ package view.initial.wfList {
 		 * @param itemID
 		 * 
 		 */
-		public function removeItem(itemID:int):void {
+		public function deleteItem(itemID:int):void {
 			
 			var actualItemIndex:int;
 			var collectionItemIndex:int;

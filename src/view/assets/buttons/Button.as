@@ -54,6 +54,8 @@ package view.assets.buttons {
 			}
 			shape.graphics.endFill();
 			
+			shape.alpha = this.shapeAlpha;
+			
 			this.addChild(shape);
 			
 			//2.Label
@@ -112,8 +114,10 @@ package view.assets.buttons {
 			
 			if (this.toggle) {
 				shape.graphics.beginFill(this.toggleColor,this.toggleColorAlpha);
+				shape.alpha = this.toggleAlpha;
 			} else {
 				shape.graphics.beginFill(this.color,this.colorAlpha);
+				shape.alpha = this.shapeAlpha;
 			}
 			
 			
@@ -135,7 +139,14 @@ package view.assets.buttons {
 		 * 
 		 */
 		protected function mouseOver(event:MouseEvent):void {
-			TweenMax.to(shape,.4,{colorTransform:{tint:this.toggleColor, tintAmount:0.3}});
+			
+			if (!this.toggle) {
+				shape.alpha = this.toggleAlpha;
+				TweenMax.to(shape,.4,{colorTransform:{tint:this.toggleColor, tintAmount:0.3}});
+			} else {
+				TweenMax.to(shape,.4,{colorTransform:{tint:this.color, tintAmount:0.3}});
+			}
+			
 		}	
 		
 		/**
@@ -144,6 +155,12 @@ package view.assets.buttons {
 		 * 
 		 */
 		protected function mouseOut(event:MouseEvent):void {
+			if (this.toggle) {
+				shape.alpha = this.toggleAlpha;
+			} else {
+				shape.alpha = this.shapeAlpha;
+			}
+			
 			TweenMax.to(shape,.4,{removeTint:true});
 		}	
 		

@@ -2,9 +2,10 @@ package controller {
 	
 	//imports
 	import model.FlagModel;
+	import model.Session;
+	import model.WrkBuilderModel;
 	import model.WrkFlowModel;
 	import model.WrkfluxModel;
-	import model.Session;
 	
 	import mvc.AbstractController;
 	
@@ -94,6 +95,15 @@ package controller {
 					return null;
 			}
 			
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function getVisibility():Boolean {
+			return WrkFlowModel(this.getModel("wrkflow")).getVisibility();
 		}
 		
 		//****************** STRUCTURE ****************** ****************** ******************

@@ -18,7 +18,7 @@ package model.initial {
 		protected var _author				:String;
 		protected var _createdDate			:Date;
 		protected var _modifiedDate			:Date;
-		
+		protected var _visibility			:uint;
 		
 		//****************** Properties ****************** ****************** ******************
 		
@@ -38,7 +38,8 @@ package model.initial {
 									  authorID:int,
 									  author:String,
 									  createdDate:String,
-									  modifiedDate:String = "") {
+									  modifiedDate:String = "",
+									  visibility = 1) {
 			
 			
 			
@@ -50,7 +51,7 @@ package model.initial {
 			_author = author;
 			_createdDate = handleDate(createdDate);
 			_modifiedDate = handleDate(modifiedDate);
-			
+			_visibility = visibility;
 		}
 		
 		
@@ -138,6 +139,14 @@ package model.initial {
 			return _modifiedDate;
 		}
 
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get visibility():uint {
+			return _visibility;
+		}
 		
 	}
 }

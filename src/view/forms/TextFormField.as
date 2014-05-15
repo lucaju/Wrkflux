@@ -24,6 +24,8 @@ package view.forms {
 		
 		protected var _textArea			:Boolean;
 		protected var _maxChars			:int;
+		protected var _selectable		:Boolean;
+		protected var _text				:String;
 		
 		//****************** Constructor ****************** ****************** ******************
 		
@@ -38,6 +40,7 @@ package view.forms {
 			//initials
 			textArea = false;
 			maxChars = 0;
+			selectable = true;
 			
 		}
 		
@@ -62,7 +65,17 @@ package view.forms {
 			//2. input
 			inputTF = new TextField();
 			inputTF.name = this.name + "_input";
-			inputTF.type = TextFieldType.INPUT;
+			
+			if (selectable) {
+				inputTF.selectable = true;
+				inputTF.type = TextFieldType.INPUT;
+			} else {
+				inputTF.selectable = false;
+				inputTF.type = TextFieldType.DYNAMIC;
+				this.removeEventListener(FocusEvent.FOCUS_IN, focusIn);
+				this.removeEventListener(FocusEvent.FOCUS_OUT, focusOut);
+			}
+			
 			if (this.textPlaceHolder == "") inputTF.displayAsPassword = this.displayAsPassword;
 			inputTF.width = this.maxWidth - 2*gap;
 			inputTF.height = this.maxHeight- 2*gap;
@@ -80,6 +93,8 @@ package view.forms {
 			inputTF.defaultTextFormat = inputStyle;
 			
 			if (this.textPlaceHolder != "") inputTF.text = this.textPlaceHolder;
+			
+			if (text) inputTF.text = text;
 			
 			inputTF.x = gap;
 			inputTF.y = gap;
@@ -129,7 +144,7 @@ package view.forms {
 		 * @return 
 		 * 
 		 */
-		public function getInput():String {
+		override public function getInput():String {
 			return inputTF.text;
 		}
 		
@@ -180,6 +195,49 @@ package view.forms {
 		 */
 		public function set maxChars(value:int):void {
 			_maxChars = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get selectable():Boolean {
+			return _selectable;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set selectable(value:Boolean):void {
+			_selectable = value;
+			if (!_selectable) {
+				this._backgroundAlpha = .3;
+			} else {
+				this._backgroundAlpha = .8;
+			}
+			
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get text():String {
+			return _text;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set text(value:String):void {
+			_text = value;
+			currentValue = value;
 		}
 
 		/**

@@ -20,18 +20,15 @@ package view.assets {
 		
 		protected var image					:Sprite;
 		protected var bitmapData			:BitmapData;
-		
-		//****************** Properties ****************** ****************** ******************
 
 		
-		
+		//****************** Costructor ****************** ****************** ******************
+
 		/**
 		 * 
 		 * 
 		 */
 		public function Background() {
-			
-			this.mouseChildren = false;
 		
 			image = new Sprite();
 			image.alpha = .6;
@@ -42,6 +39,7 @@ package view.assets {
 			loader.load(new URLRequest(imagePath)); 
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, completeHandler);
 		}
+		
 		
 		//****************** PROTECTED EVENTS ****************** ****************** ******************
 		

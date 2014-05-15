@@ -129,7 +129,7 @@ package view.initial.wfList {
 			
 			BT.shapeForm = ButtonShapeForm.RECT;
 			BT.maxWidth = 40;
-			BT.maxHeight = 50;
+			BT.maxHeight = 55;
 			BT.colorAlpha = 1;
 			
 			BT.textSize = 12;

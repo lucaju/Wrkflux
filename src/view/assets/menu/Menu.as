@@ -45,6 +45,7 @@ package view.assets.menu {
 			var bt:Button = new Button();
 			
 			bt.shapeForm = this.abstractBt.shapeForm;
+			bt.shapeAlpha = this.abstractBt.shapeAlpha;
 			
 			bt.color = this.abstractBt.color;
 			bt.colorAlpha = this.abstractBt.colorAlpha;
@@ -62,6 +63,7 @@ package view.assets.menu {
 			
 			bt.togglable = this.abstractBt.togglable;
 			bt.toggle = this.abstractBt.toggle;
+			bt.toggleAlpha = this.abstractBt.toggleAlpha;
 			bt.toggleColor = this.abstractBt.toggleColor;
 			bt.toggleColorAlpha = this.abstractBt.toggleColorAlpha;
 			
@@ -79,7 +81,7 @@ package view.assets.menu {
 				
 			} else if (orientation == MenuOrientation.VERTICAL && direction == MenuDirection.TOP) {
 				
-				if (items.length > 0) bt.y = this.height + gap;
+				if (items.length > 0) bt.y = this.height;
 				
 			} else if (orientation == MenuOrientation.VERTICAL && direction == MenuDirection.BOTTOM) {
 				
@@ -165,13 +167,11 @@ package view.assets.menu {
 				
 				bt = event.target as Button;
 				
-				if (lastClickedItem != bt) {
-					
-					//toggle
-					if (this.type == MenuType.UNIQUE) if (lastClickedItem) lastClickedItem.toggle = !lastClickedItem.toggle;
-					lastClickedItem = bt;
-					bt.toggle = !bt.toggle;
-				}
+				//toggle
+				if (this.type == MenuType.UNIQUE) if (lastClickedItem) lastClickedItem.toggle = !lastClickedItem.toggle;
+				lastClickedItem = bt;
+				bt.toggle = !bt.toggle;
+				
 				
 			} else {
 				lastClickedItem = null;
@@ -182,7 +182,10 @@ package view.assets.menu {
 			if (this.type == MenuType.UNIQUE) this.deselectAll();
 			
 			//send data
-			var data:Object = {clickedItem: bt.getLabel()};
+			var data:Object = new Object();
+			data.clickedItem = bt.getLabel();
+			if (bt.togglable) data.toggle = bt.toggle;
+			
 			this.dispatchEvent(new WrkfluxEvent(WrkfluxEvent.SELECT,data));
 			
 		}

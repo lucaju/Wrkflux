@@ -21,6 +21,7 @@ package view.assets.buttons {
 		protected var labelTF				:TextField;
 		
 		protected var _shapeForm			:String; 
+		protected var _shapeAlpha			:Number;
 		
 		protected var _color				:uint;
 		protected var _colorAlpha			:Number;
@@ -39,6 +40,7 @@ package view.assets.buttons {
 		
 		protected var _togglable			:Boolean;
 		protected var _toggle				:Boolean;
+		protected var _toggleAlpha			:Number;
 		protected var _toggleColor			:uint;
 		protected var _toggleColorAlpha		:Number;
 		
@@ -50,6 +52,7 @@ package view.assets.buttons {
 			this.buttonMode = true;
 			
 			shapeForm = ButtonShapeForm.RECT;
+			_shapeAlpha = 1;
 			
 			_color = Colors.getColorByName(Colors.WHITE);
 			_colorAlpha = 1;
@@ -68,6 +71,7 @@ package view.assets.buttons {
 			
 			_togglable = false;
 			_toggle = false;
+			_toggleAlpha = 1;
 			_toggleColor = Colors.getColorByName(Colors.LIGHT_GREY);
 			_toggleColorAlpha = 1;
 			
@@ -141,6 +145,24 @@ package view.assets.buttons {
 		 */
 		public function set shapeForm(value:String):void {
 			_shapeForm = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get shapeAlpha():Number {
+			return _shapeAlpha;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set shapeAlpha(value:Number):void {
+			_shapeAlpha = value;
 		}
 
 		/**
@@ -391,6 +413,24 @@ package view.assets.buttons {
 		 */
 		public function set toggle(value:Boolean):void {
 			_toggle = value;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function get toggleAlpha():Number {
+			return _toggleAlpha;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * 
+		 */
+		public function set toggleAlpha(value:Number):void {
+			_toggleAlpha = value;
 		}
 
 		/**

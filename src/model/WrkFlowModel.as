@@ -92,6 +92,15 @@ package model {
 			}
 		}
 		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function getVisibility():Boolean {
+			if (workflowModel.visibility == 0) return true;
+			return false;
+		}
 		
 		//****************** STRUCTURE PUBLIC METHODS ****************** ****************** ******************
 		
@@ -360,7 +369,7 @@ package model {
 		protected function addDocHandler(event:LoaderEvent):void {
 			
 			var dataLoader:DataLoader = DataLoader(event.target);
-			trace (dataLoader.content);
+			if (Settings.debug) trace (dataLoader.content);
 			var itemData:Object = JSON.parse(dataLoader.content);
 			
 			if (workflowModel) {
@@ -385,7 +394,7 @@ package model {
 		protected function addLogDocHandler(event:LoaderEvent):void {
 			
 			var dataLoader:DataLoader = DataLoader(event.target);
-			trace (dataLoader.content);
+			if (Settings.debug) trace (dataLoader.content);
 			var itemData:Object = JSON.parse(dataLoader.content);
 			
 			if (workflowModel) {
@@ -426,7 +435,7 @@ package model {
 		 * 
 		 */
 		protected function progressHandler(event:LoaderEvent):void {
-			//trace("progress: " + event.target.progress);
+			if (Settings.debug) trace("progress: " + event.target.progress);
 		}
 		
 		/**
@@ -437,17 +446,18 @@ package model {
 		protected function completeHandler(event:LoaderEvent):void {
 			
 			var dataLoader:DataLoader = DataLoader(event.target);
-			trace (dataLoader.content);
+			if (Settings.debug) trace (dataLoader.content);
 			var workflowData:Object = JSON.parse(dataLoader.content);
 			
 			workflowModel = new WorkflowModel(workflowData.id,
-															workflowData.title,
-															workflowData.authorID,
-															workflowData.flags,
-															workflowData.steps,
-															workflowData.connections,
-															workflowData.flow,
-															workflowData.tags);
+											  workflowData.title,
+											  workflowData.authorID,
+											  workflowData.visibility,
+											  workflowData.flags,
+											  workflowData.steps,
+											  workflowData.connections,
+											  workflowData.flow,
+											  workflowData.tags);
 			
 			workflowModel.source = this;
 			
@@ -466,7 +476,7 @@ package model {
 		protected function loadDocLogcompleted(event:LoaderEvent):void {
 			
 			var dataLoader:DataLoader = DataLoader(event.target);
-			trace (dataLoader.content);
+			if (Settings.debug) trace (dataLoader.content);
 			var itemData:Object = JSON.parse(dataLoader.content);
 			
 			if (workflowModel) {

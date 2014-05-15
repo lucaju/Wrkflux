@@ -100,12 +100,13 @@ package view {
 			//action
 			if (wfID != 0) {
 				this.id = wfID;
-				WrkFlowController(this.getController()).loadWorkflow(wfID)
+				WrkFlowController(this.getController()).loadWorkflow(wfID);
 			}
 			
 			//top bar
 			topBar = new TopBar();
 			this.addChild(topBar);
+			topBar.type = "use";
 			topBar.backgroundColor = Colors.getColorByName(Colors.WHITE);
 			topBar.titleColor = Colors.getColorByName(Colors.DARK_GREY);
 			topBar.init();
@@ -151,6 +152,7 @@ package view {
 			
 			//top bar
 			topBar.label = WrkFlowController(this.getController()).getLabel();
+			topBar.showVisibility(WrkFlowController(this.getController()).getVisibility());
 			var topMenu:Menu = topBar.getMenu("right");
 			
 			//add menu Options
@@ -212,6 +214,8 @@ package view {
 			
 			if (Settings.pinListVisibility) this.showPinlist();
 			
+			//move top bar to top layer
+			this.setChildIndex(topBar, this.numChildren-1);
 		}
 		
 		/**
@@ -286,6 +290,8 @@ package view {
 		
 		/**
 		 * 
+		 * @param message
+		 * @param type
 		 * 
 		 */
 		protected function showMessage(message:String, type:String):void {
@@ -295,13 +301,13 @@ package view {
 				messageWindow.maxWidth = 160;
 				messageWindow.maxHeight = 17;
 				messageWindow.windowColor = Colors.getColorByName(Colors.LIGHT_GREY);
-				messageWindow.windowColorAlpha = .3;
+				messageWindow.windowColorAlpha = .9;
 				messageWindow.windowLine = true;
 				messageWindow.windowLineColor = Colors.getColorByName(Colors.LIGHT_GREY);
 				messageWindow.windowLineThickness = 1;
 				messageWindow.init();
 				
-				this.addChildAt(messageWindow,0);
+				this.addChildAt(messageWindow, this.numChildren-2);
 				
 				messageWindow.sendMessage(message, type);
 				
@@ -375,7 +381,6 @@ package view {
 		 */
 		protected function click(event:MouseEvent):void {
 			//click in the background clear selection
-			trace (event.target)
 			/*if (event.target is Background) {
 				event.stopImmediatePropagation();
 				flowView.closeAllOpenedPins();

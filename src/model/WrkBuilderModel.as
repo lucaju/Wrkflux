@@ -20,6 +20,8 @@ package model {
 	
 	import mvc.Observable;
 	
+	import settings.Settings;
+	
 	import util.MessageType;
 	
 	/**
@@ -127,11 +129,63 @@ package model {
 			if (!workflowModel) {
 				return label;
 			} else {
-				var wfLabel:String = workflowModel.title + " [Build Mode]";	
+				var wfLabel:String = workflowModel.title;	
 				return wfLabel;
 			}
 		}
 		
+		
+		//****************** PUBLIC GENERAL UPADATE METHODS ****************** ****************** ******************
+		
+		/**
+		 * 
+		 * @param label
+		 * @return 
+		 * 
+		 */
+		public function updateTitle(label:String):Boolean {
+			return workflowModel.title = label;
+		}
+		
+		/**
+		 * 
+		 * @return 
+		 * 
+		 */
+		public function getVisibility():Boolean {
+			if (workflowModel.visibility == 0) return true;
+			return false;
+		}
+		
+		/**
+		 * 
+		 * @param value
+		 * @return 
+		 * 
+		 */
+		public function changeVisibility(value:*):Boolean {
+			
+			if (value is Boolean) {
+				if (value == true) {
+					workflowModel.visibility = 0;
+				} else {
+					workflowModel.visibility = 1;
+				}
+				
+				return true;
+				
+			} else if (value is uint) {
+				if (value == 0) {
+					workflowModel.visibility = 0;
+				} else {
+					workflowModel.visibility = 1;
+				}
+				
+				return true;
+			}
+			
+			return false;
+		}
 		
 		//****************** PUBLIC FLAGS METHODS ****************** ****************** ******************
 		
@@ -378,8 +432,9 @@ package model {
 			var wfData:Object = new Object();
 			wfData.action = "updateWorkflowBuild";
 			wfData.id = workflowModel.id;
-			//wfData.title = workflowProjectModel.title;
-			//wfData.author = workflowProjectModel.author;
+			wfData.title = workflowModel.title;
+			//wfData.author = workflowModel.author;
+			wfData.visibility = workflowModel.visibility;
 			
 			//flags
 			if (workflowModel.flagsManager.hasFlagsAdded) 	wfData.added_flags = workflowModel.flagsManager.getFlagsAdded();
@@ -414,12 +469,12 @@ package model {
 			
 			//send data
 			var dataLoader:DataLoader = new DataLoader(request,
-				{name:"update",
-					estimatedBytes:200,
-					onProgress:progressHandler,
-					onComplete:updateHandler,
-					onError:errorHandler});
-				dataLoader.load();
+  													   {name:"update",
+														estimatedBytes:200,
+														onProgress:progressHandler,
+														onComplete:updateHandler,
+														onError:errorHandler});
+			dataLoader.load();
 			
 			return true;
 		}
@@ -433,7 +488,7 @@ package model {
 		 * 
 		 */
 		protected function progressHandler(event:LoaderEvent):void {
-			//trace("progress: " + event.target.progress);
+			if (Settings.debug) trace("progress: " + event.target.progress);
 		}
 		
 		/**
@@ -444,7 +499,7 @@ package model {
 		protected function completeHandler(event:LoaderEvent):void {
 			
 			var dataLoader:DataLoader = DataLoader(event.target);
-			//trace (dataLoader.content);
+			if (Settings.debug) trace (dataLoader.content);
 			var workflowData:Object = JSON.parse(dataLoader.content);
 		
 			workflowModel = new WorkflowModel(workflowData.id,
@@ -452,6 +507,7 @@ package model {
 															workflowData.authorID,
 															workflowData.created_date,
 															workflowData.modified_date,
+															workflowData.visibility,
 															workflowData.flags,
 															workflowData.steps,
 															workflowData.connections,
@@ -478,7 +534,7 @@ package model {
 			
 			//get feedback
 			var dataLoader:DataLoader = DataLoader(event.target);
-			//trace (dataLoader.content);
+			if (Settings.debug) trace (dataLoader.content);
 			var workflowData:Object = JSON.parse(dataLoader.content);
 			
 			//update uid in recently added flags and steps
@@ -523,5 +579,6 @@ package model {
 		protected function errorHandler(event:LoaderEvent):void {
 			this.dispatchEvent(new ErrorEvent(ErrorEvent.ERROR,false,false,event.text));
 		}
+		
 	}
 }

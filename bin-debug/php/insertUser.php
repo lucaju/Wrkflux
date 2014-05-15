@@ -33,6 +33,7 @@ if($_POST['wdata']) {
 		$data["userID"] = $dbConn->insert_id;
 		$data["firstName"] = utf8_encode($firstName);
 		$data["lastName"] = utf8_encode($lastName);
+		$data['email'] = utf8_encode($row['email']);
 		
 		
 	} else {

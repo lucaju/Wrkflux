@@ -19,7 +19,7 @@ if($_POST['wdata']) {
 	$email = utf8_decode($jData['email']);
 	$password = utf8_decode($jData['password']);
 	
-	$query = "SELECT id, first_name, last_name, email, AES_DECRYPT(password, SHA1('wrkflux')) FROM users WHERE email = '$email' LIMIT 1";
+	$query = "SELECT id, first_name, last_name, email, AES_DECRYPT(password, SHA1('wrkflux')), profile_image FROM users WHERE email = '$email' LIMIT 1";
 	
 	if ($result = $dbConn->query($query)) {
 	
@@ -37,6 +37,8 @@ if($_POST['wdata']) {
 				$data['userID'] = $row['id'];	
 				$data['firstName'] = utf8_encode($row['first_name']);
 				$data['lastName'] = utf8_encode($row['last_name']);
+				$data['email'] = utf8_encode($row['email']);
+				$data['profile_image'] = utf8_encode($row['profile_image']);
 		
 			
 			} else {

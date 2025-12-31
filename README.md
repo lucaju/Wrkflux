@@ -1,12 +1,9 @@
 Wrkflux Beta 2
 =======
 
-Demo: http://labs.fluxo.art.br/wrkflux/
+Learn more: https://lucianofrizzera.com/projects#workflow-interfaces-for-editorial-processes
 
-Download: http://labs.fluxo.art.br/wrkflux/app/Wrkflux.air
-
-
-####Previous versions
+- https://vimeo.com/100567400
 - iPad version: https://vimeo.com/70748726
 - Version 1: https://vimeo.com/47347463
 
